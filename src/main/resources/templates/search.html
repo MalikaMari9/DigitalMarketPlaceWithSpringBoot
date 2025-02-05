@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <link rel="stylesheet" th:href="@{/CSS/itemList.css}">
+</head>
+<body>
+<form th:action="@{/search}" method="GET">
+    <input type="text" name="query" placeholder="Search by name, category, or tag" required>
+    <button type="submit">Search</button>
+</form>
+</body>

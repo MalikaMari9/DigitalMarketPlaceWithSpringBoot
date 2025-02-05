@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.example.demo.entity.tag.Tag;
 
-public interface TagRepository extends JpaRepository<Tag, Long>{
-	
+public interface TagRepository extends JpaRepository<Tag, Long> {
+
 	Optional<Tag> findByName(String name);
 }

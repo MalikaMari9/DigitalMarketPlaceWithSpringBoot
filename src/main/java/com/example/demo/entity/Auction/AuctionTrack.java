@@ -9,61 +9,61 @@ import com.example.demo.entity.User;
 @Table(name = "auctiontrack_tbl")
 public class AuctionTrack {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long auctionTrackID;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long auctionTrackID;
 
-    @Column(nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private LocalDateTime createdAt;
+	@Column(nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+	private LocalDateTime createdAt;
 
-    private Double price;
+	private Double price;
 
-    @ManyToOne
-    @JoinColumn(name = "auctionID", nullable = false)
-    private Auction auction;
+	@ManyToOne
+	@JoinColumn(name = "auctionID", nullable = false)
+	private Auction auction;
 
-    @ManyToOne
-    @JoinColumn(name = "userID", nullable = false)
-    private User user;
+	@ManyToOne
+	@JoinColumn(name = "userID", nullable = false)
+	private User user;
 
-    // Getters and Setters
-    public Long getAuctionTrackID() {
-        return auctionTrackID;
-    }
+	// Getters and Setters
+	public Long getAuctionTrackID() {
+		return auctionTrackID;
+	}
 
-    public void setAuctionTrackID(Long auctionTrackID) {
-        this.auctionTrackID = auctionTrackID;
-    }
+	public void setAuctionTrackID(Long auctionTrackID) {
+		this.auctionTrackID = auctionTrackID;
+	}
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
+	}
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
+	public void setCreatedAt(LocalDateTime createdAt) {
+		this.createdAt = createdAt;
+	}
 
-    public Double getPrice() {
-        return price;
-    }
+	public Double getPrice() {
+		return price;
+	}
 
-    public void setPrice(Double price) {
-        this.price = price;
-    }
+	public void setPrice(Double price) {
+		this.price = price;
+	}
 
-    public Auction getAuction() {
-        return auction;
-    }
+	public Auction getAuction() {
+		return auction;
+	}
 
-    public void setAuction(Auction auction) {
-        this.auction = auction;
-    }
+	public void setAuction(Auction auction) {
+		this.auction = auction;
+	}
 
-    public User getUser() {
-        return user;
-    }
+	public User getUser() {
+		return user;
+	}
 
-    public void setUser(User user) {
-        this.user = user;
-    }
+	public void setUser(User user) {
+		this.user = user;
+	}
 }

@@ -8,41 +8,41 @@ import jakarta.persistence.*;
 @Table(name = "itemtag_tbl")
 public class ItemTag {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "itemTagID")
-    private Long itemTagID;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "itemTagID")
+	private Long itemTagID;
 
-    @ManyToOne
-    @JoinColumn(name = "tag_tbl_tagID", nullable = false)
-    private Tag tag;
+	@ManyToOne
+	@JoinColumn(name = "tag_tbl_tagID", nullable = false)
+	private Tag tag;
 
-    @ManyToOne
-    @JoinColumn(name = "item_tbl_itemID", nullable = false)
-    private Item item;
+	@ManyToOne
+	@JoinColumn(name = "item_tbl_itemID", nullable = false)
+	private Item item;
 
-    // Getters and Setters
-    public Long getItemTagID() {
-        return itemTagID;
-    }
+	// Getters and Setters
+	public Long getItemTagID() {
+		return itemTagID;
+	}
 
-    public void setItemTagID(Long itemTagID) {
-        this.itemTagID = itemTagID;
-    }
+	public void setItemTagID(Long itemTagID) {
+		this.itemTagID = itemTagID;
+	}
 
-    public Tag getTag() {
-        return tag;
-    }
+	public Tag getTag() {
+		return tag;
+	}
 
-    public void setTag(Tag tag) {
-        this.tag = tag;
-    }
+	public void setTag(Tag tag) {
+		this.tag = tag;
+	}
 
-    public Item getItem() {
-        return item;
-    }
+	public Item getItem() {
+		return item;
+	}
 
-    public void setItem(Item item) {
-        this.item = item;
-    }
+	public void setItem(Item item) {
+		this.item = item;
+	}
 }

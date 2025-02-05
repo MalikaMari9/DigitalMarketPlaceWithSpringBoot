@@ -8,13 +8,17 @@ import org.springframework.data.repository.query.Param;
 
 import com.example.demo.entity.Item;
 
+public interface ItemRepository extends JpaRepository<Item, Long> {
 
-public interface ItemRepository extends JpaRepository<Item, Long>{
-	
-	@Query("SELECT t.name FROM Tag t " +
-	           "JOIN ItemTag it ON t.tagID = it.tag.tagID " +
-	           "JOIN Item i ON i.itemID = it.item.itemID " +
-	           "WHERE i.itemID = :itemID")
-	    List<String> findTagNamesByItemId(@Param("itemID") Long itemID);
-	
+	@Query("SELECT t.name FROM Tag t " + "JOIN ItemTag it ON t.tagID = it.tag.tagID "
+			+ "JOIN Item i ON i.itemID = it.item.itemID " + "WHERE i.itemID = :itemID")
+	List<String> findTagNamesByItemId(@Param("itemID") Long itemID);
+
+	@Query("SELECT i FROM Item i " + "LEFT JOIN FETCH i.category c " + "LEFT JOIN FETCH i.itemTags it "
+			+ "LEFT JOIN FETCH it.tag t " + "LEFT JOIN FETCH Auction a ON a.item = i " + // ✅ Fetch auction details
+			"WHERE LOWER(i.itemName) LIKE LOWER(CONCAT('%', :query, '%')) "
+			+ "OR LOWER(c.name) LIKE LOWER(CONCAT('%', :query, '%')) "
+			+ "OR LOWER(t.name) LIKE LOWER(CONCAT('%', :query, '%'))")
+	List<Item> searchItems(@Param("query") String query);
+
 }
