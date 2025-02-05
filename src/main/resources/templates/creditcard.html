@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Credit Card Payment Gateway</title>
+  <link rel="stylesheet" href="CSS/ckstyle1.css">
+  <script src="JS/card.js"></script>
+</head>
+<body>
+  <div class="payment-container">
+    <h2>Credit Card Payment </h2>
+    <div class="payment-box">
+      <h2>Payment Details</h2>
+      <div class="card-icons"> 
+        <!-- <img src="/mastercard.png" alt="MasterCard">
+        <img src="img/discover.png" alt="Discover">
+        <img src="img/paypal.webp" alt="PayPal">
+        <img src="img/amex.png" alt="American Express"> --> 
+        <img src="Image/icon/card.png" alt="American Express">
+      </div>
+      <form id="payment-form">
+        <label for="card-number">Card Number</label>
+        <input type="text" id="card-number" placeholder="Valid Card Number" required>
+        <span class="error-message" id="card-number-error"></span>
+      
+        <div class="row">
+          <div>
+            <label for="expiration-date">Expiration Date</label>
+            <input type="text" id="expiration-date" placeholder="MM / YY" required>
+            <span class="error-message" id="expiration-date-error"></span>
+          </div>
+          <div>
+            <label for="cv-code">Security Code</label>
+            <input type="text" id="cv-code" placeholder="CVV" required>
+            <span class="error-message" id="cv-code-error"></span>
+          </div>
+        </div>
+      
+        <label for="card-owner">Card Owner</label>
+        <input type="text" id="card-owner" placeholder="Card Owner Name" required>
+        <span class="error-message" id="card-owner-error"></span>
+
+        <label for="postal-code">Postal Code</label>
+        <input type="text" id="postal-code" placeholder="Postal Code" required>
+        <span class="error-message" id="postal-code-error"></span>
+        <button type="submit">Confirm Payment</button>
+      </form>
+      
+    </div>
+  </div>
+</body>
+</html>

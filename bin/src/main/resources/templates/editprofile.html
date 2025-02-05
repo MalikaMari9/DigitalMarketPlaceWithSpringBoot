@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile</title>
+    <link rel="stylesheet" th:href="@{/CSS/STRMstyle.css}">
+</head>
+<body >
+    <div class="add-body">
+    <div class="page-wrapper">
+       
+                <main class="edit-profile-container">
+             
+                    <h1>Edit Profile</h1>
+                    <form class="horizontal-form">
+                        <div class="form-row">
+                            <div class="form-group profile-picture">
+                                <label for="profilePicture">Profile Picture:</label>
+                                <input type="file" id="profilePicture">
+                                <img src="https://i.pinimg.com/236x/4b/12/fb/4b12fbe8012b0f175bc1e9cad35880a3.jpg" alt="Profile Image">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="username">Username:</label>
+                                <input type="text" id="username" value="tess">
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email:</label>
+                                <input type="email" id="email" value="tess@gmail.com">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="phone">Phone:</label>
+                                <input type="tel" id="phone" value="09987654321" maxlength="12">
+                            </div>
+                            <div class="form-group">
+                                <label for="dob">Date of Birth:</label>
+                                <input type="date" id="dob" value="2000-03-06">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="gender">Gender:</label>
+                                <select id="gender">
+                                    <option value="male" selected>Male</option>
+                                    <option value="female">Female</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="bio">Bio:</label>
+                                <textarea id="bio" rows="4">Free</textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <button type="submit" class="profile-button">Save Changes</button>
+                        </div>
+                    </form>
+                 
+                </main>
+            </div>
+    </div>
+</body>
+</html>

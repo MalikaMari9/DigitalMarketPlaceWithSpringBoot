@@ -1,0 +1,125 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>View Auction</title>
+    <link rel="stylesheet" href="CSS/viewItem.css">
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    
+    
+<script>
+    
+</script>
+</head>
+<body>
+<div id="saleItem">
+    <div id="previewImages">
+        <img src="Image/nendo2.jpg"  class="thumbnail"  alt="Thumbnail" height="75px" width="75px" data-fullsize="Image/nendo2.jpg">
+        <img src="Image/nendo1.jpg"  class="thumbnail"  alt="Thumbnail" height="75px" width="75px" data-fullsize="Image/nendo1.jpg">
+        <img src="Image/nendo3.jpg"  class="thumbnail"  alt="Thumbnail" height="75px" width="75px" data-fullsize="Image/nendo3.jpg">
+        
+    </div>
+    <div id="imageEnlarge">
+        <img id="mainImage"  src="Image/nendo2.jpg"  alt="Main Image">
+    </div>
+    <div id="desc">
+        <div class="item-header">
+            <h2>Nikkari Aoe Nendoroid (Good Smile)</h2>
+            <p class="heart-container">
+                <img src="Image/icon/heart.png" width="25px" height="25px" alt="Heart Icon"> 4
+            </p>
+        </div>
+        <div id="auction-sale"
+        th:if="${item.sellType != null and item.sellType.name() == 'AUCTION'}">
+        <div id="bid-details">
+            <table>
+                <tr>
+                    <th>Current Bid: </th><td>USD $40</td>
+                </tr>
+                
+                <tr>
+                    <th>Bids: </th><td>3</td>
+                </tr>
+                <tr>
+                    <th>Time Left: </th><td>4days 20:17:55</td>
+                </tr>
+
+                <tr>
+                    <th>Your Max Bid</th><td><input type="number" name="userBid"></td>
+                </tr>
+            </table>
+        </div>
+        
+        
+        <div id="bid-btn">
+        <button id="addToCartBtn"><img src="Image/icon/bid.png" width="25px" height="25px">Real Time Bid</button>
+        <div id="popupNotification" class="hidden">
+            <p>Item has been added to the cart!</p>
+        </div>
+        <button id="addToCartBtn"><img src="Image/icon/target.png" width="25px" height="25px">Place Sniper Bid</button>
+        <div class="tooltip-container">
+            <img src="Image/icon/circle-help.png" width="25px" height="25px" alt="Help Icon">
+            <span class="tooltip-text">If you choose the sniper bid option, your bid will be placed within the last 10 minutes of the auction.<br>
+                After placing a sniper bid, please be aware that there are several cases where you bid will not be made:<br>
+                1. Another bidder has placed a bid above your maximum bid<br>
+                2. The seller ends the auction early before our sniper bid is placed<br>
+                3. The seller does not wish to sell to proxy services and cancels our bid</span>
+        </div>
+        
+        </div>
+        </div>
+        <hr color="darkgrey">    
+            <h4>Product Description</h4>
+                <p>"Come now, smile." From the popular browser and smartphone game "Touken Ranbu -ONLINE-" comes a Nendoroid of Nikkari Aoe, a sword of the Aoe school just like Juzumaru Tsunetsugu. He comes with three face plates including a standard expression, a combat expression and a smiling expression based on the line "Come now, smile". His sword can be displayed both sheathed or drawn and he also comes with two differently shaped haori coats allowing you to display him in various different situations. Be sure to add him to your collection! Product Name Nendoroid Nikkari Aoe Series Touken Ranbu -ONLINE- Manufacturer ORANGE ROUGE</p>
+                <p id="last-updated">Last Updated:2024-12-10 23:24:59(1 month ago) </p> <!--We neeed to calculate the time here-->
+        <hr>      
+                <h4>Product information</h4>
+                <table class="info-table">
+                    <tr>
+                        <th>Category:</th>
+                        <td>Comics & Anime</td>
+                    </tr>
+                    <tr>
+                        <th>Condition:</th>
+                        <td>New</td>
+                    </tr>
+                    <tr>
+                        <th>Tags:</th>
+                        <td>touken ranbu, nikkari aoe, nendoroid, good smile</td>
+                    </tr>
+                </table>
+                
+                
+        <hr>
+            <div id="seller">
+                
+                <h4 style="margin-bottom: 0px;">Seller</h4>
+                <div class="profile-container">
+                    <img src="Image/profile/default.png" alt="Profile Picture" width="50px" height="50px">
+                    <a href="#"><h4>Seller Profile</h4></a>
+                </div>
+                <div class="profile-info">
+                    <div class="star-rating">
+                        <span class="star filled">★</span>
+                        <span class="star filled">★</span>
+                        <span class="star filled">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                    </div>
+                    <p class="identity-verified">
+                        <i class="fas fa-user-check"></i> Identity Verified
+                    </p>
+                </div>
+                
+                <div></div>
+            </div>
+        </div>
+    </div>
+
+
+
+<script src="JS/ImageSwap.js" defer></script>
+
+</body>
+
+
+</html>

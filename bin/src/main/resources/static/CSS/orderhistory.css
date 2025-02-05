@@ -1,0 +1,217 @@
+:root {
+    --primary-color: #333; /* Dark Gray */
+    --secondary-color: #555; /* Medium Gray */
+    --background-color: #f9f9f9; /* Light Gray */
+    --text-color: #000; /* Black */
+    --highlight-color: #0073e6; /* Blue */
+}
+
+
+.checkout-body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f9f9f9;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position:relative;
+}
+
+.completed-orders-wrapper {
+    width: 100%;
+    max-width: 800px;
+    margin-bottom: 30px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+.order-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    margin-bottom: 10px;
+}
+
+.order-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.order-image {
+    width: 80px;
+    height: 80px;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.order-info {
+    flex: 1;
+}
+
+.order-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.order-status {
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.green-icon {
+    color: green;
+}
+
+.red-icon {
+    color: red;
+}
+
+.orange-icon {
+    color: orange;
+}
+
+
+
+.trash-button {
+    background-color:#f9f9f9;
+    color: var(--primary-color);
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    width:20%;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-align:left;
+    
+}
+
+.trash-button:hover {
+    color: red;
+}
+
+.order-footer {
+    display: flex;
+    justify-content: flex-end; /* Aligns the button to the right */
+    margin-top: 10px;
+    
+}
+
+.proceed-button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+
+    font-size: 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.proceed-button:hover {
+    background-color:white;
+    color:var(--primary-color);
+}
+
+.wishlist-button {
+    background-color:#f9f9f9;
+    color: var(--primary-color);
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    width:20%;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.wishlist-button:hover {
+    background-color:#f9f9f9;
+    color:green;
+}
+
+.shop-name {
+    font-weight: bold;
+    color: var(--primary-color);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.shop-name:hover {
+    color: var(--secondary-color);
+    text-decoration: underline;
+}
+
+.download-invoice {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+}
+
+.download-button {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    font-size: 0.9rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.download-button i {
+    font-size: 1rem;
+}
+
+.download-button:hover {
+    
+     background-color:white;
+    color:var(--primary-color); /* Darker blue on hover */
+    transform: scale(1.05);
+}
+
+/* Order History Header Wrapper */
+.order-history-header {
+    display: flex;
+    justify-content: space-between; /* Aligns header and receipt on opposite sides */
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 10px;
+    border-bottom: 1px solid #ccc; /* Optional separator */
+}
+
+/* Receipt ID Styling */
+.receipt-id {
+    font-size: 1rem;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.buy-again {
+    background-color: white;
+    color: var(--primary-color);
+    border: 1;
+    padding: 10px 20px;
+    font-size: 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.buy-again:hover {
+    background-color:var(--primary-color);
+    color:white;
+}

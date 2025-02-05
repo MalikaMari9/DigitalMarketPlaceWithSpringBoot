@@ -1,0 +1,44 @@
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <link rel="stylesheet" href="CSS/itemList.css">
+    </head>
+<body>
+
+    <div id="saleItemList">
+    
+<div id="saleItemContainer" th:each="item : ${itemList}"
+  th:if="${item.sellType != null and item.sellType.name() != 'AUCTION'}">
+
+
+   
+        <div id="saleItem">
+            <img th:src="@{${item.getThumbnail()}}" width="100" height="100" alt="Thumbnail">
+            <p id="status" th:text="${item.stat}"></p>
+           <p id="price" th:text="'$' + ${item.price}"></p>
+
+        </div> 
+      <a th:href="@{/itemList/{itemID}(itemID=${item.itemID})}" th:text="${item.itemName}" id="name"></a> 
+  
+</div>
+
+<div id="saleItemContainer" th:each="auction : ${auctionList}"
+  th:if="${auction.item.sellType != null and auction.item.sellType.name() == 'AUCTION'}">
+
+
+   
+        <div id="saleItem">
+            <img th:src="@{${auction.item.getThumbnail()}}" width="100" height="100" alt="Thumbnail">
+            <p id="status" th:text="${auction.item.stat}"></p>
+           <p id="price" th:text="'$' + ${auction.startPrice}"></p>
+
+        </div> 
+      <a th:href="@{/itemList/{itemID}(itemID=${auction.item.itemID})}" th:text="${auction.item.itemName}" id="name"></a> 
+  
+</div>
+
+
+</div>
+</body>
+
+
+</html>

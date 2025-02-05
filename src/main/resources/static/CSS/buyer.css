@@ -1,0 +1,391 @@
+:root {
+    --primary-color: #333; /* Dark Gray */
+    --secondary-color: #555; /* Medium Gray */
+    --background-color: #f9f9f9; /* Light Gray */
+    --text-color: #000; /* Black */
+    --highlight-color: #0073e6; /* Blue */
+}
+
+
+body{
+    margin-top: 100px;
+    margin-bottom: 100px;
+    background-color: var(--background-color);
+}
+
+
+.profile-body {
+    font-family: Arial, sans-serif;
+  
+ 
+    color: var(--text-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.profile-wrapper {
+    max-width: 900px;
+    width: 100%;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid var(--secondary-color);
+}
+
+.profile-picture img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin-right: 20px;
+    border: 2px solid var(--primary-color);
+}
+
+.profile-info {
+    flex: 1;
+}
+
+.profile-info h2 {
+    font-size: 1.5rem;
+    margin: 0;
+}
+
+.share-button {
+    background: none;
+    border: 1px solid var(--primary-color);
+    padding: 10px 15px;
+    border-radius: 5px;
+    color: var(--primary-color);
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.share-button:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.profile-tabs {
+    display: flex;
+    justify-content: space-around;
+    background: var(--background-color);
+    border-bottom: 1px solid var(--secondary-color);
+}
+
+.tab {
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 1rem;
+    border: none;
+    background: none;
+    outline: none;
+    transition: color 0.3s ease;
+}
+
+.tab.active {
+    color: var(--highlight-color);
+    font-weight: bold;
+    border-bottom: 2px solid var(--highlight-color);
+}
+
+.profile-content {
+    padding: 20px;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.posts h3 {
+    margin-top: 0;
+    color: var(--primary-color);
+}
+
+
+.bio p {
+    margin: 5px 0;
+    font-size: 0.9rem;
+    color: var(--secondary-color);
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Limit to 2 lines initially */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.bio button {
+    background: none;
+    border: none;
+    color: var(--highlight-color);
+    cursor: pointer;
+    font-size: 0.9rem;
+    margin-top: 5px;
+    padding: 0;
+}
+
+.bio button:hover {
+    text-decoration: underline;
+}
+
+.stats {
+    margin-top: 10px;
+}
+
+.stats span {
+    display: inline-block;
+    margin-right: 15px;
+    font-size: 0.9rem;
+    color: var(--secondary-color);
+}
+
+.stats span strong {
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+
+#saleItemList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* Space between items */
+    justify-content: center;
+    padding: 10px;
+}
+
+.saleItemContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 240px; /* Set consistent width */
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+#saleItem {
+    position: relative;
+    width: 200px; /* Ensure the image container matches the image size */
+    height: 200px;
+    border: 1px solid #ccc; /* Optional border */
+    border-radius: 5px; /* Rounded corners */
+    overflow: hidden; /* Prevent overflowing content */
+    background-color: #f9f9f9; /* Light background color */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+#saleItem img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Crop image while maintaining aspect ratio */
+    display: block;
+}
+
+#status {
+    position: absolute;
+    top: -10px;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent background */
+    color: #fff; /* White text */
+    font-size: 16px;
+    padding: 2px 5px;
+    border-radius: 3px;
+}
+
+#price {
+    position: absolute;
+    bottom: -10px;
+    right: 0px;
+    background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent background */
+    color: #fff; /* White text */
+    font-size: 16px;
+    padding: 2px 5px;
+    border-radius: 3px;
+}
+
+#name {
+    margin-top: 10px; /* Space between image and name */
+    font-size: 18px;
+    font-weight: bold;
+    color: #333; /* Dark gray text */
+    text-align: center; /* Center the name text */
+}
+
+
+#saleItemListcontainer {
+    margin: 20px;
+    padding: 20px;
+    background-color: var(--background-color);
+    border: 1px solid var(--secondary-color);
+    border-radius: 10px;
+    font-family: Arial, sans-serif;
+}
+
+/* Item Header Container */
+#item-header {
+    display: flex;
+    justify-content: space-between; /* Align items on opposite sides */
+    align-items: center; /* Center vertically */
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--secondary-color); /* Optional divider */
+    padding-bottom: 10px;
+}
+
+/* Title Styling */
+#item-header h3 {
+    margin: 0;
+    font-size: 18px;
+    color: var(--primary-color);
+}
+
+/* List Item Link */
+#list-item-link {
+    text-decoration: none;
+    background-color: var(--link-color); /* Accent color */
+    color: var(--background-color); /* White text */
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 14px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+#list-item-link:hover {
+    background-color: var(--hover-color); /* Darker hover color */
+    transform: scale(1.05); /* Slightly enlarge on hover */
+}
+
+
+.completed-orders-wrapper {
+    width: 100%;
+    max-width: 800px;
+    margin-bottom: 30px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+.order-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    margin-bottom: 10px;
+}
+
+.order-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.order-image {
+    width: 80px;
+    height: 80px;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.order-info {
+    flex: 1;
+}
+
+.order-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.order-status {
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.green-icon {
+    color: green;
+}
+
+.red-icon {
+    color: red;
+}
+
+.orange-icon {
+    color: orange;
+}
+
+.order-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.trash-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #555;
+}
+
+.trash-button:hover {
+    color: red;
+}
+
+
+
+.order-status.delivered {
+    color: green;
+}
+
+.order-status.cancelled {
+    color: red;
+}
+
+.order-status.waiting {
+    color: orange;
+}
+
+
+.shop-name {
+    font-weight: bold;
+    color: var(--primary-color);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.shop-name:hover {
+    color: var(--secondary-color);
+    text-decoration: underline;
+}
+
+
+
+.order-details-wrapper {
+    display: flex;
+    justify-content: space-between; /* Align text on left and button on right */
+    align-items: center; /* Vertically align items */
+    margin-top: 10px;
+}
+
+/* Order Details */
+.order-details {
+    flex: 1; /* Take up remaining space */
+    margin-right: 15px; /* Add some spacing between text and button */
+}
+

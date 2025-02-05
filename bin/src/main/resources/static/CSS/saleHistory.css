@@ -1,0 +1,187 @@
+:root {
+    --primary-color: #333;
+    --secondary-color: #555;
+    --background-color: #f2f2f2;
+    --text-color: #000;
+    --link-color: #007BFF;
+    --hover-color: #0056b3;
+    --hr-color: #c2c2c2;
+    --container-color: #fff;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+#container {
+    max-width: 1200px;
+    margin: 40px auto;
+    background-color: var(--container-color);
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+/* Page title */
+#page-title {
+    color: var(--primary-color);
+    text-align: center;
+    margin-top: 0;
+}
+
+/* Form */
+#search-form {
+    margin: 20px auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center; /* Align items vertically center */
+    gap: 15px; /* Add spacing between the elements */
+}
+
+.search-label {
+    margin: 0;
+    font-size: 14px;
+    color: var(--secondary-color);
+    display: flex;
+    align-items: center; /* Align label text with input vertically */
+}
+
+#search-field,
+#sort-by {
+    padding: 8px;
+    border: 1px solid var(--secondary-color);
+    border-radius: 5px;
+    font-size: 14px;
+    width: 200px; /* Set a consistent width */
+    box-sizing: border-box; /* Ensure padding is included in width */
+}
+
+#search-button {
+    padding: 8px 15px;
+    background-color: var(--primary-color);
+    color: var(--background-color);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+#search-button:hover {
+    background-color: var(--secondary-color);
+}
+
+/* Table */
+#sales-table {
+    width: 100%;
+    margin: 20px auto;
+    border-collapse: collapse;
+    background-color: var(--background-color);
+}
+
+#sales-table th,
+#sales-table td {
+    border: 1px solid var(--hr-color);
+    padding: 10px;
+    text-align: center;
+}
+
+#sales-table th {
+    background-color: var(--primary-color);
+    color: var(--background-color);
+}
+
+#sales-table tr:nth-child(even) {
+    background-color: #e6e6e6;
+}
+
+.table-link {
+    color: var(--link-color);
+    text-decoration: none;
+}
+
+.table-link:hover {
+    color: var(--hover-color);
+    text-decoration: underline;
+}
+
+.disabled-checkbox {
+    cursor: not-allowed;
+}
+
+.item-image {
+    max-width: 50px;
+    max-height: 50px;
+    object-fit: cover;
+}
+
+/* Stock cell styling */
+#sales-table td button {
+    background-color: var(--primary-color);
+    color: var(--background-color);
+    border: none;
+    padding: 5px 10px;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 3px;
+    margin: 0 5px; /* Space between button and input */
+    transition: background-color 0.3s ease;
+}
+
+#sales-table td button:hover {
+    background-color: var(--secondary-color);
+}
+
+#sales-table td input[type="number"] {
+    width: 50px; /* Adjust the width as needed */
+    padding: 5px;
+    font-size: 14px;
+    text-align: center;
+    border: 1px solid var(--secondary-color);
+    border-radius: 5px;
+    margin: 0 5px; /* Space around the input */
+    box-sizing: border-box;
+}
+
+.save-button:disabled {
+    background-color: #ccc; /* Light gray to indicate it is inactive */
+    color: #666; /* Slightly darker gray for text */
+    cursor: not-allowed; /* Change cursor to indicate it's not clickable */
+    opacity: 0.7; /* Slightly transparent for a "disabled" look */
+    box-shadow: none; /* Remove any shadow for a flat look */
+}
+
+
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    #sales-table {
+        font-size: 12px;
+    }
+
+    #sales-table th, #sales-table td {
+        padding: 8px;
+    }
+
+    #sales-table {
+        overflow-x: auto;
+        display: block;
+        white-space: nowrap;
+    }
+}
+
+@media (max-width: 576px) {
+    #search-form {
+        flex-direction: column; /* Stack the form fields on small screens */
+        gap: 10px;
+    }
+
+    #search-field,
+    #sort-by,
+    #search-button {
+        width: 100%; /* Full width on smaller screens */
+    }
+}

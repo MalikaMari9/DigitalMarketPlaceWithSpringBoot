@@ -1,0 +1,108 @@
+#saleItemList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* Space between items */
+    justify-content: center;
+    padding: 10px;
+}
+
+.saleItemContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 240px; /* Set consistent width */
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+#saleItem {
+    position: relative;
+    width: 200px; /* Ensure the image container matches the image size */
+    height: 200px;
+    border: 1px solid #ccc; /* Optional border */
+    border-radius: 5px; /* Rounded corners */
+    overflow: hidden; /* Prevent overflowing content */
+    background-color: #f9f9f9; /* Light background color */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+#saleItem img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Crop image while maintaining aspect ratio */
+    display: block;
+}
+
+#status {
+    position: absolute;
+    top: -10px;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent background */
+    color: #fff; /* White text */
+    font-size: 16px;
+    padding: 2px 5px;
+    border-radius: 3px;
+}
+
+#price {
+    position: absolute;
+    bottom: -10px;
+    right: 0px;
+    background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent background */
+    color: #fff; /* White text */
+    font-size: 16px;
+    padding: 2px 5px;
+    border-radius: 3px;
+}
+
+#name {
+    margin-top: 10px; /* Space between image and name */
+    font-size: 18px;
+    font-weight: bold;
+    color: #333; /* Dark gray text */
+    text-align: center; /* Center the name text */
+}
+
+
+#saleItemListcontainer {
+    margin: 20px;
+    padding: 20px;
+    background-color: var(--background-color);
+    border: 1px solid var(--secondary-color);
+    border-radius: 10px;
+    font-family: Arial, sans-serif;
+}
+
+/* Item Header Container */
+#item-header {
+    display: flex;
+    justify-content: space-between; /* Align items on opposite sides */
+    align-items: center; /* Center vertically */
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--secondary-color); /* Optional divider */
+    padding-bottom: 10px;
+}
+
+/* Title Styling */
+#item-header h3 {
+    margin: 0;
+    font-size: 18px;
+    color: var(--primary-color);
+}
+
+/* List Item Link */
+#list-item-link {
+    text-decoration: none;
+    background-color: var(--link-color); /* Accent color */
+    color: var(--background-color); /* White text */
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 14px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+#list-item-link:hover {
+    background-color: var(--hover-color); /* Darker hover color */
+    transform: scale(1.05); /* Slightly enlarge on hover */
+}

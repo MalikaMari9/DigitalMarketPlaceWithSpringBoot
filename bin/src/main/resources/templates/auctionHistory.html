@@ -1,0 +1,65 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Sale History</title>
+    <link rel="stylesheet" href="CSS/saleHistory.css">
+</head>
+<body>
+    <div id="container">
+    <h2 id="page-title">Auction History</h2>
+
+    <div id="winningbids">
+
+    <form id="search-form">
+        <label class="search-label">Search: </label>
+        <input type="text" id="search-field" name="searchfield" value="">
+        <label class="search-label">Sort By: </label>
+        <select id="sort-by" name="sortby">
+
+            <option value="item">Item Name</option>
+            <option value="price">Price</option>
+            <option value="buyer">Buyer</option>
+            <option value="Auctionstatus">Auction Status</option>
+            <option value="status">Delivery Status</option>
+        </select>
+        <input type="submit" id="search-button" name="search" value="Search">
+    </form>
+    <table id="sales-table">
+        <tr>
+            <th>Auction No</th>
+            <th>Item Name</th>
+            <th>Item Image</th>
+            <th>Current Winning Bid</th>
+            <th>End Date</th>
+            <th>Auction Status</th>
+            <th>Buyer</th>
+            <th>Delivery Status</th>
+        </tr>
+        <tr>
+            <td>AA0234</td>
+            <td><a class="table-link" href="">Nikkari Aoe Nendoroid</a></td>
+            <td><img class="item-image" src="Image/nendo1.jpg" alt=""></td>
+            <td>USD $66</td>
+            <td>yyyy/mm/dd</td>
+            <td>Completed</td>
+            <td><a class="table-link" href="">Malika</a></td>
+            <td><img src="Image/icon/package-check.png" width="25px" height="25px"></td>
+        </tr>
+        <tr>
+            <td>AA0234</td>
+            <td><a class="table-link" href="">Nikkari Aoe Nendoroid</a></td>
+            <td><img class="item-image" src="Image/nendo1.jpg" alt=""></td>
+            <td>USD $36</td>
+            <td>yyyy/mm/dd</td>
+            <td>Ongoing</td> 
+            <td><a class="table-link" href="">Malika</a></td>
+            <td><img src="Image/icon/package-x.png" width="25px" height="25px"></td>
+        </tr>
+
+
+    </table>
+</div>
+</div>
+
+
+</body>
+</html>

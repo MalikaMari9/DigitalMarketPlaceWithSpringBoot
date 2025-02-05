@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Completed Orders</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/CSS/wish.css}">
+    
+    	<link th:href="@{/CSS/headerFooter.css}" rel="stylesheet">
+ 	<script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <link th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css}" rel="stylesheet">
+ 	<script th:src="@{/JS/sidebar.js}"></script>
+ 
+</head>
+<body>
+<header th:insert="fragments/header :: header"></header>
+    <div class="checkout-body">
+
+        <!-- Order 1 Wrapper -->
+        <div class="completed-orders-wrapper">
+            <div class="order-card">
+                <div class="order-card-header">
+                    <img src="https://marksandspencer.com.ph/cdn/shop/products/SD_01_T01_1026C_Y0_X_EC_90.jpg?v=1673598246" alt="Leather Tote Bag" class="order-image">
+                    <div class="order-info">
+                        <h4 class="order-title">Leather Tote Bag</h4>
+                        <p class="order-date"><i class="fas fa-calendar-alt"></i> 2024-12-27 12:11</p>
+                        <a href="viewprofile.html" class="shop-name">Shop Name</a>
+                        <div class="order-details">
+                            <p><strong>Price:</strong> MMK 50,000</p>
+                        </div>
+                    </div>
+                    <div class="order-actions-wrapper">
+                    <button class="icon-button cart-button" title="Add to Cart">
+                            <i class="fas fa-cart-plus"></i>
+                        </button>
+                        <button class="icon-button" title="Delete">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                       
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order 2 Wrapper -->
+        <div class="completed-orders-wrapper">
+            <div class="order-card">
+                <div class="order-card-header">
+                    <img src="https://callashoes.co.uk/cdn/shop/files/emily_heels_for_bunions_calla_shoes_4.jpg?v=1676998804&width=1080" alt="Heels" class="order-image">
+                    <div class="order-info">
+                        <h4 class="order-title">Heels</h4>
+                        <p class="order-date"><i class="fas fa-calendar-alt"></i> 2024-12-27 12:10</p>
+                        <a href="viewprofile.html" class="shop-name">Shop Name</a>
+                        <div class="order-details">
+                            <p><strong>Price:</strong> MMK 45,000</p>
+                        </div>
+                    </div>
+                    <div class="order-actions-wrapper">
+                    <button class="icon-button cart-button" title="Add to Cart">
+                            <i class="fas fa-cart-plus"></i>
+                        </button>
+                        <button class="icon-button" title="Delete">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                       
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order 3 Wrapper -->
+        <div class="completed-orders-wrapper">
+            <div class="order-card">
+                <div class="order-card-header">
+                    <img src="https://market99.com/cdn/shop/products/blue-ceramic-curvy-vase-engraved-floral-pattern-flower-holder-vases-1-29122137587882.jpg?crop=center&height=1403&v=1725536221&width=1080" alt="Vase" class="order-image">
+                    <div class="order-info">
+                        <h4 class="order-title">Vase</h4>
+                        <p class="order-date"><i class="fas fa-calendar-alt"></i> 2024-12-28 10:15</p>
+                        <a href="viewprofile.html" class="shop-name">Shop Name</a>
+                        <div class="order-details">
+                            <p><strong>Price:</strong> MMK 60,000</p>
+                        </div>
+                    </div>
+                    <div class="order-actions-wrapper">
+                    <button class="icon-button cart-button" title="Add to Cart">
+                            <i class="fas fa-cart-plus"></i>
+                        </button>
+                        <button class="icon-button" title="Delete">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <footer th:insert="fragments/footer :: footer"></footer>
+ <script>
+        lucide.createIcons();
+      </script>
+</body>
+</html>

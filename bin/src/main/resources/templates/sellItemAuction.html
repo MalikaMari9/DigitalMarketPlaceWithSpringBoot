@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" th:href="@{/CSS/sellItem.css}" />
+
+<script th:src="@{/JS/previewImage.js}"></script>
+    <script th:src="@{/JS/checkdeadline.js}"></script>
+    <title>Auction Details</title>
+</head>
+<body>
+    <form id="item-form" th:action="@{/auction-item}" method="POST" enctype="multipart/form-data">
+        <h2 class="form-title">Auction Details</h2>
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="item-name" class="form-label">Item Name:</label>
+                <input type="text" id="item-name" class="form-input" name="name" placeholder="Enter the item's name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="item-price" class="form-label">Base Price:</label>
+                <input type="number" id="item-price" class="form-input" name="price" required>
+                <small class="form-note">The price listing is in USD</small>
+            </div>
+
+            <div class="form-group">
+                <label for="item-desc" class="form-label">Item Description:</label>
+                <textarea id="item-desc" class="form-textarea" name="desc" placeholder="Enter the item's description" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="item-raising" class="form-label">Raising:</label>
+                <input type="number" id="item-raising" class="form-input" name="raising"  required><br>
+                <label for="item-deadline" class="form-label">Deadline:</label>
+                <input type="date" id="item-deadline" class="form-input" name="deadline"  required>
+          
+            </div>
+           
+             <div class="form-group">
+			                <label for="item-category" class="form-label">Category:</label>
+			                <select id="item-category" class="form-select" name="categoryID" required >
+			                    <option value="" disabled selected>Select a Category</option>
+			                    <th:block th:each="entry : ${categoryMap}">
+			                        <optgroup th:label="${entry.key.name}">
+			                            <option th:each="sub : ${entry.value}"
+			                                    th:value="${sub.catID}"
+			                                    th:data-category="${entry.key.name}"
+			                                    th:text="${sub.name}">
+			                            </option>
+			                        </optgroup>
+			                    </th:block>
+			                </select>
+			            </div>
+
+            <div class="form-group">
+                <label for="item-condition" class="form-label">Condition:</label>
+                <select id="item-condition" class="form-select" name="cond" required>
+                    <option value="new">New</option>
+                    <option value="old">Used</option>
+                </select>
+            </div>
+
+           
+
+            <div class="form-group">
+                <label for="item-tags" class="form-label">Tags:</label>
+                <textarea id="item-tags" class="form-textarea" name="tags" placeholder="E.g. doll, woman, braid, ..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="item-images" class="form-label">Upload Images (Max 5):</label>
+                <input type="file" id="item-images" class="form-input" name="itemImages" accept="image/*" multiple required>
+                <button type="button" id="add-more-images" class="form-button" style="display:none;">Add More Images</button>
+            </div>
+        </div>
+        <div id="image-preview-container" class="form-image-preview"></div>
+        <input type="submit" id="submit-button" class="form-submit-button" value="Submit" name="submit">
+    </form>
+</body>
+</html>

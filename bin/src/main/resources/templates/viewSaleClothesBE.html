@@ -1,0 +1,134 @@
+<html xmlns:th="http://www.thymeleaf.org">l>
+<head>
+    <title>View Item</title>
+    <link rel="stylesheet" href="CSS/viewItem.css">
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="JS/quanManipulation.js"></script>
+    
+<script>
+    
+</script>
+</head>
+<body>
+<div id="saleItem">
+    <div id="previewImages">
+        <img src="Image/clothes/cloth-black.png"  class="thumbnail"  alt="Thumbnail" height="75px" width="75px" data-fullsize="Image/clothes/cloth-black.png">
+        <img src="Image/clothes/cloth-blue.png"  class="thumbnail"  alt="Thumbnail" height="75px" width="75px" data-fullsize="Image/clothes/cloth-blue.png">
+        <img src="Image/clothes/cloth-pink.png"  class="thumbnail"  alt="Thumbnail" height="75px" width="75px" data-fullsize="Image/clothes/cloth-pink.png">
+        <img src="Image/clothes/cloth-white.png"  class="thumbnail"  alt="Thumbnail" height="75px" width="75px" data-fullsize="Image/clothes/cloth-white.png">
+    </div>
+    <div id="imageEnlarge">
+        <img id="mainImage"  src="Image/clothes/cloth-black.png"  alt="Main Image">
+    </div>
+    <div id="desc">
+        <div class="item-header">
+            <h2>Ladies' Solid Color Lace Trim T-Shirt</h2>
+            <p class="heart-container">
+                <img src="Image/icon/heart.png" width="25px" height="25px" alt="Heart Icon"> 4
+            </p>
+        </div>
+        <h3>USD  $6.92</h3>
+        <div class="clothing-buttons">
+            <button data-color="black">
+                <span class="color-circle" style="background-color: #000000;"></span> Black
+            </button>
+            <button data-color="blue">
+                <span class="color-circle" style="background-color: #0000FF;"></span> Blue
+            </button>
+            <button data-color="pink">
+                <span class="color-circle" style="background-color: #FFC0CB;"></span> Pink
+            </button>
+            <button data-color="white">
+                <span class="color-circle" style="background-color: #FFFFFF; border: 1px solid #ccc;"></span> White
+            </button>
+        </div>
+        <div class="size-buttons">
+            <button>S</button>
+            <button>M</button>
+            <button>L</button>
+        </div>
+        
+        <div class="quantity-control">
+            <label>Quantity: </label>
+            <button class="decrease">-</button>
+            <input type="number" value="0" name="quan" class="quantity-input" readonly>
+            <button class="increase">+</button>
+        </div>
+        
+        
+
+        <button id="addToCartBtn">Add to Cart</button>
+        <div id="popupNotification" class="hidden">
+            <p>Item has been added to the cart!</p>
+        </div>
+        <hr color="darkgrey">    
+            <h4>Product Description</h4>
+                <p>Details:	Bow, Contrast Lace, Rib-Knit
+                    Sleeve Type:	Regular Sleeve
+                    Style:	Casual
+                    Color:	Black
+                    Pattern Type:	Plain
+                    Neckline:	Scoop Neck
+                    Sleeve Length:	Cap Sleeve
+                    Length:	Regular
+                    Fit Type:	Slim Fit
+                    Fabric:	High Stretch
+                    Material:	Polyester
+                    Composition:	95% Polyester, 5% Elastane
+                    Care Instructions:	Machine wash or professional dry clean
+                    Sheer:	No</p>
+                <p id="last-updated">Last Updated:2024-12-10 23:24:59(1 month ago) </p> <!--We neeed to calculate the time here-->
+        <hr>      
+                <h4>Product information</h4>
+                <table class="info-table">
+                    <tr>
+                        <th>Category:</th>
+                        <td>Clothing</td>
+                    </tr>
+                    <tr>
+                        <th>Condition:</th>
+                        <td>New</td>
+                    </tr>
+                    <tr>
+                        <th>Tags:</th>
+                        <td>women wear, clothes</td>
+                    </tr>
+                </table>
+                
+                
+        <hr>
+            <div id="seller">
+                
+                <h4 style="margin-bottom: 0px;">Seller</h4>
+                <div class="profile-container">
+                    <img src="Image/profile/default.png" alt="Profile Picture" width="50px" height="50px">
+                    <a href="#"><h4>Lycoris Women Clothing</h4></a>
+                </div>
+                <div class="profile-info">
+                    <div class="star-rating">
+                        <span class="star filled">★</span>
+                        <span class="star filled">★</span>
+                        <span class="star filled">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                    </div>
+                    <p class="identity-verified">
+                        <i class="fas fa-user-check"></i> Identity Verified
+                    </p>
+                </div>
+                
+                <div></div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script src="JS/activeBtn.js" defer></script>
+<script src="JS/colorSwap.js" defer></script>
+<script src="JS/ImageSwap.js" defer></script>
+
+</body>
+
+
+</html>

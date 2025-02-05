@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Completed Orders</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/CSS/orderhistory.css}">
+    
+    <link th:href="@{/CSS/headerFooter.css}" rel="stylesheet">
+ 	<script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <link th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css}" rel="stylesheet">
+ 	<script th:src="@{/JS/sidebar.js}"></script>
+</head>
+<body>
+<header th:insert="fragments/header :: header"></header>
+    <div class="checkout-body">
+
+        <!-- Order 1 Wrapper -->
+        <div class="completed-orders-wrapper">
+        <div class="order-history-header">
+            <h2>Ordery History from <a href="viewprofile.html" class="shop-name">Seller</a> </h2> 
+            <p class="receipt-id">Receipt ID: #123456789</p>
+          </div>  
+            <div class="order-card">
+                <div class="order-card-header">
+                    <img src="https://marksandspencer.com.ph/cdn/shop/products/SD_01_T01_1026C_Y0_X_EC_90.jpg?v=1673598246" alt="Leather Tote Bag" class="order-image">
+                    <div class="order-info">
+                        <h4 class="order-title">Leather Tote Bag</h4>
+                        
+                        <p class="order-date"><i class="fas fa-calendar-alt"></i> 2024-12-27 12:11</p>
+                    </div>
+                    <div class="order-actions">
+                        <button class="buy-again" >
+                           Bye Again
+                        </button>
+                    </div>
+                   
+                </div>
+                
+                
+                
+                <div class="order-details">
+                    <p><strong>Order No:</strong> 18965808N</p>
+                    <p><strong>Price × Quantity:</strong> <span class="order-price">MMK 50,000 × 1</span></p>
+                   
+                </div> 
+            </div>
+            
+            <div class="order-card">
+                <div class="order-card-header">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQaQg21jtHo-3KFcHCiTg38m99AJpNH59Padw&s" alt="Perfume" class="order-image">
+                    <div class="order-info">
+                        <h4 class="order-title">Perfume</h4>
+                        
+                        <p class="order-date"><i class="fas fa-calendar-alt"></i> 2024-12-27 12:11</p>
+                    </div>
+                    <div class="order-actions">
+                        <button class="buy-again" >
+                           Bye Again
+                        </button>
+                        
+                        
+                    </div>
+                   
+                </div>
+                
+                
+                
+                <div class="order-details">
+                    <p><strong>Order No:</strong> 18965808N</p>
+                    <p><strong>Price × Quantity:</strong> <span class="order-price">MMK 50,000 × 1</span></p>
+                   
+                </div> 
+            </div>
+            
+            
+            
+            <div class="order-footer">
+            <p><strong>Total:</strong> <span class="order-price">MMK 100000 </span></p>
+            </div>
+             		<div class="order-footer">
+       				  <button class="download-button">
+                               <i class="fas fa-file-download"></i> Download Invoice
+                           </button>
+    				</div>
+    				
+    				
+        </div>
+
+       
+
+    </div>
+    <footer th:insert="fragments/footer :: footer"></footer>
+ <script>
+        lucide.createIcons();
+      </script>
+    
+</body>
+</html>

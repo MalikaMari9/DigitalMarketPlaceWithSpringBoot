@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Registration</title>
+  <link rel="stylesheet" type="text/css" href="CSS/ckstyle1.css">
+  <script src="JS/userValidation.js"></script>
+</head>
+<body>
+
+<div class="form-container">
+  <h2>Sign Up</h2>
+  <form action="Register" method="POST" onsubmit="return validateForm(event)">
+    <!-- Username Field -->
+    <label for="usn">Username: </label>
+    <input type="text" id="usn" name="usn" required onblur="validateUsername()">
+    <span class="error" id="usernameError"></span>
+
+    <!-- Email Field -->
+    <label for="email">Email: </label>
+    <input type="email" id="email" name="email" required>
+    <span class="error" id="emailError"></span>
+
+    <!-- Password Field -->
+    <label for="psw">Password: </label>
+    <input type="password" id="psw" name="psw" required onblur="validatePassword()">
+    <span class="error" id="passwordMessage"></span>
+
+    <!-- Confirm Password Field -->
+    <label for="confirmpsw">Confirm Password: </label>
+    <input type="password" id="confirmpsw" name="confirmpsw" required onblur="checkPasswords()">
+    <span class="error" id="message"></span>
+<!-- Phone Number Field -->
+<label for="phone">Phone: </label>
+<input type="text" id="phone" name="phone" required onblur="validatePhone()">
+<span class="error" id="phoneMessage"></span>
+
+<!-- Date of Birth Field -->
+<label for="dob">Date Of Birth: </label>
+<input type="date" id="dob" name="dob" required onblur="validateDate()">
+<span class="error" id="dobMessage"></span>
+    <!-- Gender Field -->
+    <label>Gender: </label>
+    <div class="gender-container">
+        <input type="radio" id="male" name="gender" value="male"> Male
+        <input type="radio" id="female" name="gender" value="female"> Female
+        <input type="radio" id="other" name="gender" value="other"> Other
+    </div>
+
+    
+
+    <!-- Submit Button -->
+    <!-- Submit Button -->
+<div style="display: flex; justify-content: center;">
+  <input type="submit" name="Register" value="Register">
+</div>
+
+  </form>
+</div>
+
+</body>
+</html>

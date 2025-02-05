@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link rel="stylesheet" th:href="@{/CSS/buyer.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <link th:href="@{/CSS/headerFooter.css}" rel="stylesheet">
+ 	<script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <link th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css}" rel="stylesheet">
+ 	<script th:src="@{/JS/sidebar.js}"></script>
+</head>
+<body >
+<header th:insert="fragments/header :: header"></header>
+    <div class="profile-body">
+    <div class="profile-wrapper">
+        <div class="profile-header">
+            <div class="profile-picture">
+                <img src="https://cdn.openart.ai/uploads/image_6Ehe7BE__1690816311739_512.webp" alt="User Profile">
+            </div>
+            <div class="profile-info">
+                <h2>Tess</h2>
+                <div class="stats">
+                    <span><strong>100</strong> Posts</span>
+                </div>
+                <div class="bio">
+                    <p id="bioText" data-full-text="A skincare brand that uses thermal water from the French Alps to create products for a variety of skin types. Uriage products are hypoallergenic and are designed to be soothing, hydrating, and protective.">
+                    </p>
+                    <button id="toggleBioButton" onclick="toggleBio()">See More</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-tabs">
+            <button class="tab active" onclick="showSection('all-posts')">All Posts</button>
+            <button class="tab" onclick="showSection('reviews')">Reviews</button>
+        </div>
+
+        <div class="profile-content">
+            <div id="all-posts" class="tab-content active">
+                <div class="completed-orders-section">
+                    <h2>Orders history</h2>
+
+                    <!-- Order 1 -->
+                    <div class="order-card">
+                        <div class="order-card-header">
+                            <img src="https://marksandspencer.com.ph/cdn/shop/products/SD_01_T01_1026C_Y0_X_EC_90.jpg?v=1673598246" alt="Item Image" class="order-image">
+                            <div class="order-info">
+                                <h4 class="order-title">Leather Tote Bag</h4>
+                                <p class="order-status delivered"><i class="fas fa-check-circle"></i> Order arrived</p>
+                                <p class="order-date"><i class="fas fa-calendar-alt"></i> 2024-12-27 12:11</p>
+                            </div>
+                            <div class="order-actions">
+                                <i class="fas fa-box-open action-icon green-icon" title="Delivered"></i>&nbsp;&nbsp;&nbsp;&nbsp;
+                                <button class="trash-button" title="Delete">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                             
+                        </div>
+                        <a href="viewprofile.html" class="shop-name"><h4>Shop Name</h4></a>
+                        <div class="order-details-wrapper">
+                        <div class="order-details">
+                            <p><strong>Order No:</strong> 18965808N</p>
+                            <p><strong>Price × Quantity:</strong> <span class="order-price">MMK 50,000 × 1</span></p>
+                            
+                        </div>
+                        
+                           
+                       
+                    </div>
+                    </div>
+
+                    <!-- Order 2 -->
+                    <div class="order-card">
+                        <div class="order-card-header">
+                            <img src="https://callashoes.co.uk/cdn/shop/files/emily_heels_for_bunions_calla_shoes_4.jpg?v=1676998804&width=1080" alt="Item Image" class="order-image">
+                            <div class="order-info">
+                                <h4 class="order-title">Heels</h4>
+                                <p class="order-status cancelled"><i class="fas fa-times-circle"></i> Order cancelled</p>
+                                <p class="order-date"><i class="fas fa-calendar-alt"></i> 2024-12-27 12:10</p>
+                            </div>
+                            <div class="order-actions">
+                                <i class="fas fa-times-circle action-icon red-icon" title="Cancelled"></i>&nbsp;&nbsp;&nbsp;&nbsp;
+                                <button class="trash-button" title="Delete">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                       <a href="viewprofile.html" class="shop-name"> <h4>Shop Name</h4></a>
+                        <div class="order-details">
+                            <p><strong>Order No:</strong> 18965798T</p>
+                            <p><strong>Price × Quantity:</strong> <span class="order-price">MMK 45,000 × 1</span></p>
+                        </div>
+                    </div>
+
+                    <!-- Order 3 -->
+                    <div class="order-card">
+                        <div class="order-card-header">
+                            <img src="https://market99.com/cdn/shop/products/blue-ceramic-curvy-vase-engraved-floral-pattern-flower-holder-vases-1-29122137587882.jpg?crop=center&height=1403&v=1725536221&width=1080" alt="Item Image" class="order-image">
+                            <div class="order-info">
+                                <h4 class="order-title">Vase</h4>
+                                <p class="order-status waiting"><i class="fas fa-clock"></i> Awaiting arrival</p>
+                                <p class="order-date"><i class="fas fa-calendar-alt"></i> 2024-12-28 10:15</p>
+                            </div>
+                            <div class="order-actions">
+                                <i class="fas fa-clock action-icon orange-icon" title="Waiting"></i>&nbsp;&nbsp;&nbsp;&nbsp;
+                                <button class="trash-button" title="Delete">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <a href="viewprofile.html" class="shop-name"><h4>Shop Name</h4></a>
+                        <div class="order-details">
+                            <p><strong>Order No:</strong> 18965988W</p>
+                            <p><strong>Price × Quantity:</strong> <span class="order-price">MMK 60,000 × 2</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="reviews" class="tab-content">
+                <h3>Reviews</h3>
+                <p>You have no reviews yet.</p>
+            </div>
+        </div>
+    </div>
+</div>
+<footer th:insert="fragments/footer :: footer"></footer>
+ <script>
+        lucide.createIcons();
+      </script>
+
+    <script th:src="@{/JS/profile.js}"></script>
+</body>
+</html>

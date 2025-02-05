@@ -1,0 +1,78 @@
+<html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <title>Sale History</title>
+    <link rel="stylesheet" href="CSS/saleHistory.css">
+</head>
+<body>
+    <div id="container">
+    <h2 id="page-title">Sale History</h2>
+
+    <form id="search-form">
+        <label class="search-label">Search: </label>
+        <input type="text" id="search-field" name="searchfield" value="">
+        <label class="search-label">Sort By: </label>
+        <select id="sort-by" name="sortby">
+            <option value="date">Sale Date</option>
+            <option value="item">Item Name</option>
+            <option value="price">Price</option>
+            <option value="buyer">Buyer</option>
+            <option value="status">Delivery Status</option>
+        </select>
+        <input type="submit" id="search-button" name="search" value="Search">
+    </form>
+    <table id="sales-table">
+        <tr>
+            <th>Order No</th>
+            <th>Item Name</th>
+            <th>Item Image</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Sale Date</th>
+            <th>Buyer</th>
+            <th>Delivery Status</th>
+        </tr>
+        <tr>
+            <td>AA0234</td>
+            <td><a class="table-link" href="">Nikkari Aoe Nendoroid</a></td>
+            <td><img class="item-image" src="Image/nendo1.jpg" alt=""></td>
+            <td>1</td>
+            <td>USD $66</td>
+            <td>yyyy/mm/dd</td>
+            <td><a class="table-link" href="">Malika</a></td>
+            <td><img src="Image/icon/package-check.png" width="25px" height="25px"></td>
+        </tr>
+        <tr>
+            <td>AA0234</td>
+            <td><a class="table-link" href="">Nikkari Aoe Nendoroid</a></td>
+            <td><img class="item-image" src="Image/nendo1.jpg" alt=""></td>
+            <td>1</td>
+            <td>USD $66</td>
+            <td>yyyy/mm/dd</td>
+            <td><a class="table-link" href="">Malika</a></td>
+            <td><img src="Image/icon/package-x.png" width="25px" height="25px"></td>
+        </tr>
+        <tr>
+            <td>AA0234</td>
+            <td><a class="table-link" href="">Nikkari Aoe Nendoroid</a></td>
+            <td><img class="item-image" src="Image/nendo1.jpg" alt=""></td>
+            <td>1</td>
+            <td>USD $66</td>
+            <td>yyyy/mm/dd</td>
+            <td><a class="table-link" href="">Malika</a></td>
+            <td><img src="Image/icon/package-check.png" width="25px" height="25px"></td>
+        </tr>
+        <tr>
+            <td>AA0234</td>
+            <td><a class="table-link" href="">Nikkari Aoe Nendoroid</a></td>
+            <td><img class="item-image" src="Image/nendo1.jpg" alt=""></td>
+            <td>1</td>
+            <td>USD $66</td>
+            <td>yyyy/mm/dd</td>
+            <td><a class="table-link" href="">Malika</a></td>
+            <td><img src="Image/icon/package-x.png" width="25px" height="25px"></td>
+        </tr>
+        <!-- Additional rows -->
+    </table>
+    </div>
+</body>
+</html>

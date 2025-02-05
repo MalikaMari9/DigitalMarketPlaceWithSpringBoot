@@ -1,0 +1,17 @@
+.image-preview {
+    display: flex;
+    gap: 20px;
+}
+
+.preview-container {
+    text-align: center;
+}
+
+.preview-image {
+    max-width: 200px;
+    display: block;
+}
+
+.hidden {
+    display: none;
+}

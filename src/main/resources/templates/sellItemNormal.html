@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" th:href="@{/CSS/sellItem.css}" />
+    <script th:src="@{/JS/previewImage.js}"></script>
+   <script th:src="@{/JS/clothing.js}"></script> 
+
+</head>
+<body>
+    <form id="item-form" th:action="@{/sell-item}" method="POST" enctype="multipart/form-data">
+        <h2 class="form-title">Item Details</h2>
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="item-name" class="form-label">Item Name:</label>
+                <input type="text" id="item-name" class="form-input" name="name" placeholder="Enter the item's name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="item-price" class="form-label">Item Price:</label>
+                <input type="number" id="item-price" class="form-input" name="price" required>
+                <small class="form-note">The price listing is in USD</small>
+            </div>
+
+            <div class="form-group">
+                <label for="item-desc" class="form-label">Item Description:</label>
+                <textarea id="item-desc" class="form-textarea" name="desc" placeholder="Enter the item's description" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="item-stock" class="form-label">Stock:</label>
+                <input type="number" id="item-stock" class="form-input" name="stock" min="1" max="100" required>
+
+                <!-- Trigger Modal Button -->
+<div id="additional-details-container" style="display: none;">
+    <button type="button" id="open-modal" class="form-button">Add More Clothing Details</button>
+</div>
+            </div>
+
+
+
+
+            <div class="form-group">
+                <label for="item-category" class="form-label">Category:</label>
+                <select id="item-category" class="form-select" name="categoryID" >
+                    <option value="" disabled selected>Select a Category</option>
+                    <th:block th:each="entry : ${categoryMap}">
+                        <optgroup th:label="${entry.key.name}">
+                            <option th:each="sub : ${entry.value}"
+                                    th:value="${sub.catID}"
+                                    th:data-category="${entry.key.name}"
+                                    th:text="${sub.name}">
+                            </option>
+                        </optgroup>
+                    </th:block>
+                </select>
+            </div>
+
+<!-- Clothing Details Modal -->
+<!-- Modal -->
+<div id="clothing-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close-button">&times;</span>
+        <h2>Add Clothing Details</h2>
+        <div id="modal-form">
+            <!-- Colors Section -->
+            <div id="colors-container" class="form-group">
+                <label for="colors" class="form-label">Colors:</label>
+                <div id="color-fields">
+                    <input type="text" class="modal-input" name="colors[]" placeholder="Enter color" >
+                    <input type="file" class="modal-input" name="colorImages[]" accept="image/*" >
+                </div>
+                <button type="button" id="add-color" class="modal-button">Add More Colors</button>
+            </div>
+
+            <!-- Sizes Section -->
+            <div id="sizes-container" class="form-group">
+                <label for="sizes" class="form-label">Sizes:</label>
+                <div id="size-fields">
+                    <input type="text" class="modal-input" name="sizes[]" placeholder="Enter size (e.g., S, M, L)" >
+                </div>
+                <button type="button" id="add-size" class="modal-button">Add More Sizes</button>
+            </div>
+
+            <button type="button" id="save-details" class="modal-button">Save Details</button>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+            <div class="form-group">
+                <label for="item-condition" class="form-label">Condition:</label>
+                <select id="item-condition" class="form-select" name="cond" required>
+                    <option value="new">New</option>
+                    <option value="old">Used</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="item-tags" class="form-label">Tags:</label>
+                <textarea id="item-tags" class="form-textarea" name="tags" placeholder="E.g. doll, woman, braid, ..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="item-images" class="form-label">Upload Images (Max 5):</label>
+                <input type="file" id="item-images" class="form-input" name="itemImages" accept="image/*" multiple required>
+                <button type="button" id="add-more-images" class="form-button" style="display:none;">Add More Images</button>
+            </div>
+        </div>
+        <div id="image-preview-container" class="form-image-preview"></div>
+        <input type="submit" id="submit-button" class="form-submit-button" value="Submit" name="submit">
+    </form>
+</body>
+</html>

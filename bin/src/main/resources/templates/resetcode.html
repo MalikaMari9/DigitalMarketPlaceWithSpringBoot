@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Verification</title>
+    <style>
+        .resend-body {
+            font-family: Arial, sans-serif;
+            background-color: #f3f4f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .otp-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .otp-container h1 {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .message {
+            
+            color: #155724;
+            
+            padding: 10px;
+            margin-bottom: 20px;
+           
+            font-size: 0.9rem;
+        }
+
+        .otp-container input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .otp-container .submit-button {
+            width: 100%;
+            padding: 10px;
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .otp-container .submit-button:hover {
+           background-color: #34495e;
+        }
+
+        .otp-container .resend-button {
+            margin-top: 10px;
+            background: none;
+            color: none;
+            border: none;
+            font-size: 1rem;
+            text-decoration: none;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .otp-container .resend-button:hover {
+            color: #5948e8;
+        }
+    </style>
+</head>
+<body>
+    <div  class="resend-body">
+    <div class="otp-container">
+        <h1>Reset Code</h1>
+        <div class="message">
+            We've sent a verification code to your email.
+        </div>
+        <form id="otpForm">
+            <input type="text" id="otpInput" placeholder="Enter verification code" required>
+            <button type="submit" class="submit-button">Submit</button>
+        </form>
+        <button class="resend-button" onclick="resendEmail()">Resend Email</button>
+    </div>
+</div>
+    <script>
+        document.getElementById('otpForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const otpInput = document.getElementById('otpInput').value;
+
+            // Example: Replace "123456" with your expected OTP
+            const expectedOTP = "123456";
+
+            if (otpInput === expectedOTP) {
+                alert("OTP verified successfully!");
+            } else {
+                alert("Invalid OTP. Please try again.");
+            }
+        });
+
+        function resendEmail() {
+            alert("Verification email has been resent.");
+        }
+    </script>
+</body>
+</html>

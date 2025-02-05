@@ -1,0 +1,52 @@
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Track Stock</title>
+        <link rel="stylesheet" href="CSS/saleHistory.css">
+        <script src="JS/stockManipulation.js"></script>
+    </head>
+<body>
+    <div id="container">
+        <h2 id="page-title">Warehouse Track</h2>
+        <form id="search-form">
+            <label class="search-label">Search: </label>
+            <input type="text" id="search-field" name="searchfield" value="">
+            <label class="search-label">Sort By: </label>
+            <select id="sort-by" name="sortby">
+
+                <option value="item">Item Name</option>
+                <option value="price">Price</option>
+
+            </select>
+            <input type="submit" id="search-button" name="search" value="Search">
+        </form>
+    <table id="sales-table">
+        <tr>
+        <th>Item ID</th>
+        <th>Item Name</th>
+        <th>Image</th>
+        <th>Price</th>
+        <th>Stock</th>
+        <th>Edit</th>
+        <th>Delete</th>
+        <th></th>
+        </tr>
+        <tr>
+            <td>AI0w3534</td>
+            <td><a class="table-link" href="">Nikkari Aoe Nendoroid</a></td>
+            <td><img src="Image/nendo1.jpg" class="item-image"></td>
+            <td>USD $66.00</td>
+            <td>
+                <button class="btn decrement">-</button>
+                <input type="number" name="stock" class="stock-input" value="9" readonly>
+                <button class="btn increment">+</button>
+            </td>
+            <td><a href="" class="btn edit-link">Edit</a></td>
+            <td><a href="" class="btn delete-link">Delete</a></td>
+            <td><button class="btn save-button disabled" disabled>Save</button></td>
+        </tr>
+    </table>
+</div>
+
+</body>
+
+</html>

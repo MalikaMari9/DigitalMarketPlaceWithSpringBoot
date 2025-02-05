@@ -1,0 +1,42 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f4f4f4;
+  }
+  
+  .product-container {
+    text-align: center;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .image-container img {
+    max-width: 300px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+  }
+  
+  .color-selector {
+    margin-top: 20px;
+  }
+  
+  .color-button {
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 50%;
+    margin: 0 10px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+  }
+  
+  .color-button:hover {
+    transform: scale(1.1);
+  }
+  

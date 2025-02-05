@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery Tracking</title>
+    <link rel="stylesheet" type="text/css" href="CSS/ckstyle1.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="container">
+        <h1 style="text-align: center;">Delivery Tracking</h1>
+        <table style="width:50%">
+            <tr>
+              <td class="label"  style="border:none">Customer Name:</td>
+              <td  style="border:none">Berry</td>
+            </tr>
+            <tr>
+              <td class="label"  style="border:none">Item No:</td>
+              <td style="border:none">Item_no 12345</td>
+            </tr>
+          </table>
+        <div class="status">
+            <div class="active">
+                <img src="Image/icon/box.png" alt="Example Image" width="300" height="200">
+                <span>Your order has been sent</span>
+            </div>
+            <span class="arrow">&#10132;</span>
+            <div>
+                <img src="Image/icon/deli.png" alt="Example Image" width="300" height="200">
+                <span>Your order is being delivered</span>
+            </div>
+            <span class="arrow">&#10132;</span>
+            <div>
+                <img src="Image/icon/deli1.png" alt="Example Image" width="300" height="200">
+                <span>Your order has been delivered</span>
+            </div>
+        </div>
+
+        <h2 style="text-align: left;">History Information</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>State occurrence date</th>
+                    <th>Record</th>
+                    <th>Details</th>
+                    <th>City</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>11/30/2024 22:03</td>
+                    <td>Order Sent</td>
+                    <td>Package is at the warehouse</td>
+                    <td>North Dagon</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="section">
+            <h2 style="text-align: left;">Office Contact Information</h2>
+            <table>
+                <tr>
+                    <th>Case Class</th>
+                    <th>City</th>
+                    <th>Phone Number</th>
+                </tr>
+                <tr>
+                    <td>Acceptance</td>
+                    <td>North Dagon</td>
+                    <td>0570-943-347</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,480 @@
+:root {
+    --primary-color: #333; /* Dark Gray */
+    --secondary-color: #555; /* Medium Gray */
+    --background-color: #f2f2f2; /* Light Gray */
+    --text-color: #000; /* Black */
+    --error-color: #ff0000; /* Red */
+    --button-color: var(--text-color); /* Button Text */
+    --button-bg: #fff; /* Button Background */
+    --sidebar-bg: var(--background-color); /* Sidebar Background */
+}
+
+
+body{
+    margin-top: 100px;
+    margin-bottom: 100px;
+    background-color: var(--background-color);
+}
+
+
+.add-body, .body-shape {
+
+
+    font-family: Arial, sans-serif;
+
+    color: var(--text-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Profile Section */
+.profile-container {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    
+}
+
+/* Container Wrapper */
+
+
+.profile-card {
+    text-align: center;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width:500px;
+}
+
+.profile-image {
+    margin-bottom: 20px;
+}
+
+.profile-image img {
+    border-radius: 50%;
+    width: 150px;
+    height: 150px;
+}
+
+.profile-image h2 {
+    font-size: 1.2rem;
+    color: var(--primary-color);
+    margin: 10px 0 0;
+}
+
+.profile-details {
+    margin: 20px 0;
+    text-align: left;
+}
+
+.profile-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 1rem;
+}
+
+.profile-info label {
+    font-weight: bold;
+    color: var(--secondary-color);
+}
+
+.profile-info span {
+    color: var(--text-color);
+}
+
+/* Button Styles */
+.profile-button {
+    background-color: var(--button-bg);
+    color: var(--button-color);
+    border: 1px solid var(--primary-color);
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 1rem;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    text-decoration: none;
+}
+
+
+.profile-button:hover {
+    background-color: var(--primary-color);
+    color: var(--button-bg);
+  
+}
+
+
+
+.form-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    flex: 1;
+    margin-right: 20px;
+}
+
+.form-group:last-child {
+    margin-right: 0;
+}
+
+label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+    color: var(--primary-color);
+}
+
+input[type="text"],
+select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--secondary-color);
+    border-radius: 5px;
+    font-size: 1rem;
+    background-color: var(--background-color);
+}
+
+.birthday-group select {
+    display: inline-block;
+    width: 32%;
+    margin-right: 2%;
+}
+
+.birthday-group select:last-child {
+    margin-right: 0;
+}
+
+span {
+    display: block;
+    font-size: 0.9rem;
+    color: var(--secondary-color);
+}
+
+a {
+    color: var(--primary-color);
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+a:hover {
+    color: var(--secondary-color);
+}
+
+
+
+
+/* Horizontal Layout for Edit Profile Form */
+.horizontal-form {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.horizontal-form .form-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap; /* Ensures wrapping on smaller screens */
+    margin-bottom: 15px;
+}
+
+.horizontal-form .form-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 250px; /* Prevents shrinking too much */
+}
+
+.horizontal-form .form-group.profile-picture {
+    flex: 1 1 100%; /* Ensures profile picture spans full width */
+    text-align: center;
+}
+
+.horizontal-form .form-group.profile-picture img {
+    display: block;
+    margin: 10px auto;
+    border-radius: 50%;
+    width: 150px;
+    height: 150px;
+}
+
+.horizontal-form input,
+.horizontal-form select,
+.horizontal-form textarea {
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid var(--form-border);
+    border-radius: 5px;
+    background-color: var(--background-color);
+    width: 100%;
+}
+
+.horizontal-form textarea {
+    resize: none;
+}
+
+.horizontal-form button {
+   background-color: var(--button-bg);
+    color: var(--button-color);
+    border: 1px solid var(--primary-color);
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 1rem;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    text-decoration: none;
+}
+
+.horizontal-form button:hover {
+   background-color: var(--primary-color);
+    color: var(--button-bg);
+}
+
+
+
+
+/* Page Wrapper with Reserved Space */
+.page-wrapper {
+    width: 100%;
+    max-width: 800px;
+    margin-bottom: 30px;
+    background-color: var(--background-color);
+    border-radius: 10px;
+   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    
+}
+
+
+
+.edit-button {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: var(--secondary-color);
+    transition: color 0.3s ease;
+}
+
+.edit-button:hover {
+    color: var(--primary-color);
+}
+
+/* Adjustments for Address Book Container */
+.address-book-container {
+    flex-grow: 1;
+    padding: 30px;
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    margin-left: 20px;
+}
+
+/* Adjustments for Address Title */
+.address-book-container .address-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Adjustments for Address List */
+.address-book-container .address-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Individual Address Item Adjustments */
+.address-book-container .address-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: none;
+}
+
+/* Adjustments for Address Icon */
+.address-book-container .address-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    font-size: 1.5rem;
+    background-color: transparent; 
+    color: var(--primary-color);
+    border-radius: 50%; /* Circular icon */
+    margin-right: 15px;
+   
+}
+
+/* Address Details Adjustments */
+.address-book-container .address-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.address-book-container .address-name {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    margin: 0;
+}
+
+.address-book-container .address-info {
+    font-size: 0.9rem;
+    color: var(--secondary-color);
+    margin-top: 5px;
+}
+
+/* Adjustments for Address Actions */
+.address-book-container .address-actions .edit-button {
+   display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    background-color: transparent; /* Transparent background */
+    font-size: 1.2rem; /* Adjust pencil icon size */
+    cursor: pointer;
+    color: var(--primary-color);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+    gap : 30px;
+}
+
+/* Add Address Button Adjustments */
+.address-book-container .add-address-button {
+    width: 100%;
+    padding: 15px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: center;
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px; /* Space between "+" and text */
+    transition: background-color 0.3s ease;
+}
+
+.address-book-container .add-address-button span {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.address-book-container .add-address-button:hover {
+    background-color: var(--secondary-color);
+}
+
+
+/* Add Address Form (Adjusted Width) */
+.add-address-form,.edit-profile-container {
+    display: block;
+    margin-top: 30px;
+    padding: 30px;
+    padding-right: 70px;
+    background-color:var(--background-color);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    max-width: 800px; /* Increased width */
+    margin-left: 30px;
+    margin-right: 20px;
+    margin-bottom: 20px;
+}
+
+.add-address-form h2 {
+    font-size: 1.8rem; /* Slightly larger title */
+    margin-bottom: 20px;
+    text-align: center;
+    color: var(--primary-color);
+}
+
+.form-row {
+    display: flex;
+    gap: 30px; /* Increased gap between fields */
+    margin-bottom: 20px;
+}
+
+.form-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-weight: bold;
+    color: var(--primary-color);
+    margin-bottom: 8px; /* Increased spacing for readability */
+}
+
+.form-group input,
+.form-group select {
+    padding: 12px; /* Slightly increased padding */
+    border: 1px solid var(--secondary-color);
+    border-radius: 5px;
+    font-size: 1rem;
+    background-color: var(--background-color);
+    width: 100%;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px; /* Adjusted spacing between buttons */
+    margin-top: 20px;
+}
+
+.save-button
+ {
+    padding: 12px 25px; /* Larger buttons */
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.save-button {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.save-button:hover {
+    background-color: var(--secondary-color);
+}
+
+.cancel-button {
+   
+    background-color: var(--button-bg);
+    color: var(--button-color);
+    border: 1px solid var(--primary-color);
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 1rem;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    text-decoration: none;
+}
+
+.cancel-button:hover {
+    background-color: var(--primary-color);
+    color: var(--button-bg);
+}
+
+

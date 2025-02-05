@@ -1,0 +1,692 @@
+
+
+
+:root {
+    --primary-color: #333; /* Dark Gray */
+    --secondary-color: #555; /* Medium Gray */
+    --background-color: #f2f2f2; /* Light Gray */
+    --text-color: #000; /* Black */
+    --link-color: #007BFF; /* Accent color for links */
+    --hover-color: #0056b3; /* Darker accent for hover */
+    --hr-color: #c2c2c2;
+    --container-color: #fff;
+}
+
+body{
+    margin-top: 100px;
+    margin-bottom: 100px;
+    background-color: var(--background-color);
+}
+
+hr {
+    border: none; /* Removes the default border */
+    border-top: 2px solid var(--hr-color); /* Adds a visible border */
+    margin: 20px 0; /* Adds space above and below */
+}
+
+
+/* Main Sale Item Container */
+#saleItem {
+    display: grid;
+    grid-template-columns: 0.5fr 2fr 3fr; /* Adjust column widths */
+    gap: 20px; /* Space between columns */
+    padding: 20px;
+    max-width: 1200px; /* Limit total width */
+    margin: 0 auto; /* Center on the page */
+    align-items: start; /* Align items to the top */
+    background-color: var(--container-color); /* Optional background */
+    border-radius: 10px; /* Optional rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional shadow */
+}
+
+/* Preview Images Column */
+#previewImages {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#previewImages img {
+    width: 75px;
+    height: 75px;
+    object-fit: cover; /* Maintain aspect ratio */
+    border: 2px solid var(--secondary-color);
+    border-radius: 5px;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+}
+
+#previewImages img:hover {
+    border-color: var(--hover-color); /* Highlight on hover */
+}
+
+/* Enlarged Image Column */
+#imageEnlarge {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%; /* Ensures it stretches with the tallest column */
+}
+
+#imageEnlarge img {
+    max-width: 100%; /* Scale image to fit */
+    max-height: 400px; /* Limit height */
+    object-fit: contain; /* Ensure no distortion */
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Description Column */
+#desc {
+    display: flex;
+    flex-direction: column;
+   
+    padding: 10px;
+    background-color: var(--container-color);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow-y: auto; /* Make it scrollable if content overflows */
+    max-height: 400px; /* Match the height of the enlarged image */
+}
+
+/* Headings */
+#desc h2 {
+    font-size: 29px;
+    font-weight: bold;
+    color: var(--primary-color);
+    margin: 5px 0; 
+}
+
+#desc h3{
+    font-size: 23px;
+    font-weight: bold;
+    color: var(--primary-color);
+    margin: 5px 0; 
+}
+
+#desc h4 {
+    font-size: 21px;
+    font-weight: bold;
+    color: var(--secondary-color);
+    margin-bottom: 10px;
+    margin-top: 0px;
+}
+
+/* Paragraphs */
+#desc p {
+    font-size: 16px;
+    color: var(--text-color);
+    line-height: 1.5;
+}
+
+/* Button */
+#desc button {
+    background-color: var(--primary-color);
+    color: var(--background-color);
+    border: none;
+    padding: 10px 15px;
+    font-size: 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+}
+
+#desc button:hover {
+    background-color: var(--hover-color);
+}
+
+#desc #last-updated {
+    color: var(--primary-color); /* Apply primary color to the text */
+    font-size: 14px;
+}
+
+
+.quantity-control {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Space between items */
+    font-family: Arial, sans-serif; /* Font for consistency */
+    margin: 10px 0;
+}
+
+.quantity-control label {
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.quantity-control input[type="number"] {
+    width: 50px; /* Width for the number input */
+    height: 30px; /* Match the button's height for consistency */
+    text-align: center; /* Center the number */
+    border: 1px solid var(--secondary-color);
+    border-radius: 5px;
+    padding: 5px;
+    font-size: 14px;
+    box-sizing: border-box; /* Ensures padding doesn't affect width/height */
+}
+
+#desc .quantity-control button {
+    background-color: var(--primary-color);
+    color: var(--background-color);
+    border: none;
+    border-radius: 5px;
+    width: 30px;
+    height: 30px; /* Set consistent height for the buttons */
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Center the text inside the button */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 0px;
+}
+
+.quantity-control button:hover {
+    background-color: var(--hover-color);
+}
+
+.info-table {
+    width: 100%; /* Makes the table take full width of the container */
+    margin: 10px 0; /* Adds spacing around the table */
+    font-family: Arial, sans-serif; /* Consistent font */
+    font-size: 16px;
+    color: var(--text-color); /* Text color based on your variables */
+    border-collapse: collapse; /* Removes spacing between cells */
+}
+
+.info-table th, 
+.info-table td {
+    text-align: left; /* Align text to the left */
+    padding: 8px 10px; /* Adds space inside cells */
+}
+
+.info-table th {
+    font-weight: bold; /* Makes headers stand out */
+    color: var(--primary-color); /* Header text color */
+}
+
+.info-table td {
+    font-weight: normal; /* Regular font weight for table data */
+    color: var(--secondary-color); /* Data text color */
+}
+
+/* Styling for the bid-details div */
+#bid-details {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: var(--container-color);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#bid-details table {
+    width: 100%; /* Full-width table */
+    border-collapse: collapse; /* Remove spacing between cells */
+    font-size: 16px;
+    color: var(--text-color);
+}
+
+#bid-details th,
+#bid-details td {
+    text-align: left; /* Align text to the left */
+    padding: 8px 10px; /* Space inside cells */
+}
+
+#bid-details th {
+    font-weight: bold; /* Emphasize headers */
+    color: var(--primary-color);
+    width: 40%; /* Allocate more space to the description */
+}
+
+#bid-details td {
+    font-weight: normal;
+    color: var(--secondary-color);
+}
+
+#bid-details input[type="number"] {
+    width: 100%; /* Full-width input */
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid var(--secondary-color);
+    border-radius: 5px;
+    box-sizing: border-box; /* Ensure padding doesn’t overflow */
+    background-color: var(--background-color);
+}
+
+/* Styling for the bid-btn div */
+#bid-btn {
+    align-items: center;
+    display: flex; /* Align buttons horizontally */
+    gap: 15px; /* Space between buttons */
+    margin-top: 20px;
+    justify-content: flex-start; /* Align buttons to the left */
+}
+
+#bid-btn button {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Space between icon and text */
+    background-color: var(--primary-color);
+    color: var(--background-color);
+    border: none;
+    padding: 10px 15px;
+    font-size: 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+#bid-btn button img {
+    width: 20px;
+    height: 20px;
+}
+
+#bid-btn button:hover {
+    background-color: var(--hover-color);
+    transform: scale(1.05); /* Slight hover effect */
+}
+
+#bid-btn button:active {
+    background-color: var(--hover-color);
+    transform: scale(1); /* Reset size on click */
+}
+
+/* Tooltip Container */
+.tooltip-container {
+    position: relative; /* Parent for tooltip positioning */
+    display: inline-block; /* Inline with the image */
+    cursor: pointer; /* Indicate it's interactive */
+}
+
+/* Tooltip Text */
+.tooltip-container .tooltip-text {
+    visibility: hidden; /* Hidden by default */
+    width: 250px; /* Set tooltip width */
+    background-color: var(--primary-color); /* Background color */
+    color: var(--background-color); /* Text color */
+    text-align: justify; /* Center the text */
+    border-radius: 5px; /* Rounded corners */
+    padding: 5px 10px; /* Inner padding for spacing */
+    position: absolute; /* Position relative to the parent */
+    bottom: 120%; /* Position above the image */
+    left: 50%; /* Center horizontally */
+    transform: translateX(-50%); /* Adjust to align center */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+    z-index: 10; /* Ensure it appears on top */
+    opacity: 0; /* Start fully transparent */
+    transition: opacity 0.3s ease; /* Smooth fade-in */
+}
+
+/* Tooltip Arrow */
+.tooltip-container .tooltip-text::after {
+    content: '';
+    position: absolute;
+    top: 100%; /* Arrow below the tooltip */
+    left: 50%; /* Centered under tooltip */
+    transform: translateX(-50%);
+    border-width: 5px; /* Arrow size */
+    border-style: solid;
+    border-color: var(--primary-color) transparent transparent transparent; /* Arrow color */
+}
+
+/* Show Tooltip on Hover */
+.tooltip-container:hover .tooltip-text {
+    visibility: visible; /* Make visible */
+    opacity: 1; /* Fade in */
+}
+
+
+/* Optional: Add subtle row shading for better readability */
+.info-table tr:nth-child(odd) {
+    background-color: var(--background-color); /* Light gray for odd rows */
+}
+
+.info-table tr:nth-child(even) {
+    background-color: var(--container-color); /* White for even rows */
+}
+
+.last-updated{
+    color: var(--secondary-color)
+}
+.clothing-buttons {
+    display: flex;
+    gap: 10px; /* Spacing between buttons */
+    flex-wrap: wrap; /* Allow wrapping for smaller screens */
+}
+
+.clothing-buttons button {
+    display: flex;
+    align-items: center; /* Align circle and text vertically */
+    gap: 5px; /* Spacing between the circle and text */
+    padding: 5px 10px;
+    border: 1px solid var(--secondary-color);
+    background-color: var(--background-color);
+    color: var(--primary-color);
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.clothing-buttons button:hover {
+    background-color: var(--hover-color);
+    color: var(--background-color);
+    transform: scale(1.05);
+}
+
+.color-circle {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%; /* Make it a perfect circle */
+    display: inline-block; /* Ensure it behaves like a block-level element */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+}
+
+#desc .size-buttons {
+    display: flex; /* Arrange buttons horizontally */
+    gap: 10px; /* Add space between buttons */
+    margin: 10px 0; /* Add spacing above and below the buttons */
+    justify-content: start; /* Align buttons to the left */
+}
+
+#desc .size-buttons button {
+    background-color: var(--background-color); /* Use background color from CSS variables */
+    color: var(--primary-color); /* Text color for the buttons */
+    border: 2px solid var(--secondary-color); /* Border around the buttons */
+    border-radius: 5px; /* Slightly rounded corners */
+    padding: 8px 15px; /* Padding inside the button for a consistent size */
+    font-size: 16px; /* Make the text readable */
+    font-weight: bold; /* Bold text for emphasis */
+    cursor: pointer; /* Show pointer on hover */
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth hover and click animations */
+}
+
+#desc .size-buttons button:hover {
+    background-color: var(--hover-color); /* Change background on hover */
+    color: var(--background-color); /* Change text color on hover */
+    transform: scale(1.05); /* Slightly enlarge the button */
+}
+
+#desc .size-buttons button:active {
+    background-color: var(--hover-color); /* Darker background when clicked */
+    color: var(--background-color); /* Light text when clicked */
+    transform: scale(1); /* Reset the size on click */
+}
+
+#desc .size-buttons button.active {
+    background-color: var(--hover-color); /* Highlight the selected button */
+    color: var(--background-color); /* Light text for active button */
+    border-color: var(--hover-color); /* Change the border for the active button */
+}
+
+/* Popup Notification */
+#popupNotification {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--background-color);
+    color: var(--text-color);
+    border: 2px solid var(--secondary-color);
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    text-align: center;
+    display: none; /* Hidden by default */
+}
+
+#popupNotification p {
+    margin: 0;
+    font-size: 16px;
+}
+
+#popupNotification button {
+    margin-top: 10px;
+    background-color: var(--link-color);
+    color: var(--background-color);
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+#popupNotification button:hover {
+    background-color: var(--hover-color);
+}
+
+/* Container for item name and heart */
+.item-header {
+    display: flex; /* Use flexbox to align items horizontally */
+    align-items: center; /* Vertically align heart container with the name */
+    justify-content: space-between; /* Push heart to the right side */
+    gap: 10px; /* Add some spacing between the item name and heart */
+   
+}
+
+.item-header h2 {
+    margin: 0; /* Remove default margin for alignment */
+    font-size: 26px; /* Keep the item name prominent */
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+.heart-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--background-color);
+    border: 1px solid var(--secondary-color);
+    border-radius: 15px;
+    padding: 5px 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+    color: var(--text-color);
+    width: auto; /* Adjust width dynamically */
+}
+
+.heart-container img {
+    margin-right: 5px;
+}
+
+
+.profile-info {
+    display: flex;
+    align-items: center; /* Aligns items vertically */
+    gap: 15px; /* Adds space between the star rating and the text */
+}
+
+.star-rating {
+    display: flex; /* Ensures stars stay in a row */
+    color: #ffc107; /* Gold color for stars */
+}
+
+.star {
+    color: #e4e5e9; /* Gray color for unfilled stars */
+}
+
+.star.filled {
+    color: #ffc107; /* Gold color for filled stars */
+}
+
+.identity-verified {
+    font-size: 16px;
+    color: #4caf50; /* Green for "Identity Verified" */
+    display: flex;
+    align-items: center; /* Aligns text with the icon */
+    gap: 5px; /* Space between icon and text */
+}
+
+.profile-container {
+    display: flex;
+    align-items: center; /* Align items vertically */
+    gap: 10px; /* Space between image and text */
+    margin-top: 10px;
+}
+
+.profile-container img {
+    display: block; /* Ensures proper spacing */
+    border-radius: 50%; /* Optional: Makes the image circular */
+}
+
+.profile-container h4 {
+    text-decoration: underline;
+    text-decoration-color:var(--primary-color)
+}
+
+#recommendation h3{
+    margin-left: 20px;
+}
+
+#saleItemList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* Space between items */
+    justify-content: center;
+    padding: 10px;
+}
+
+.saleItemContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 240px; /* Set consistent width */
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+#saleItemeach {
+    position: relative;
+    width: 200px; /* Ensure the image container matches the image size */
+    height: 200px;
+    border: 1px solid #ccc; /* Optional border */
+    border-radius: 5px; /* Rounded corners */
+    overflow: hidden; /* Prevent overflowing content */
+    background-color: #f9f9f9; /* Light background color */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+#saleItemeach img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Crop image while maintaining aspect ratio */
+    display: block;
+}
+
+#status {
+    position: absolute;
+    top: -10px;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent background */
+    color: #fff; /* White text */
+    font-size: 16px;
+    padding: 2px 5px;
+    border-radius: 3px;
+}
+
+#price {
+    position: absolute;
+    bottom: -10px;
+    right: 0px;
+    background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent background */
+    color: #fff; /* White text */
+    font-size: 16px;
+    padding: 2px 5px;
+    border-radius: 3px;
+}
+
+#name {
+    margin-top: 10px; /* Space between image and name */
+    font-size: 18px;
+    font-weight: bold;
+    color: #333; /* Dark gray text */
+    text-align: center; /* Center the name text */
+}
+
+
+#saleItemListcontainer {
+    margin: 20px;
+    padding: 20px;
+    background-color: var(--background-color);
+    border: 1px solid var(--secondary-color);
+    border-radius: 10px;
+    font-family: Arial, sans-serif;
+}
+
+/* Item Header Container */
+#item-header {
+    display: flex;
+    justify-content: space-between; /* Align items on opposite sides */
+    align-items: center; /* Center vertically */
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--secondary-color); /* Optional divider */
+    padding-bottom: 10px;
+}
+
+/* Title Styling */
+#item-header h3 {
+    margin: 0;
+    font-size: 18px;
+    color: var(--primary-color);
+}
+
+/* List Item Link */
+#list-item-link {
+    text-decoration: none;
+    background-color: var(--link-color); /* Accent color */
+    color: var(--background-color); /* White text */
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 14px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+#list-item-link:hover {
+    background-color: var(--hover-color); /* Darker hover color */
+    transform: scale(1.05); /* Slightly enlarge on hover */
+}
+
+
+
+
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    #saleItem {
+        grid-template-columns: 1fr; /* Stack all columns vertically */
+    }
+
+    #previewImages {
+        display: flex; /* Change to flexbox for side-by-side alignment */
+        flex-wrap: wrap; /* Allow images to wrap if there's not enough space */
+        justify-content: center; /* Center the images */
+        gap: 10px; /* Space between thumbnails */
+        flex-direction: row;
+    }
+
+    #previewImages img {
+        width: 75px; /* Maintain thumbnail size */
+        height: 75px;
+    }
+
+    #imageEnlarge img {
+        max-width: 100%; /* Ensure the enlarged image is responsive */
+        max-height: 300px; /* Limit height on smaller screens */
+    }
+
+    #desc {
+        max-height: none; /* Remove fixed height for scrolling */
+    }
+
+    .item-header {
+        flex-direction: column; /* Stack vertically on smaller screens */
+        align-items: flex-start; /* Align items to the left */
+    }
+
+    .heart-container {
+        margin-top: 5px; /* Add some space below the item name */
+    }
+}
