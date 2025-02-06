@@ -6,13 +6,20 @@
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
   <link th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css}" rel="stylesheet">
-  
+   <script th:src="@{/JS/CategorySelect.js}"></script>
   <script th:src="@{/JS/sidebar.js}"></script>
 </head>
 <body>
 <header th:insert="fragments/header :: header"></header>
 <div id="searchResultContainer">
-<h2 class="search-title">Search Results for "<span th:text="${query}"></span>"</h2>
+<h2 class="search-title">
+   
+    <span th:if="${query != null}">for "<span th:text="${query}"></span>"</span>
+    <span th:if="${query != null and categoryID != null}"> in </span>
+    <span th:if="${categoryID != null}" th:text="'Category: ' + ${selectedCategory.name}"></span>
+     <span style="font-size: 1.2rem">(<span th:text="${#lists.size(searchResults)}" ></span> results) </span>
+</h2>
+
 
 <div id="saleItemList">
 

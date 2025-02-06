@@ -1,6 +1,19 @@
 package com.example.demo.entity;
 
-import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "category_tbl")
@@ -15,7 +28,11 @@ public class Category {
 
 	@ManyToOne
 	@JoinColumn(name = "parentID")
+	@JsonIgnore // Prevent infinite recursion
 	private Category parentCategory;
+
+	@Transient // This is not stored in the DB but will be included in the JSON response
+	private List<Category> subcategories;
 
 	// Getters and Setters
 	public Long getCatID() {
@@ -47,5 +64,25 @@ public class Category {
 			return parentCategory.getFullCategoryPath() + " > " + name;
 		}
 		return name;
+	}
+
+	public List<Category> getSubcategories() {
+		return subcategories;
+	}
+
+	public void setSubcategories(List<Category> subcategories) {
+		this.subcategories = subcategories;
+	}
+
+	public List<Category> getCategoryPathList() {
+		List<Category> pathList = new ArrayList<>();
+		Category current = this;
+
+		while (current != null) {
+			pathList.add(0, current); // Add to the beginning to maintain correct order
+			current = current.getParentCategory();
+		}
+
+		return pathList;
 	}
 }

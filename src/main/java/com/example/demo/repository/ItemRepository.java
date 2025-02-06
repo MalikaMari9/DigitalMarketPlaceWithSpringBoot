@@ -21,4 +21,16 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 			+ "OR LOWER(t.name) LIKE LOWER(CONCAT('%', :query, '%'))")
 	List<Item> searchItems(@Param("query") String query);
 
+	@Query("SELECT i FROM Item i " + "LEFT JOIN FETCH i.category c " + "LEFT JOIN FETCH i.itemTags it "
+			+ "LEFT JOIN FETCH it.tag t " + "LEFT JOIN FETCH Auction a ON a.item = i "
+			+ "WHERE (LOWER(i.itemName) LIKE LOWER(CONCAT('%', :query, '%')) "
+			+ "OR LOWER(t.name) LIKE LOWER(CONCAT('%', :query, '%'))) "
+			+ "AND c.catID IN (SELECT sub.catID FROM Category sub WHERE sub.catID = :categoryID OR sub.parentCategory.catID = :categoryID OR sub.parentCategory.parentCategory.catID = :categoryID)")
+	List<Item> searchItemsByCategory(@Param("query") String query, @Param("categoryID") Long categoryID);
+
+	@Query("SELECT i FROM Item i " + "LEFT JOIN FETCH i.category c " + "LEFT JOIN FETCH i.itemTags it "
+			+ "LEFT JOIN FETCH it.tag t " + "LEFT JOIN FETCH Auction a ON a.item = i "
+			+ "WHERE c.catID IN (SELECT sub.catID FROM Category sub WHERE sub.catID = :categoryID OR sub.parentCategory.catID = :categoryID OR sub.parentCategory.parentCategory.catID = :categoryID)")
+	List<Item> findItemsByCategory(@Param("categoryID") Long categoryID);
+
 }

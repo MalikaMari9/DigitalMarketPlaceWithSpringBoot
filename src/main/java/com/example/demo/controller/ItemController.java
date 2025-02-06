@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -243,7 +244,13 @@ public class ItemController {
 		return "redirect:/itemList";
 	}
 
-	// Search
+	// Search Header
+	@ModelAttribute("categories")
+	public List<Category> loadCategories() {
+		List<Category> parentCategories = categoryRepo.findByParentCategoryIsNull();
+		parentCategories.forEach(this::loadSubcategories);
+		return parentCategories;
+	}
 
 	@GetMapping("/searchbar")
 	public String searchbar() {
@@ -251,13 +258,45 @@ public class ItemController {
 	}
 
 	@GetMapping("/search")
-	public String searchItems(@RequestParam("query") String query, Model model) {
-		List<Item> searchResults = itemRepo.searchItems(query);
-		List<Auction> auctionResults = auctionRepo.findAllByItemIn(searchResults); // ✅ Fetch auctions
+	public String searchItems(@RequestParam(value = "query", required = false) String query,
+			@RequestParam(value = "categoryID", required = false) Long categoryID, Model model) {
+
+		List<Item> searchResults;
+
+		if (categoryID != null) {
+			searchResults = itemRepo.findItemsByCategory(categoryID);
+		} else if (query != null) {
+			searchResults = itemRepo.searchItems(query);
+		} else {
+			searchResults = itemRepo.findAll();
+		}
+
+		List<Auction> auctionResults = auctionRepo.findAllByItemIn(searchResults);
+
+		// ✅ Fetch category name if category is selected
+		Category selectedCategory = categoryID != null ? categoryRepo.findById(categoryID).orElse(null) : null;
 
 		model.addAttribute("searchResults", searchResults);
 		model.addAttribute("auctionResults", auctionResults);
 		model.addAttribute("query", query);
+		model.addAttribute("categoryID", categoryID);
+		model.addAttribute("selectedCategory", selectedCategory);
+
+		return "searchResults";
+	}
+
+	@GetMapping("/category-search")
+	public String categorySearch(@RequestParam("categoryID") Long categoryID, Model model) {
+		List<Item> searchResults = itemRepo.findItemsByCategory(categoryID);
+		List<Auction> auctionResults = auctionRepo.findAllByItemIn(searchResults);
+
+		// ✅ Fetch the selected category name
+		Category selectedCategory = categoryRepo.findById(categoryID).orElse(null);
+
+		model.addAttribute("searchResults", searchResults);
+		model.addAttribute("auctionResults", auctionResults);
+		model.addAttribute("categoryID", categoryID);
+		model.addAttribute("selectedCategory", selectedCategory); // Pass category name
 
 		return "searchResults";
 	}
@@ -313,6 +352,13 @@ public class ItemController {
 				itemTagRepo.save(itemTag);
 			}
 		}
+
+	}
+
+	private void loadSubcategories(Category category) {
+		List<Category> subcategories = categoryRepo.findByParentCategory(category);
+		subcategories.forEach(this::loadSubcategories); // Recursive call to load deeper levels
+		category.setSubcategories(subcategories);
 	}
 
 }

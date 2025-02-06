@@ -90,6 +90,14 @@ body {
     cursor: pointer;
 }
 
+.dropdown-contentyoon ul,
+.submenuyoon ul,
+.submenu-level2yoon ul {
+    list-style: none;  /* ✅ Removes bullet points */
+    padding: 0;
+    margin: 0;
+}
+
 .dropdown-contentyoon {
     display: none;
     position: absolute;
@@ -107,12 +115,14 @@ body {
 }
 
 .category-itemyoon > a {
+	font-size: 1em;
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0.75rem 1rem;
     text-decoration: none;
     color: var(--text-color);
+    font-weight: bold;  /* ✅ Makes parent categories stand out */
 }
 
 .category-itemyoon > a::after {
@@ -125,8 +135,7 @@ body {
     display: block;
 }
 
-.submenuyoon,
-.submenu-level2yoon {
+.submenuyoon, .submenu-level2yoon {
     display: none;
     position: absolute;
     left: 100%;
@@ -136,17 +145,24 @@ body {
     border: 1px solid var(--border-color);
     border-radius: 0.375rem;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    padding: 0;  /* ✅ Removes extra spacing */
 }
+
+.submenu-itemyoon > a{
+	font-size:1rem;
+}
+
 
 .submenu-itemyoon > a,
 .submenu-level2yoon > a {
     display: block;
-    padding: 0.75rem 1rem;
+    padding: 0.5rem 1rem;
     text-decoration: none;
     color: var(--text-color);
+    font-size: 0.875rem;
+    font-weight: normal; /* ✅ Makes subcategories look less bold */
     white-space: nowrap;
 }
-
 .submenu-itemyoon > a::after {
     content: '>';
     margin-left: 0.5rem;
@@ -157,6 +173,31 @@ body {
 .submenu-level2yoon > a:hover {
     background-color: var(--background-color);
     color: var(--accent-color);
+}
+
+
+.submenu-level2yoon a {
+	
+    font-size: 0.9rem;
+    margin-bottom:10%;
+    color: var(--text-color);  /* ✅ Keeps color consistent */
+    font-weight: normal;
+    text-decoration: none;  /* ✅ Removes underline */
+}
+
+
+/* 🔹 Hover Effects */
+.category-itemyoon a:hover,
+.submenu-itemyoon > a:hover,
+.submenu-level2yoon > a:hover {
+    background-color: var(--background-color);
+    color: var(--accent-color);
+}
+
+/* 🔹 Show Submenus on Hover */
+.has-submenuyoon:hover > .submenuyoon,
+.has-submenu2yoon:hover > .submenu-level2yoon {
+    display: block;
 }
 
 /* Search bar */

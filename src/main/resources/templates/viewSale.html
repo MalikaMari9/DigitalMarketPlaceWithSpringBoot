@@ -15,6 +15,7 @@
 
     <!-- JavaScript Links -->
     <script th:src="@{/JS/sidebar.js}"></script>
+     <script th:src="@{/JS/CategorySelect.js}"></script>
     <script th:src="@{/JS/quanManipulation.js}"></script>
     <script th:src="@{/JS/countdown.js}"></script>
      <script th:src="@{/JS/ImageSwap.js}" defer></script>
@@ -121,10 +122,16 @@
   <hr>      
                 <h4>Product information</h4>
                 <table class="info-table">
-                    <tr>
-                        <th>Category:</th>
-                        <td th:text="${item.category.getFullCategoryPath()}"></td>
-                    </tr>
+<tr>
+    <th>Category:</th>
+    <td>
+        <span th:each="category, iterStat : ${item.category.getCategoryPathList()}">
+            <a th:href="@{/category-search(categoryID=${category.catID})}" th:text="${category.name}"></a>
+            <span th:if="${!iterStat.last}"> > </span> <!-- Adds '>' separator between categories -->
+        </span>
+    </td>
+</tr>
+
                     <tr>
                         <th>Condition:</th>
                         <td  th:text="${item.cond}">New</td>
