@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Store</title>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" th:href="@{/CSS/home/picture-carousel.css}" />
+    <link rel="stylesheet" th:href="@{/CSS/home/how-to-buy.css}" />
+    <link rel="stylesheet" th:href="@{/CSS/home/explore-categories.css}" />
+    <link rel="stylesheet" th:href="@{/CSS/home/product-grid.css}" />
+    <link rel="stylesheet" th:href="@{/CSS/home/admin-announcemnt.css}" />
+    <link rel="stylesheet" th:href="@{/CSS/home/journey-section.css}" />
+<link th:href="@{/CSS/headerFooter.css}" rel="stylesheet">
+    <!-- Scripts -->
+    <script th:src="@{/JS/home/picture-carousel.js}"></script>
+    <script th:src="@{/JS/home/how-to-buy.js}"></script>
+    <script th:src="@{/JS/home/explore-categories.js}"></script>
+    <script th:src="@{/JS/home/product-grid.js}"></script>
+    <script th:src="@{/JS/home/admin-announcement.js}"></script>
+    <script th:src="@{/JS/home/journey-section.js}"></script>
+
+    <!-- External Libraries -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+    <link th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css}" rel="stylesheet">
+     <script th:src="@{/JS/sidebar.js}"></script>
+    
+</head>
+
+  <body>
+    <!--Main Section-->
+    <!--Picture Carousel-->
+<header th:insert="fragments/header :: header"></header>
+    <div class="carousel-container">
+      <div class="carousel">
+        <div class="slide active">
+          <img th:src="@{/Image/home/Electronics.jpg}" alt="Curated Collections" />
+          <div class="slide-content">
+            <span class="tag">NEW COLLECTION</span>
+            <h2>Curated Collections</h2>
+            <p>Discover our carefully selected pieces for every occasion</p>
+            <button class="cta-button">Shop Now</button>
+          </div>
+        </div>
+        <div class="slide">
+          <img
+            th:src="@{https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?auto=format&fit=crop&q=80}"
+            alt="Premium Quality"
+          />
+          <div class="slide-content">
+            <span class="tag">NEW COLLECTION</span>
+            <h2>Premium Quality</h2>
+            <p>Experience luxury in every detail</p>
+            <button class="cta-button">Explore</button>
+          </div>
+        </div>
+        <div class="slide">
+          <img th:src="@{/Image/home/Cosmetics.jpg}" alt="Timeless Style" />
+          <div class="slide-content">
+            <span class="tag">NEW COLLECTION</span>
+            <h2>Timeless Style</h2>
+            <p>Elegance that lasts forever</p>
+            <button class="cta-button">View Collection</button>
+          </div>
+        </div>
+        <div class="slide">
+          <img th:src="@{/Image/home/Delivery.jpg}" alt="Timeless Style" />
+          <div class="slide-content">
+            <span class="tag">NEW COLLECTION</span>
+            <h2>Trusted Delivery</h2>
+            <p>Enjoy our speedy and trusted delivery service</p>
+            <button class="cta-button">Shipping Info</button>
+          </div>
+        </div>
+      </div>
+
+      <button class="carousel-arrow prev" aria-label="Previous slide">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
+      <button class="carousel-arrow next" aria-label="Next slide">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </button>
+
+      <div class="carousel-dots"></div>
+    </div>
+
+    <!--How to buy from us-->
+
+    <section class="how-to-buy">
+      <h2>How to buy from us</h2>
+      <div class="steps-container">
+        <div class="step">
+          <div class="circle">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </div>
+          <p>Search your desired item</p>
+        </div>
+        <div class="arrow">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </div>
+        <div class="step">
+          <div class="circle">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="9" cy="21" r="1"></circle>
+              <circle cx="20" cy="21" r="1"></circle>
+              <path
+                d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"
+              ></path>
+            </svg>
+          </div>
+          <p>Add to cart</p>
+        </div>
+        <div class="arrow">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </div>
+        <div class="step">
+          <div class="circle">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect x="1" y="3" width="15" height="13"></rect>
+              <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+              <circle cx="5.5" cy="18.5" r="2.5"></circle>
+              <circle cx="18.5" cy="18.5" r="2.5"></circle>
+            </svg>
+          </div>
+          <p>Select your choice of delivery</p>
+        </div>
+        <div class="arrow">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </div>
+        <div class="step">
+          <div class="circle">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"
+              ></path>
+            </svg>
+          </div>
+          <p>Receive item</p>
+        </div>
+      </div>
+    </section>
+
+    <!--Explore Categories-->
+    <section class="categories-section">
+      <div class="container">
+        <h2>Explore Our Categories</h2>
+        <div class="categories-wrapper">
+          <button class="nav-arrow prev-arrow" aria-label="Previous categories">
+            &lt;
+          </button>
+          <div class="categories-grid">
+            <div class="category-card">
+              <div class="category-image">
+                <img th:src="@{/Image/home/Clothes.jpg}" alt="Clothing" />
+                <div class="category-content">
+                  <h3>Clothing</h3>
+                  <a href="#" class="explore-btn">Explore Now</a>
+                </div>
+              </div>
+            </div>
+
+            <div class="category-card">
+              <div class="category-image">
+                <img th:src="@{/Image/home/Elec.jpg}" alt="Electronics" />
+                <div class="category-content">
+                  <h3>Electronics</h3>
+                  <a href="#" class="explore-btn">Explore Now</a>
+                </div>
+              </div>
+            </div>
+
+            <div class="category-card">
+              <div class="category-image">
+                <img th:src="@{/Image/home/Decor.jpg}" alt="Home" />
+                <div class="category-content">
+                  <h3>Home</h3>
+                  <a href="#" class="explore-btn">Explore Now</a>
+                </div>
+              </div>
+            </div>
+
+            <div class="category-card">
+              <div class="category-image">
+                <img th:src="@{/Image/home/Shoes.jpg}" alt="Shoes" />
+                <div class="category-content">
+                  <h3>Shoes</h3>
+                  <a href="#" class="explore-btn">Explore Now</a>
+                </div>
+              </div>
+            </div>
+
+            <div class="category-card">
+              <div class="category-image">
+                <img th:src="@{/Image/home/Beauty.jpg}" alt="Beauty" />
+                <div class="category-content">
+                  <h3>Beauty</h3>
+                  <a href="#" class="explore-btn">Explore Now</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <button class="nav-arrow next-arrow" aria-label="Next categories">
+            &gt;
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!--Product Grid-->
+    <section class="pg-products-section">
+      <!-- First Row -->
+      <div class="pg-container">
+        <div class="pg-header">
+          <h2>Top picks for you</h2>
+          <p>Explore our latest and most popular items</p>
+        </div>
+
+        <div class="pg-products-container">
+          <button class="pg-nav-arrow pg-prev" aria-label="Previous">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
+          </button>
+
+          <div class="pg-products-grid" style="width: 100%; overflow-x: auto">
+          
+          <!-- Pg Product Card -->
+            <div class="pg-product-card">
+              <div class="pg-product-image">
+                <img th:src="@{/Image/home/Leather Bag.jpg}" alt="Vintage Leather Backpack" />
+                <button class="pg-wishlist-btn">♡</button>
+              </div>
+              <div class="pg-product-info">
+                <h3 class="pg-product-title">Vintage Leather Backpack</h3>
+                <p class="pg-price">$89.99</p>
+                <p class="pg-seller">Vintage Goods Co.</p>
+                <div class="pg-rating">
+                  <div class="pg-stars">★★★★☆</div>
+                  <span>4.5</span>
+                </div>
+                <div class="pg-buttons">
+                  <button class="pg-cart-btn">Add to Cart</button>
+                  <button class="pg-view-btn">👁</button>
+                </div>
+              </div>
+            </div>
+            
+            
+            <div class="pg-product-card">
+              <div class="pg-product-image">
+                <img th:src="@{/Image/home/Wireless headphones.jpg}" alt="Wireless Headphones" />
+                <button class="pg-wishlist-btn">♡</button>
+              </div>
+              <div class="pg-product-info">
+                <h3 class="pg-product-title">Wireless Headphones</h3>
+                <p class="pg-price">$199.99</p>
+                <p class="pg-seller">Tech Haven</p>
+                <div class="pg-rating">
+                  <div class="pg-stars">★★★★★</div>
+                  <span>4.8</span>
+                </div>
+                <div class="pg-buttons">
+                  <button class="pg-cart-btn">Add to Cart</button>
+                  <button class="pg-view-btn">👁</button>
+                </div>
+              </div>
+            </div>
+            <div class="pg-product-card">
+              <div class="pg-product-image">
+                <img th:src="@{/Image/home/SmartWatch.jpg}" alt="Smart Watch" />
+                <button class="pg-wishlist-btn">♡</button>
+              </div>
+              <div class="pg-product-info">
+                <h3 class="pg-product-title">Smart Watch</h3>
+                <p class="pg-price">$299.99</p>
+                <p class="pg-seller">Tech Haven</p>
+                <div class="pg-rating">
+                  <div class="pg-stars">★★★★☆</div>
+                  <span>4.7</span>
+                </div>
+                <div class="pg-buttons">
+                  <button class="pg-cart-btn">Add to Cart</button>
+                  <button class="pg-view-btn">👁</button>
+                </div>
+              </div>
+            </div>
+            <div class="pg-product-card">
+              <div class="pg-product-image">
+                <img th:src="@{/Image/home/Coffee Maker.jpg}" alt="Coffee Maker" />
+                <button class="pg-wishlist-btn">♡</button>
+              </div>
+              <div class="pg-product-info">
+                <h3 class="pg-product-title">Coffee Maker</h3>
+                <p class="pg-price">$129.99</p>
+                <p class="pg-seller">Kitchen Essentials</p>
+                <div class="pg-rating">
+                  <div class="pg-stars">★★★★☆</div>
+                  <span>4.6</span>
+                </div>
+                <div class="pg-buttons">
+                  <button class="pg-cart-btn">Add to Cart</button>
+                  <button class="pg-view-btn">👁</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button class="pg-nav-arrow pg-next" aria-label="Next">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M9 18l6-6-6-6" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Second Row -->
+      <div class="pg-container pg-mt-16">
+        <div class="pg-header">
+          <h2>More Recommendations</h2>
+          <p>Discover more amazing products</p>
+        </div>
+
+        <div class="pg-products-container">
+          <button class="pg-nav-arrow pg-prev" aria-label="Previous">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
+          </button>
+
+          <div class="pg-products-grid" style="width: 100%; overflow-x: auto">
+            <div class="pg-product-card">
+              <div class="pg-product-image">
+                <img th:src="@{/Image/home/Premium Earbuds.jpg}" alt="Premium Earbuds" />
+                <button class="pg-wishlist-btn">♡</button>
+              </div>
+              <div class="pg-product-info">
+                <h3 class="pg-product-title">Premium Earbuds</h3>
+                <p class="pg-price">$149.99</p>
+                <p class="pg-seller">Audio Pro</p>
+                <div class="pg-rating">
+                  <div class="pg-stars">★★★★★</div>
+                  <span>4.8</span>
+                </div>
+                <div class="pg-buttons">
+                  <button class="pg-cart-btn">Add to Cart</button>
+                  <button class="pg-view-btn">👁</button>
+                </div>
+              </div>
+            </div>
+            <div class="pg-product-card">
+              <div class="pg-product-image">
+                <img th:src="@{/Image/home/Smart Home Hub.jpg}" alt="Smart Home Hub" />
+                <button class="pg-wishlist-btn">♡</button>
+              </div>
+              <div class="pg-product-info">
+                <h3 class="pg-product-title">Smart Home Hub</h3>
+                <p class="pg-price">$199.99</p>
+                <p class="pg-seller">Smart Living</p>
+                <div class="pg-rating">
+                  <div class="pg-stars">★★★★☆</div>
+                  <span>4.7</span>
+                </div>
+                <div class="pg-buttons">
+                  <button class="pg-cart-btn">Add to Cart</button>
+                  <button class="pg-view-btn">👁</button>
+                </div>
+              </div>
+            </div>
+            <div class="pg-product-card">
+              <div class="pg-product-image">
+                <img th:src="@{/Image/home/Fitness Tracker.jpg}" alt="Fitness Tracker" />
+                <button class="pg-wishlist-btn">♡</button>
+              </div>
+              <div class="pg-product-info">
+                <h3 class="pg-product-title">Fitness Tracker</h3>
+                <p class="pg-price">$79.99</p>
+                <p class="pg-seller">Health Tech</p>
+                <div class="pg-rating">
+                  <div class="pg-stars">★★★★☆</div>
+                  <span>4.6</span>
+                </div>
+                <div class="pg-buttons">
+                  <button class="pg-cart-btn">Add to Cart</button>
+                  <button class="pg-view-btn">👁</button>
+                </div>
+              </div>
+            </div>
+            <div class="pg-product-card">
+              <div class="pg-product-image">
+                <img th:src="@{/Image/home/Portable Charger.jpg}" alt="Portable Charger" />
+                <button class="pg-wishlist-btn">♡</button>
+              </div>
+              <div class="pg-product-info">
+                <h3 class="pg-product-title">Portable Charger</h3>
+                <p class="pg-price">$49.99</p>
+                <p class="pg-seller">Power Solutions</p>
+                <div class="pg-rating">
+                  <div class="pg-stars">★★★★☆</div>
+                  <span>4.5</span>
+                </div>
+                <div class="pg-buttons">
+                  <button class="pg-cart-btn">Add to Cart</button>
+                  <button class="pg-view-btn">👁</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button class="pg-nav-arrow pg-next" aria-label="Next">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M9 18l6-6-6-6" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!--Admin Announcement-->
+
+    <section class="slideann-section">
+      <div class="slideann-container">
+        <h2>Admin Announcements</h2>
+
+        <div class="slideann-slider">
+          <div class="slideann-slides">
+            <div class="slideann-slide" data-priority="high">
+              <div class="slideann-content">
+                <div class="slideann-header">
+                  <span class="slideann-priority">High Priority</span>
+                  <span class="slideann-date">2024-03-15</span>
+                </div>
+                <h3>Important System Update</h3>
+                <p>
+                  System maintenance scheduled for next weekend. Please save
+                  your work accordingly.
+                </p>
+              </div>
+            </div>
+
+            <div class="slideann-slide" data-priority="medium">
+              <div class="slideann-content">
+                <div class="slideann-header">
+                  <span class="slideann-priority">Medium Priority</span>
+                  <span class="slideann-date">2024-03-14</span>
+                </div>
+                <h3>New Feature Release</h3>
+                <p>Check out our latest features in the dashboard section!</p>
+              </div>
+            </div>
+
+            <div class="slideann-slide" data-priority="low">
+              <div class="slideann-content">
+                <div class="slideann-header">
+                  <span class="slideann-priority">Low Priority</span>
+                  <span class="slideann-date">2024-03-13</span>
+                </div>
+                <h3>Holiday Schedule</h3>
+                <p>Office will be closed during the upcoming holidays.</p>
+              </div>
+            </div>
+          </div>
+
+          <button
+            class="slideann-arrow slideann-prev"
+            aria-label="Previous announcement"
+          >
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+          </button>
+
+          <button
+            class="slideann-arrow slideann-next"
+            aria-label="Next announcement"
+          >
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
+
+          <div class="slideann-dots"></div>
+        </div>
+      </div>
+    </section>
+
+    <!--Journey Section -->
+    <section class="js-journey-section">
+      <div class="js-container">
+        <div class="js-content">
+          <div class="js-text-content" data-aos="fade-right">
+            <h1 class="js-title">Our Journey at TradeSphere</h1>
+            <p class="js-description">
+              At WebCart, we strive to deliver an exceptional online shopping
+              experience. Our mission is to combine convenience, variety, and
+              customer satisfaction, ensuring every visit is memorable and
+              fulfilling.
+            </p>
+          </div>
+
+          <div class="js-stats-grid">
+            <div class="js-stat-card" data-aos="fade-up" data-aos-delay="100">
+              <h2 class="js-stat-number">2025</h2>
+              <h3 class="js-stat-title">years</h3>
+              <p class="js-stat-description">
+                Since our inception, we have focused on customer-centricity and
+                innovation, making us a trusted name in e-commerce.
+              </p>
+            </div>
+
+            <div class="js-stat-card" data-aos="fade-up" data-aos-delay="200">
+              <h2 class="js-stat-number">5</h2>
+              <h3 class="js-stat-title">core values</h3>
+              <p class="js-stat-description">
+                Our core values include integrity, quality, and sustainability,
+                which guide our operations and decision-making.
+              </p>
+            </div>
+
+            <div class="js-stat-card" data-aos="fade-up" data-aos-delay="300">
+              <h2 class="js-stat-number">3</h2>
+              <h3 class="js-stat-title">team members</h3>
+              <p class="js-stat-description">
+                Our dedicated team, led by experienced professionals, is
+                committed to enhancing your shopping experience.
+              </p>
+            </div>
+
+            <div class="js-stat-card" data-aos="fade-up" data-aos-delay="400">
+              <h2 class="js-stat-number">10</h2>
+              <h3 class="js-stat-title">years of experience</h3>
+              <p class="js-stat-description">
+                With over a decade of combined experience in e-commerce, our
+                team is equipped to serve you better.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="js-image-container" data-aos="fade-left">
+          <img th:src="@{/Image/home/Our journey.jpg}" alt="WebCart Team" class="js-team-image" />
+        </div>
+      </div>
+    </section>
+
+    <!-- Initialize Lucide Icons -->
+<footer th:insert="fragments/footer :: footer"></footer>
+ <script>
+        lucide.createIcons();
+      </script>
+  </body>
+</html>

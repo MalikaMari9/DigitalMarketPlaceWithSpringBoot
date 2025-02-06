@@ -17,6 +17,12 @@ public class dmpController {
 
 	}
 
+	@GetMapping("/home")
+	public String viewHome() {
+		return "home";
+
+	}
+
 	@GetMapping("/test")
 	public String test() {
 		return "test";

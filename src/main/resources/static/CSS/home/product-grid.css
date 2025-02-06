@@ -1,0 +1,225 @@
+:root {
+    --primary-color: #333;
+    --secondary-color: #555;
+    --background-color: #f2f2f2;
+    --text-color: #000;
+    --error-color: #ff0000;
+    --white: #FFFFFF;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background-color: var(--background-color);
+   /* padding: 2rem;*/
+}
+
+.pg-products-section {
+    max-width: 1280px;
+    margin: 0 auto;
+}
+
+.pg-container {
+    margin-bottom: 4rem;
+}
+
+.pg-mt-16 {
+    margin-top: 4rem;
+}
+
+.pg-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.pg-header h2 {
+    font-size: 1.875rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    color: var(--primary-color);
+}
+
+.pg-header p {
+    color: var(--secondary-color);
+}
+
+.pg-products-container {
+    position: relative;
+    padding: 0 2rem;
+}
+
+.pg-products-grid {
+    display: flex;
+    gap: 1.5rem;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding: 1rem 0;
+}
+
+.pg-products-grid::-webkit-scrollbar {
+    display: none;
+}
+
+.pg-product-card {
+    flex: 0 0 calc(25% - 1.125rem); /* Show exactly 4 items, accounting for gaps */
+    background: var(--white);
+    border-radius: 0.5rem;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+}
+
+.pg-product-card:hover {
+    transform: translateY(-4px);
+}
+
+.pg-product-image {
+    position: relative;
+    aspect-ratio: 1;
+}
+
+.pg-product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.pg-wishlist-btn {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    background: var(--white);
+    border: none;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.pg-product-info {
+    padding: 1rem;
+}
+
+.pg-product-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+}
+
+.pg-price {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    margin-bottom: 0.25rem;
+}
+
+.pg-seller {
+    font-size: 0.875rem;
+    color: var(--secondary-color);
+    margin-bottom: 0.5rem;
+}
+
+.pg-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.pg-stars {
+    color: #F97316;
+}
+
+.pg-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.pg-cart-btn {
+    flex: 1;
+    padding: 0.5rem;
+    background: var(--primary-color);
+    color: var(--white);
+    border: none;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.pg-cart-btn:hover {
+    background: var(--secondary-color);
+}
+
+.pg-view-btn {
+    width: 2.5rem;
+    background: var(--white);
+    border: 1px solid var(--secondary-color);
+    border-radius: 0.25rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pg-nav-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: var(--white);
+    border: 1px solid var(--secondary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.2s;
+}
+
+.pg-nav-arrow:hover {
+    background: var(--background-color);
+}
+
+.pg-nav-arrow.pg-prev {
+    left: 0;
+}
+
+.pg-nav-arrow.pg-next {
+    right: 0;
+}
+
+@media (max-width: 1200px) {
+    .pg-products-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .pg-products-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .pg-products-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .pg-products-container {
+        padding: 0 1rem;
+    }
+}

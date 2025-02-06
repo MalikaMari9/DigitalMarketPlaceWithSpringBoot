@@ -1,0 +1,165 @@
+:root {
+    --primary-color: #333; /* Dark Gray */
+    --secondary-color: #555; /* Medium Gray */
+    --background-color: #f2f2f2; /* Light Gray */
+    --text-color: #000; /* Black */
+    --error-color: #ff0000; /* Red */
+}
+
+.slideann-section {
+    padding: 4rem 0;
+    background-color: var(--background-color);
+}
+
+.slideann-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.slideann-container h2 {
+    text-align: center;
+    color: var(--primary-color);
+    font-size: 2rem;
+    margin-bottom: 2rem;
+}
+
+.slideann-slider {
+    position: relative;
+    height: 300px;
+    background: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.slideann-slides {
+    position: relative;
+    height: 100%;
+}
+
+.slideann-slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    padding: 2rem;
+}
+
+.slideann-slide.active {
+    opacity: 1;
+}
+
+.slideann-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.slideann-priority {
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+[data-priority="high"] .slideann-priority {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+[data-priority="medium"] .slideann-priority {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+[data-priority="low"] .slideann-priority {
+    background-color: #dcfce7;
+    color: #166534;
+}
+
+.slideann-date {
+    color: var(--secondary-color); /* Updated to use CSS variable */
+    font-size: 0.875rem;
+}
+
+.slideann-slide h3 {
+    font-size: 1.5rem;
+    color: var(--primary-color); /* Updated to use CSS variable */
+    margin-bottom: 1rem;
+}
+
+.slideann-slide p {
+    color: var(--secondary-color); /* Updated to use CSS variable */
+    line-height: 1.6;
+    margin-left: 2rem;
+}
+
+.slideann-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.8);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-color); /* Updated to use CSS variable */
+    transition: background-color 0.3s;
+}
+
+.slideann-arrow:hover {
+    background: rgba(255, 255, 255, 0.95);
+}
+
+.slideann-prev {
+    left: 1rem;
+}
+
+.slideann-next {
+    right: 1rem;
+}
+
+.slideann-dots {
+    position: absolute;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0.5rem;
+}
+
+.slideann-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.slideann-dot.active {
+    width: 1rem;
+    border-radius: 9999px;
+    background: var(--primary-color); /* Updated to use CSS variable */
+}
+
+@media (max-width: 640px) {
+    .slideann-container {
+        padding: 0 1rem;
+    }
+
+    .slideann-slider {
+        height: 400px;
+    }
+
+    .slideann-arrow {
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+}

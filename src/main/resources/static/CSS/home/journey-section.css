@@ -1,0 +1,128 @@
+:root {
+    --primary-color: #333;
+    --secondary-color: #555;
+    --background-color: #f2f2f2;
+    --text-color: #000;
+    --error-color: #ff0000;
+    --white: #FFFFFF;
+    --accent-blue: #007bff;
+}
+
+.js-journey-section {
+    padding: 5rem 2rem;
+    background-color: var(--white);
+}
+
+.js-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+}
+
+.js-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.js-title {
+    font-size: 3rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    transition: color 0.3s ease;
+}
+
+.js-title:hover {
+    color: var(--accent-blue);
+}
+
+.js-description {
+    font-size: 1.125rem;
+    color: var(--secondary-color);
+    line-height: 1.6;
+}
+
+.js-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+}
+
+.js-stat-card {
+    background: var(--white);
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.js-stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+}
+
+.js-stat-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--accent-blue);
+    margin-bottom: 0.5rem;
+}
+
+.js-stat-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+}
+
+.js-stat-description {
+    font-size: 0.875rem;
+    color: var(--secondary-color);
+    line-height: 1.5;
+}
+
+.js-image-container {
+    position: relative;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    margin-top: 2.5rem;
+}
+
+.js-image-container:hover {
+    transform: scale(1.02);
+}
+
+.js-team-image {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+@media (max-width: 1024px) {
+    .js-container {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+    }
+
+    .js-image-container {
+        order: -1;
+    }
+}
+
+@media (max-width: 768px) {
+    .js-stats-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .js-title {
+        font-size: 2.5rem;
+    }
+}
