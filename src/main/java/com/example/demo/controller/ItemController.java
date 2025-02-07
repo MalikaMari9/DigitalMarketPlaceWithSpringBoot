@@ -7,15 +7,19 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -63,15 +67,8 @@ public class ItemController {
 
 	@GetMapping("/sell-item")
 	public String showSellItemForm(Model model) {
-		// Fetch all top-level categories (where parentCategory is NULL)
-		List<Category> parentCategories = categoryRepo.findByParentCategoryIsNull();
-
-		// Fetch all subcategories mapped by parent category
-		Map<Category, List<Category>> categoryMap = parentCategories.stream()
-				.collect(Collectors.toMap(parent -> parent, parent -> categoryRepo.findByParentCategory(parent)));
-
-		// Add to model
-		model.addAttribute("categoryMap", categoryMap);
+		List<Category> categories = categoryRepo.findByParentCategoryIsNull();
+		model.addAttribute("categories", categories);
 		return "sellItemNormal";
 	}
 
@@ -79,8 +76,16 @@ public class ItemController {
 	public String viewItems(Model model) {
 		List<Item> itemList = itemRepo.findAll();
 		List<Auction> auctionList = auctionRepo.findAll();
+		Map<Long, Double> maxBids = new HashMap<>();
+		for (Auction auction : auctionList) {
+			Long auctionID = auction.getAuctionID();
+			Double maxBid = auctionTrackRepo.findMaxPriceByAuctionID(auctionID);
+			maxBids.put(auctionID, maxBid != null ? maxBid : auction.getStartPrice()); // Default to startPrice if no
+																						// bids
+		}
 		model.addAttribute("itemList", itemList);
 		model.addAttribute("auctionList", auctionList);
+		model.addAttribute("maxBids", maxBids); // Pass map of max bids
 
 		return "itemList";
 
@@ -276,6 +281,16 @@ public class ItemController {
 		// ✅ Fetch category name if category is selected
 		Category selectedCategory = categoryID != null ? categoryRepo.findById(categoryID).orElse(null) : null;
 
+		// Fetch highest bids for auction items
+		Map<Long, Double> auctionMaxBids = new HashMap<>();
+		for (Auction auction : auctionResults) {
+			Double maxBid = auctionTrackRepo.findMaxPriceByAuctionID(auction.getAuctionID());
+			auctionMaxBids.put(auction.getAuctionID(), maxBid != null ? maxBid : auction.getStartPrice());
+		}
+
+		// Add to model
+		model.addAttribute("auctionMaxBids", auctionMaxBids);
+
 		model.addAttribute("searchResults", searchResults);
 		model.addAttribute("auctionResults", auctionResults);
 		model.addAttribute("query", query);
@@ -293,12 +308,60 @@ public class ItemController {
 		// ✅ Fetch the selected category name
 		Category selectedCategory = categoryRepo.findById(categoryID).orElse(null);
 
+		// Fetch highest bids for auction items
+		Map<Long, Double> auctionMaxBids = new HashMap<>();
+		for (Auction auction : auctionResults) {
+			Double maxBid = auctionTrackRepo.findMaxPriceByAuctionID(auction.getAuctionID());
+			auctionMaxBids.put(auction.getAuctionID(), maxBid != null ? maxBid : auction.getStartPrice());
+		}
+
+		// Add to model
+		model.addAttribute("auctionMaxBids", auctionMaxBids);
+
 		model.addAttribute("searchResults", searchResults);
 		model.addAttribute("auctionResults", auctionResults);
 		model.addAttribute("categoryID", categoryID);
 		model.addAttribute("selectedCategory", selectedCategory); // Pass category name
 
 		return "searchResults";
+	}
+
+	// Delete
+
+	@DeleteMapping("/delete/{itemId}")
+	public ResponseEntity<String> deleteItem(@PathVariable Long itemId) {
+		Optional<Item> itemOptional = itemRepo.findById(itemId);
+
+		if (itemOptional.isPresent()) {
+			Item item = itemOptional.get();
+
+			try {
+				System.out.println("🔹 Deleting item with ID: " + itemId);
+
+				// ✅ Delete Related Item Tags
+				itemTagRepo.deleteAll(itemTagRepo.findByItem(item));
+
+				// ✅ Delete Related Item Images from Database and Filesystem
+				deleteItemImages(item);
+
+				// ✅ Delete Auction and Auction Tracks if the item was an auction
+				Auction auction = auctionRepo.findByItem_ItemID(itemId);
+				if (auction != null) {
+					auctionTrackRepo.deleteAll(auctionTrackRepo.findByAuction(auction));
+					auctionRepo.delete(auction);
+				}
+
+				// ✅ Delete Item from Database
+				itemRepo.delete(item);
+
+				return ResponseEntity.ok("Item deleted successfully.");
+			} catch (Exception e) {
+				e.printStackTrace();
+				return ResponseEntity.status(500).body("❌ Failed to delete item: " + e.getMessage());
+			}
+		} else {
+			return ResponseEntity.status(404).body("❌ Item not found.");
+		}
 	}
 
 	// methods
@@ -359,6 +422,24 @@ public class ItemController {
 		List<Category> subcategories = categoryRepo.findByParentCategory(category);
 		subcategories.forEach(this::loadSubcategories); // Recursive call to load deeper levels
 		category.setSubcategories(subcategories);
+	}
+
+	private void deleteItemImages(Item item) {
+		List<ItemImage> images = itemImageRepo.findByItem(item);
+
+		if (!images.isEmpty()) {
+			for (ItemImage image : images) {
+				Path imagePath = Paths.get(BASE_DIR + item.getItemID(), image.getImagePath());
+
+				try {
+					Files.deleteIfExists(imagePath); // ✅ Delete from filesystem
+				} catch (IOException e) {
+					System.err.println("❌ Failed to delete image file: " + imagePath);
+					e.printStackTrace();
+				}
+			}
+			itemImageRepo.deleteAll(images); // ✅ Delete from database
+		}
 	}
 
 }

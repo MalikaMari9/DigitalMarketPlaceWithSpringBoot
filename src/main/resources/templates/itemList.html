@@ -42,7 +42,10 @@
               </div>
               <div class="pg-product-info">
                 <h3 class="pg-product-title" th:text="${auction.item.itemName}"></h3>
-                <p class="pg-price" th:text="'$' +${auction.item.price}"></p>
+           <p class="pg-price"
+   th:text="${maxBids[auction.auctionID] != null ? '$' + maxBids[auction.auctionID] : '$' + auction.startPrice}">
+</p>
+
                 <p class="pg-seller" th:text="${auction.item.seller.username}"></p>
                 <div class="pg-rating">
                   <div class="pg-stars">★★★★☆</div>

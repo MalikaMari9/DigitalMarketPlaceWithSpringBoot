@@ -1,9 +1,12 @@
 package com.example.demo.repository.Auction;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.example.demo.entity.Auction.Auction;
 import com.example.demo.entity.Auction.AuctionTrack;
 
 public interface AuctionTrackRepository extends JpaRepository<AuctionTrack, Long> {
@@ -12,4 +15,6 @@ public interface AuctionTrackRepository extends JpaRepository<AuctionTrack, Long
 	Double findMaxPriceByAuctionID(@Param("auctionID") Long auctionID);
 
 	int countByAuction_AuctionID(Long auctionID);
+
+	List<AuctionTrack> findByAuction(Auction auction);
 }

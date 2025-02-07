@@ -1,5 +1,7 @@
 package com.example.demo.repository.tag;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.example.demo.entity.Item;
@@ -9,4 +11,5 @@ import com.example.demo.entity.tag.Tag;
 public interface ItemTagRepository extends JpaRepository<ItemTag, Long> {
 	boolean existsByItemAndTag(Item item, Tag tag);
 
+	List<ItemTag> findByItem(Item item);
 }
