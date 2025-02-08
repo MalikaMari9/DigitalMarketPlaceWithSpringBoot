@@ -1,14 +1,24 @@
 package com.example.demo.entity;
 
-import jakarta.persistence.*;
-
 import java.io.File;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 
 import com.example.demo.entity.tag.ItemTag;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "item_tbl")
@@ -45,7 +55,7 @@ public class Item {
 	private Condition cond;
 
 	@ManyToOne
-	@JoinColumn(name = "sellerID", nullable = false)
+	@JoinColumn(name = "seller_userID", nullable = false)
 	private User seller;
 
 	@ManyToOne

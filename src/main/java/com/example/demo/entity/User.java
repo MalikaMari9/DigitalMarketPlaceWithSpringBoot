@@ -1,7 +1,15 @@
 package com.example.demo.entity;
 
-import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "user_tbl")
@@ -24,7 +32,7 @@ public class User {
 	private String phone;
 
 	@Column(length = 255)
-	private String profilePath = "Image/PFP/profile.png";
+	private String profilePath = "default.png";
 
 	private LocalDate dob;
 
@@ -34,11 +42,16 @@ public class User {
 	@Column(columnDefinition = "TEXT")
 	private String bio;
 
-	@Column(length = 20)
-	private String role;
+	@Column(nullable = false, length = 20)
+	private String role = "USER";
 
-	@Column(nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-	private LocalDate createdAt;
+	@Column(nullable = false, updatable = false)
+	private LocalDateTime createdAt;
+
+	@PrePersist
+	protected void onCreate() {
+		this.createdAt = LocalDateTime.now();
+	}
 
 	// Getters and Setters
 	public Long getUserID() {
@@ -121,11 +134,7 @@ public class User {
 		this.role = role;
 	}
 
-	public LocalDate getCreatedAt() {
+	public LocalDateTime getCreatedAt() {
 		return createdAt;
-	}
-
-	public void setCreatedAt(LocalDate createdAt) {
-		this.createdAt = createdAt;
 	}
 }

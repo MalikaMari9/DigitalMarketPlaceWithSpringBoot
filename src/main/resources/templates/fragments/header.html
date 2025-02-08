@@ -69,25 +69,42 @@
                 <i data-lucide="shopping-cart"></i>
                 <span class="cart-countyoon" id="cartCountyoon">3</span>
               </button>
-    
-              <button class="login-buttonyoon">Login / Signup</button>
-    
+    <th:block th:if="${session.user == null}">
+    <a th:href="@{/loginPage}">
+              <button class="login-buttonyoon">Login </button>
+              </a>
+    </th:block>
+     <th:block th:if="${session.user != null}">
+     <a th:href="@{/logout}">
+              <button class="login-buttonyoon">Logout</button>
+              </a>
+    </th:block>
+         <th:block th:if="${session.user != null}">
               <button class="menu-buttonyoon" id="menuBtnyoon">
                 <i data-lucide="menu"></i>
               </button>
+         </th:block>
+         <th:block  th:if="${session.user == null}">
+         <a th:href="@{/loginPage}">
+              <button class="login-buttonyoon">Sign Up </button>
+              </a>
+         </th:block>
             </div>
           </div>
         </div>
       </header>
     
        <!-- Sidebar Menu -->
+       <th:block th:if="${session.user != null}">
+       <th:block th:if="${session.user.role=='BUYER'}">
+       <!-- BuyerSideBar starts -->
        <div class="sidebaryoon" id="sidebaryoon">
         <div class="sidebar-headeryoon">
           <div class="user-infoyoon">
             <div class="avataryoon">
               <img src="Image/profile/default.png" alt="User" id="userAvataryoon" />
             </div>
-            <h3>User Name</h3>
+            <h3 th:text="${session.user.username}"></h3>
           </div>
           <button class="close-buttonyoon" id="closeBtnyoon">
             <i data-lucide="x"></i>
@@ -187,7 +204,121 @@
           </div>
         </div>
       </div>
+<!-- BuyerSideBar ends -->
+</th:block>
+<th:block th:if="${session.user.role=='SELLER'}">
+    <div class="sidebaryoon" id="sidebaryoon">
+      <div class="sidebar-headeryoon">
+        <div class="user-infoyoon">
+          <div class="avataryoon">
+            <img src="Image/profile/default.png"  alt="User" id="userAvataryoon" />
+          </div>
+          <h3 th:text="${session.user.username}"></h3>
+        </div>
+        <button class="close-buttonyoon" id="closeBtnyoon">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <div class="sidebar-scrollyoon">
+        <div class="sidebar-contentyoon">
+          <!-- Account Section -->
+          <div class="sidebar-sectionyoon">
+            <h3 class="section-titleyoon">Account</h3>
+            <div class="sidebar-buttonsyoon">
+              <a th:href="@{/viewSeller}">
+              <button class="sidebar-buttonyoon">
+                <i data-lucide="user"></i>View Profile
+              </button>
+              </a>
+                <a th:href="@{/editProfile}">
+              <button class="sidebar-buttonyoon">
+                <i data-lucide="edit"></i>Edit Profile
+              </button>
+              </a>
+                <a th:href="@{/changePassword}">
+              <button class="sidebar-buttonyoon">
+                <i data-lucide="key"></i>Change Password
+              </button>
+              </a>
+                <a th:href="@{/addressBook}">
+              <button class="sidebar-buttonyoon">
+                <i data-lucide="map-pin"></i>Address Book
+              </button>
+              </a>
+            </div>
+          </div>
 
+          <!-- Sell Section -->
+          <div class="sidebar-sectionyoon">
+            <h3 class="section-titleyoon">Sell</h3>
+            <div class="sidebar-buttonsyoon">
+              <a th:href="@{/sell-item}">
+              <button class="sidebar-buttonyoon">
+                <i data-lucide="package"></i>Sell Item
+              </button>
+              </a>
+              <a th:href="@{/auction-item}">
+              <button class="sidebar-buttonyoon">
+                <i data-lucide="gavel"></i>Auction Item
+              </button>
+              </a>
+                <a th:href="@{/addressBook}">
+              <button class="sidebar-buttonyoon">
+                <i data-lucide="history"></i>Sale History
+              </button>
+              </a>
+              <button class="sidebar-buttonyoon">
+                <i data-lucide="award"></i>Auction History
+              </button>
+            </div>
+          </div>
+
+          <!-- Analysis Section -->
+          <div class="sidebar-sectionyoon">
+            <h3 class="section-titleyoon">Analysis</h3>
+            <div class="sidebar-buttonsyoon">
+              <button class="sidebar-buttonyoon">
+                <i data-lucide="warehouse"></i>Warehouse Track
+              </button>
+              <button class="sidebar-buttonyoon">
+                <i data-lucide="history"></i>Sale History
+              </button>
+              <button class="sidebar-buttonyoon">
+                <i data-lucide="award"></i>Auction History
+              </button>
+            </div>
+          </div>
+
+          <!-- Delivery Section -->
+          <div class="sidebar-sectionyoon">
+            <h3 class="section-titleyoon">Delivery</h3>
+            <div class="sidebar-buttonsyoon">
+              <button class="sidebar-buttonyoon">
+                <i data-lucide="check-circle"></i>Confirm Delivery
+              </button>
+              <button class="sidebar-buttonyoon">
+                <i data-lucide="package"></i>Track Delivery
+              </button>
+            </div>
+          </div>
+
+          <!-- Other Section -->
+          <div class="sidebar-sectionyoon">
+            <h3 class="section-titleyoon">Other</h3>
+            <div class="sidebar-buttonsyoon">
+              <button class="sidebar-buttonyoon">
+                <i data-lucide="message-square"></i>Chat
+              </button>
+              <button class="sidebar-buttonyoon">
+                <i data-lucide="log-out"></i>Log Out
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</th:block>
+</th:block>
 </div>
 
 
