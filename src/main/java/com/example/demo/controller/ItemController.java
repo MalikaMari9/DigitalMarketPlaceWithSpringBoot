@@ -43,6 +43,8 @@ import com.example.demo.repository.Auction.AuctionTrackRepository;
 import com.example.demo.repository.tag.ItemTagRepository;
 import com.example.demo.repository.tag.TagRepository;
 
+import jakarta.servlet.http.HttpSession;
+
 @Controller
 public class ItemController {
 	@Autowired
@@ -121,11 +123,12 @@ public class ItemController {
 	public String saveItem(@RequestParam("name") String name, @RequestParam("desc") String desc,
 			@RequestParam("price") double price, @RequestParam("stock") int stock, @RequestParam("cond") String cond,
 			@RequestParam("categoryID") Long categoryID, @RequestParam(value = "tags", required = false) String tags,
-			@RequestParam(value = "itemImages", required = false) List<MultipartFile> images) throws IOException {
+			@RequestParam(value = "itemImages", required = false) List<MultipartFile> images, HttpSession session)
+			throws IOException {
 
 		System.out.println("➡ Item Name: " + name);
 		System.out.println("➡ Stock: " + stock);
-
+		System.out.println("Seller:" + session.getId());
 		// ✅ Create new Item
 		Item item = new Item();
 		item.setItemName(name);
@@ -143,7 +146,16 @@ public class ItemController {
 				.orElseThrow(() -> new RuntimeException("❌ Category ID not found: " + categoryID)));
 
 		// ✅ Assign a static seller for now (Replace with logged-in user later)
-		User seller = userRepo.findById(1L).orElseThrow(() -> new RuntimeException("❌ Seller ID not found"));
+		User seller = (User) session.getAttribute("user");
+
+		if (seller == null) {
+			return "redirect:/loginPage"; // Redirect if not logged in
+		}
+
+		// ✅ Ensure the user is a seller
+		if (!"SELLER".equals(seller.getRole())) {
+			return "redirect:/unauthorized"; // Redirect if not a seller
+		}
 		item.setSeller(seller);
 
 		// ✅ Save Item first
@@ -187,7 +199,8 @@ public class ItemController {
 			@RequestParam("deadline") String deadline, // Auction end date (String for conversion)
 			@RequestParam("categoryID") Long categoryID, @RequestParam("cond") String cond,
 			@RequestParam(value = "tags", required = false) String tags,
-			@RequestParam(value = "itemImages", required = false) List<MultipartFile> images) throws IOException {
+			@RequestParam(value = "itemImages", required = false) List<MultipartFile> images, HttpSession session)
+			throws IOException {
 
 		System.out.println("➡ Auction Item: " + name);
 		System.out.println("➡ Start Price: " + price);
@@ -211,7 +224,16 @@ public class ItemController {
 				.orElseThrow(() -> new RuntimeException("❌ Category ID not found: " + categoryID)));
 
 		// ✅ Assign seller (Currently static, replace with logged-in user later)
-		User seller = userRepo.findById(1L).orElseThrow(() -> new RuntimeException("❌ Seller ID not found"));
+		User seller = (User) session.getAttribute("user");
+
+		if (seller == null) {
+			return "redirect:/loginPage"; // Redirect if not logged in
+		}
+
+		// ✅ Ensure the user is a seller
+		if (!"SELLER".equals(seller.getRole())) {
+			return "redirect:/unauthorized"; // Redirect if not a seller
+		}
 		item.setSeller(seller);
 
 		// ✅ Save Item first

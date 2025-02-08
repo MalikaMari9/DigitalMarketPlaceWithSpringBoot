@@ -1,9 +1,19 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Sale History</title>
-    <link rel="stylesheet" href="CSS/saleHistory.css">
+    <link rel="stylesheet" th:href="@{CSS/saleHistory.css}">
+    
+    
+    <link th:href="@{/CSS/headerFooter.css}" rel="stylesheet">
+     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <link th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css}" rel="stylesheet">
+     <script th:src="@{/JS/sidebar.js}"></script>
+     <script th:src="@{/JS/CategorySelect.js}"></script>
+   
 </head>
 <body>
+<header th:insert="~{fragments/header :: header}"></header>
     <div id="container">
     <h2 id="page-title">Auction History</h2>
 
@@ -59,7 +69,10 @@
     </table>
 </div>
 </div>
-
+ <footer th:insert="~{fragments/footer :: footer}"></footer>
+ <script>
+        lucide.createIcons();
+        </script>
 
 </body>
 </html>

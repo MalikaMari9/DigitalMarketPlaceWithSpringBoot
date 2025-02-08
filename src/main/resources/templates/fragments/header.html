@@ -262,14 +262,7 @@
                 <i data-lucide="gavel"></i>Auction Item
               </button>
               </a>
-                <a th:href="@{/addressBook}">
-              <button class="sidebar-buttonyoon">
-                <i data-lucide="history"></i>Sale History
-              </button>
-              </a>
-              <button class="sidebar-buttonyoon">
-                <i data-lucide="award"></i>Auction History
-              </button>
+     
             </div>
           </div>
 
@@ -277,12 +270,16 @@
           <div class="sidebar-sectionyoon">
             <h3 class="section-titleyoon">Analysis</h3>
             <div class="sidebar-buttonsyoon">
+           
               <button class="sidebar-buttonyoon">
                 <i data-lucide="warehouse"></i>Warehouse Track
               </button>
+              <a th:href="@{/saleHistory}">
               <button class="sidebar-buttonyoon">
                 <i data-lucide="history"></i>Sale History
               </button>
+              </a>
+             <a th:href="@{/auctionHistory}">
               <button class="sidebar-buttonyoon">
                 <i data-lucide="award"></i>Auction History
               </button>
@@ -290,15 +287,20 @@
           </div>
 
           <!-- Delivery Section -->
+          
           <div class="sidebar-sectionyoon">
             <h3 class="section-titleyoon">Delivery</h3>
             <div class="sidebar-buttonsyoon">
+             <a th:href="@{/confirmDelivery}">
               <button class="sidebar-buttonyoon">
                 <i data-lucide="check-circle"></i>Confirm Delivery
               </button>
+              </a>
+               <a th:href="@{/trackDelivery}">
               <button class="sidebar-buttonyoon">
                 <i data-lucide="package"></i>Track Delivery
               </button>
+              </a>
             </div>
           </div>
 

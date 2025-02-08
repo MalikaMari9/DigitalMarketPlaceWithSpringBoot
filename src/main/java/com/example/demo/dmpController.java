@@ -77,6 +77,26 @@ public class dmpController {
 		return "orderhistory";
 	}
 
+	@GetMapping("/saleHistory")
+	public String saleHistory() {
+		return "saleHistory";
+	}
+
+	@GetMapping("/auctionHistory")
+	public String auctionHistory() {
+		return "auctionHistory";
+	}
+
+	@GetMapping("/confirmDelivery")
+	public String confirmDelivery() {
+		return "confirmDelivery";
+	}
+
+	@GetMapping("/trackDelivery")
+	public String trackDelivery() {
+		return "deliverytrack";
+	}
+
 	@Autowired
 	private CategoryRepository categoryRepo;
 
