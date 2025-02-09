@@ -1,0 +1,105 @@
+
+  <div th:fragment="header">
+    <header class="headeradmin" id="headeradmin">
+        <div class="header-containeradmin">
+            <div class="header-contentadmin">
+                <!-- Logo and Search Section -->
+                <div class="header-leftadmin">
+                    <a th:href="@{/home}" class="logoadmin">TRADESPHERE</a>
+                    <span class="dashboard-titleadmin">Admin Dashboard</span>
+                    
+                    <div class="search-containeradmin">
+                        <input type="text" placeholder="Search dashboard..." class="search-inputadmin">
+                        <button class="search-buttonadmin">
+                            <i data-lucide="search"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Navigation -->
+                <div class="header-rightadmin">
+                    <button class="nav-buttonadmin">
+                        <i data-lucide="message-circle"></i>
+                        Messages
+                    </button>
+                    
+                    <button class="nav-buttonadmin">
+                        <i data-lucide="bell"></i>
+                        Notifications
+                    </button>
+
+                    <button class="menu-buttonadmin" id="menuBtnadmin">
+                        <i data-lucide="menu"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sidebar Menu -->
+    <div class="sidebaradmin" id="sidebaradmin">
+        <div class="sidebar-headeradmin">
+            <div class="user-infoadmin">
+                <div class="avataradmin">
+                    <img th:src="@{/Image/profile/default.png}"  alt="Admin" id="userAvataradmin">
+                </div>
+                <h3>Admin</h3>
+            </div>
+            <button class="close-buttonadmin" id="closeBtnadmin">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+        <div class="sidebar-scrolladmin">
+            <div class="sidebar-contentadmin">
+                <div class="sidebar-sectionadmin">
+                    <div class="sidebar-buttonsadmin">
+                                    <a th:href="@{/admin/viewDashboard}">
+                        <button class="sidebar-buttonadmin" onclick="window.location.href='dashboard.html'">
+                            <i data-lucide="layout-dashboard"></i>Dashboard
+                        </button>
+                        </a>
+                         <a th:href="@{/admin/approvals}">
+                        <button class="sidebar-buttonadmin" onclick="window.location.href='approvals.html'">
+                            <i data-lucide="check-circle"></i>Approvals
+                        </button>
+                        </a>
+                         <a th:href="@{/admin/users}">
+                        <button class="sidebar-buttonadmin" onclick="window.location.href='users.html'">
+                            <i data-lucide="users"></i>Users
+                        </button>
+                        </a>
+                         <a th:href="@{/admin/sellers}">
+                        <button class="sidebar-buttonadmin" onclick="window.location.href='sellers.html'">
+                            <i data-lucide="store"></i>Sellers
+                        </button>
+                        </a>
+                         <a th:href="@{/admin/items}">
+                        <button class="sidebar-buttonadmin" onclick="window.location.href='items.html'">
+                            <i data-lucide="shopping-bag"></i>Items
+                        </button>
+                        </a>
+                         <a th:href="@{/admin/auctions}">
+                        <button class="sidebar-buttonadmin" onclick="window.location.href='auctions.html'">
+                            <i data-lucide="gavel"></i>Auctions
+                        </button>
+                        </a>
+                         <a th:href="@{/admin/orders}">
+                        <button class="sidebar-buttonadmin" onclick="window.location.href='orders.html'">
+                            <i data-lucide="shopping-cart"></i>Orders
+                        </button>
+                        </a>
+                         <a th:href="@{/admin/delivery}">
+                        <button class="sidebar-buttonadmin" onclick="window.location.href='delivery.html'">
+                            <i data-lucide="truck"></i>Delivery
+                        </button>
+                        </a>
+                        <a th:href="@{/home}">
+                        <button class="sidebar-buttonadmin" onclick="window.location.href=''">
+                            <i data-lucide="log-out"></i>Logout
+                        </button></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>

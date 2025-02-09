@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Users List</title>
+ <link rel="stylesheet" th:href="@{/CSS/admin/dashboard.css}" />
+  <link rel="stylesheet" th:href="@{/CSS/admin/users.css}" />
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script th:src="@{/JS/admin/users.js}"></script>
+    
+    <link th:href="@{/CSS/admin/admin-header.css}" rel="stylesheet">
+         <script th:src="@{/JS/admin/admin-header.js}"></script>
+  </head>
+  <body class="bg-dark">
+    <!--header-->
+<header th:insert="~{fragments/admin-header :: header}"></header>
+    <!--main-->
+    <div class="min-h-screen p-8">
+      <div class="grid">
+        <div class="users-list-grid">
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">Users List</h2>
+            </div>
+            <div class="card-content">
+              <div class="table-container">
+                <table class="users-table">
+                  <thead>
+                    <tr>
+                      <th>User ID</th>
+                      <th>Username</th>
+                      <th>Password</th>
+                      <th>Email</th>
+                      <th>Phone</th>
+                      <th>Profile</th>
+                      <th>DOB</th>
+                      <th>Gender</th>
+                      <th>Bio</th>
+                      <th>Role</th>
+                      <th>Created At</th>
+                    </tr>
+                  </thead>
+                  <tbody id="usersTableBody">
+                    <!-- Table content will be populated by JavaScript -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal for viewing user profile image -->
+    <div id="userImageModal" class="modal">
+      <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <img id="userImage" src="" alt="User Profile Image" />
+      </div>
+    </div>
+
+    <script>
+      lucide.createIcons();
+    </script>
+  </body>
+</html>

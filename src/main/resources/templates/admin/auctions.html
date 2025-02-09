@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Auctions List</title>
+    <link rel="stylesheet" th:href="@{/CSS/admin/dashboard.css}" />
+    <link rel="stylesheet" th:href="@{/CSS/admin/auctions.css}" />
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+     <script th:src="@{/JS/admin/auctions.js}"></script>
+     
+     <link th:href="@{/CSS/admin/admin-header.css}" rel="stylesheet">
+         <script th:src="@{/JS/admin/admin-header.js}"></script>
+  </head>
+  <body class="bg-dark">
+    <!--header-->
+<header th:insert="~{fragments/admin-header :: header}"></header>
+    <!--main-->
+    <div class="min-h-screen p-8">
+      <div class="grid">
+        <div class="auctions-list-grid">
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">Auctions List</h2>
+            </div>
+            <div class="card-content">
+              <div class="table-container">
+                <table class="auctions-table">
+                  <thead>
+                    <tr>
+                      <th>Auction ID</th>
+                      <th>Increment Amount</th>
+                      <th>Created At</th>
+                      <th>Status</th>
+                      <th>Item ID</th>
+                      <th>Start Price</th>
+                      <th>End Time</th>
+                      <th>Auction Table Col</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="auctionsTableBody">
+                    <!-- Table content will be populated by JavaScript -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal for viewing auction image -->
+    <div id="auctionImageModal" class="modal">
+      <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <img id="auctionImage" src="" alt="Auction Image" />
+      </div>
+    </div>
+    <script>
+      lucide.createIcons();
+    </script>
+  </body>
+</html>

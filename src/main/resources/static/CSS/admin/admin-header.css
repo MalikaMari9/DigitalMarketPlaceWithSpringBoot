@@ -1,0 +1,311 @@
+:root {
+    --primary-color: #333; /* Dark Gray */
+    --secondary-color: #555; /* Medium Gray */
+    --background-color: #f2f2f2; /* Light Gray */
+    --text-color: #000; /* Black */
+    --error-color: #ff0000; /* Red */
+    --accent-color: #9b87f5; /* Purple */
+    --muted-color: #8E9196; /* Muted Gray */
+    --dark-bg-color: #1A1F2C; /* Dark Background */
+    --border-color: #e2e8f0; /* Border Color */
+}
+
+/* Base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Base styles for the header */
+.headeradmin {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.header-containeradmin {
+    max-width: 100%;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.header-contentadmin {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 4rem;
+}
+
+/* Logo and search section */
+.header-leftadmin {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    flex: 1;
+}
+
+.logoadmin {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-decoration: none;
+    color: var(--text-color);
+}
+
+/* Search bar */
+.search-containeradmin {
+    position: relative;
+    flex: 1;
+}
+
+.search-inputadmin {
+    width: 100%;
+    padding: 0.5rem 2.5rem 0.5rem 1rem;
+    font-size: 0.875rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.375rem;
+}
+
+.search-buttonadmin {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+/* Right navigation */
+.header-rightadmin {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.nav-buttonadmin {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    font-size: 0.875rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+/* Menu Button styles */
+.menu-buttonadmin {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--text-color);
+    transition: color 0.2s;
+    position: relative;
+    width: 40px;
+    height: 40px;
+}
+
+.menu-buttonadmin i {
+    width: 24px;
+    height: 24px;
+    pointer-events: none; /* This ensures clicks pass through to the button */
+}
+
+.menu-buttonadmin:hover {
+    color: var(--accent-color);
+}
+
+/* Make sure the entire button area is clickable */
+.menu-buttonadmin::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    cursor: pointer;
+}
+
+/* Sidebar styles */
+.sidebaradmin {
+    position: fixed;
+    top: 0;
+    right: -300px; /* Hidden by default */
+    width: 300px;
+    height: 100vh;
+    background: white;
+    box-shadow: -2px 0 8px rgba(0,0,0,0.1);
+    transition: right 0.3s ease;
+    z-index: 1000;
+    overflow: hidden;
+}
+
+.sidebaradmin.active {
+    right: 0; /* Visible when active */
+}
+
+.sidebar-headeradmin {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    position: relative;
+    background: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.user-infoadmin {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.avataradmin {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid var(--accent-color);
+}
+
+.avataradmin img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.close-buttonadmin {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--muted-color);
+    padding: 0.5rem;
+    transition: color 0.2s;
+}
+
+.close-buttonadmin:hover {
+    color: var(--text-color);
+}
+
+.sidebar-scrolladmin {
+    height: calc(100vh - 5rem);
+    overflow-y: auto;
+}
+
+.sidebar-contentadmin {
+    padding: 1.5rem;
+}
+
+.sidebar-sectionadmin {
+    margin-bottom: 2rem;
+}
+
+.sidebar-buttonsadmin {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.sidebar-buttonadmin {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.75rem;
+    text-align: left;
+    background: transparent;
+    border: none;
+    border-radius: 0.375rem;
+    color: var(--text-color);
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.sidebar-buttonadmin:hover {
+    background-color: var(--background-color);
+    color: var(--accent-color);
+}
+
+.sidebar-buttonadmin i {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: var(--muted-color);
+    transition: color 0.2s;
+}
+
+.sidebar-buttonadmin:hover i {
+    color: var(--accent-color);
+}
+
+.section-titleadmin {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--muted-color);
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* New added css */
+.dashboard-titleadmin {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--muted-color);
+    margin-left: 1rem;
+    padding-left: 1rem;
+    border-left: 2px solid var(--border-color);
+}
+
+.cart-buttonadmin i {
+    color: var(--text-color);
+}
+
+/* Scrollbar styling */
+.sidebar-scrolladmin::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar-scrolladmin::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar-scrolladmin::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 3px;
+}
+
+.sidebar-scrolladmin::-webkit-scrollbar-thumb:hover {
+    background: var(--muted-color);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .sidebaradmin {
+        width: 280px;
+    }
+}
+
+@media (max-width: 480px) {
+    .sidebaradmin {
+        width: 100%;
+        right: -100%;
+    }
+}

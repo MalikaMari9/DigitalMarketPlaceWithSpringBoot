@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Items List</title>
+    <link rel="stylesheet" th:href="@{/CSS/admin/dashboard.css}" />
+    <link rel="stylesheet" th:href="@{/CSS/admin/items.css}" />
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+     <script th:src="@{/JS/admin/items.js}"></script>
+     
+         <link th:href="@{/CSS/admin/admin-header.css}" rel="stylesheet">
+         <script th:src="@{/JS/admin/admin-header.js}"></script>
+  </head>
+  <body class="bg-dark">
+    <!--header-->
+  <header th:insert="~{fragments/admin-header :: header}"></header>
+    <!--main-->
+    <div class="min-h-screen p-8">
+      <div class="grid">
+        <div class="items-list-grid">
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">Items List</h2>
+            </div>
+            <div class="card-content">
+              <div class="table-container">
+                <table class="items-table">
+                  <thead>
+                    <tr>
+                      <th>Item ID</th>
+                      <th>Item Name</th>
+                      <th>Description</th>
+                      <th>Price</th>
+                      <th>Quality</th>
+                      <th>Sell Type</th>
+                      <th>Created At</th>
+                      <th>Status</th>
+                      <th>Condition</th>
+                      <th>Seller ID</th>
+                      <th>Category ID</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="itemsTableBody">
+                    <!-- Table content will be populated by JavaScript -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal for viewing item image -->
+    <div id="itemImageModal" class="modal">
+      <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <img id="itemImage" src="" alt="Item Image" />
+      </div>
+    </div>
+
+    <script>
+      lucide.createIcons();
+    </script>
+  </body>
+</html>
