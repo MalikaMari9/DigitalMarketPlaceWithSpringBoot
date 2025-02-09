@@ -39,6 +39,22 @@ public class dmpController {
 
 	}
 
+	@GetMapping("/faq")
+	public String faq() {
+		return "FAQ";
+
+	}
+
+	@GetMapping("/register")
+	public String reg() {
+		return "Registeration.html";
+	}
+
+	@GetMapping("/contact")
+	public String contact() {
+		return "contactus";
+
+	}
 	// Site that has header footers
 
 	@GetMapping("/addressBook")
@@ -50,12 +66,6 @@ public class dmpController {
 	@GetMapping("/viewBuyer")
 	public String viewBuyer() {
 		return "buyer";
-
-	}
-
-	@GetMapping("/viewSeller")
-	public String viewSeller() {
-		return "viewprofile";
 
 	}
 

@@ -5,7 +5,12 @@
     --highlight-color: #0073e6; /* Blue */
 }
 
+body{
+		margin-top:60px;
+}
+
 .checkout-body {
+
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 20px;

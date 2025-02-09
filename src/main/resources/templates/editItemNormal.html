@@ -14,14 +14,62 @@
 	    <link th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css}" rel="stylesheet">
 
     <!-- JavaScript -->
-    <script th:src="@{/JS/sidebar.js}"></script>
+ 
     <script th:src="@{/JS/previewImageEdit.js}"></script>
-	<script th:src="@{/JS/categorySale.js}"></script>
+	<script th:src="@{/JS/categorySaleEdit.js}"></script>
 	<script th:src="@{/JS/clothing.js}"></script>
-	<style>
-		
-	</style>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("item-form"); // Your form ID
+    const categoryButton = document.getElementById("category-button");
 
+    // Prevent validation when clicking the category button
+    categoryButton.addEventListener("click", function (event) {
+        event.preventDefault(); // Stop form submission checks
+    });
+
+    // Normal validation when submitting the form
+    form.addEventListener("submit", function (event) {
+        const categoryInput = document.getElementById("selected-category");
+
+        if (!categoryInput.value) { // Check if category is empty
+            alert("Please select a category before submitting.");
+            event.preventDefault(); // Prevent form submission
+        }
+    });
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("item-form"); // Form
+    const categoryButton = document.getElementById("category-button");
+    const categoryInput = document.getElementById("selected-category");
+    const categoryError = document.createElement("p"); // Validation message
+    categoryError.classList.add("error-message"); // Style it in CSS
+    categoryError.textContent = "Please select a category.";
+    categoryError.style.color = "red";
+    categoryError.style.fontSize = "14px";
+    categoryError.style.display = "none"; // Hidden by default
+    categoryButton.parentNode.appendChild(categoryError); // Add below button
+
+    // Prevent validation issues when clicking the category button
+    categoryButton.addEventListener("click", function (event) {
+        event.preventDefault(); // Stops form validation from triggering
+    });
+
+    // Validate category before form submission
+    form.addEventListener("submit", function (event) {
+        if (!categoryInput.value) { // If category isn't selected
+            event.preventDefault(); // Stop submission
+            categoryError.style.display = "block"; // Show error
+            categoryButton.style.border = "2px solid red"; // Highlight the button
+        } else {
+            categoryError.style.display = "none"; // Hide if valid
+            categoryButton.style.border = ""; // Remove highlight
+        }
+    });
+});
+
+</script>
 </head>
 <body>
 
@@ -56,49 +104,56 @@
                 <input type="number" id="item-quality" class="form-input" name="quality" min="1" max="100" required th:value="${item.quality}">
             </div>
 
-            <!-- Category (Fixed Dropdown) -->
-			<div class="form-group">
-			    <label for="item-category" class="form-label">Category:</label>
-			    <div id="category-dropdown" class="dropdown">
-			        <button type="button" id="category-button" class="dropdown-button">
-			            <span id="selected-category-name" th:text="${item?.category?.name != null ? item.category.name : 'Select a Category'}"></span>
-			        </button>
+ <div class="form-group">
+    <label for="item-category" class="form-label">Category:</label>
+    <div id="category-dropdown" class="dropdown">
+        <button type="button" id="category-button" class="dropdown-button">
+            <span id="selected-category-name"
+                  th:text="${item?.category?.name != null ? item.category.name : 'Select a Category'}"></span>
+        </button>
 
-			        <!-- Category List -->
-			        <div id="category-list" class="dropdown-list">
-			            <ul>
-			                <th:block th:each="parent : ${categories}">
-			                    <li class="category-item parent" th:data-id="${parent.catID}" onclick="toggleSubcategories(this)">
-			                        <span th:text="${parent.name}"></span>
-			                        <span class="arrow">▶</span>
-			                    </li>
+        <!-- Category List -->
+        <div id="category-list" class="dropdown-list">
+            <ul>
+                <th:block th:each="parent : ${categories}">
+                    <li class="category-item parent" th:data-id="${parent.catID}">
+                        <span class="category-name" th:text="${parent.name}" onclick="selectCategory(this)"></span>
+                        <th:block th:if="${not #lists.isEmpty(parent.subcategories)}">
+                            <span class="arrow" onclick="toggleSubcategories(this)">▶</span>
+                        </th:block>
+                    </li>
 
-			                    <!-- Child Categories -->
-			                    <ul class="subcategories" th:data-parent="${parent.catID}" style="display: none;">
-			                        <th:block th:each="child : ${parent.subcategories}">
-			                            <li class="category-item child" th:data-id="${child.catID}" onclick="toggleSubcategories(this)">
-			                                <span th:text="${child.name}"></span>
-			                                <span class="arrow"></span>
-			                            </li>
+                    <!-- Child Categories (Initially Hidden) -->
+                    <ul class="subcategories" th:data-parent="${parent.catID}" style="display: none;">
+                        <th:block th:each="child : ${parent.subcategories}">
+                            <li class="category-item child" th:data-id="${child.catID}">
+                                <span class="category-name" th:text="${child.name}" onclick="selectCategory(this)"></span>
+                                <th:block th:if="${not #lists.isEmpty(child.subcategories)}">
+                                    <span class="arrow" onclick="toggleSubcategories(this)">▶</span>
+                                </th:block>
+                            </li>
 
-			                            <!-- Grandchild Categories -->
-			                            <ul class="subcategories" th:data-parent="${child.catID}" style="display: none;">
-			                                <th:block th:each="grandchild : ${child.subcategories}">
-			                                    <li class="category-item grandchild" th:data-id="${grandchild.catID}" onclick="selectCategory(this)">
-			                                        <span th:text="${grandchild.name}"></span>
-			                                    </li>
-			                                </th:block>
-			                            </ul>
-			                        </th:block>
-			                    </ul>
-			                </th:block>
-			            </ul>
-			        </div>
+                            <!-- Grandchild Categories -->
+                            <ul class="subcategories" th:data-parent="${child.catID}" style="display: none;">
+                                <th:block th:each="grandchild : ${child.subcategories}">
+                                    <li class="category-item grandchild" th:data-id="${grandchild.catID}">
+                                        <span class="category-name" th:text="${grandchild.name}" onclick="selectCategory(this)"></span>
+                                    </li>
+                                </th:block>
+                            </ul>
+                        </th:block>
+                    </ul>
+                </th:block>
+            </ul>
+        </div>
 
-			        <!-- Hidden Input for Category ID -->
-			        <input type="hidden" name="categoryID" id="selected-category" th:value="${item?.category?.catID}">
-			    </div>
-			</div>
+        <!-- Hidden Input for Category ID -->
+        <input type="hidden" name="categoryID" id="selected-category" th:value="${item?.category?.catID}">
+    </div>
+</div>
+
+
+
 
 
 			

@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title>Contact US</title>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+ <link rel="stylesheet" th:href="@{/CSS/home/picture-carousel.css}" />
+
+   <!-- External Libraries -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+    <link th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css}" rel="stylesheet">
+     <script th:src="@{/JS/sidebar.js}"></script>
+     <script th:src="@{/JS/CategorySelect.js}"></script>
+     <link th:href="@{/CSS/headerFooter.css}" rel="stylesheet">
+    <style>
+      * {
+        box-sizing: border-boxakk;
+      }
+      
+      /* Create two equal columns that floats next to each other */
+      .columnakk {
+        float: left;
+        width: 50%;
+        padding: 10px;
+        height: 300px; /* Should be removed. Only for demonstration */
+      }
+      
+      /* Clear floats after the columns */
+      .rowakk:after {
+        content: "";
+        display: table;
+        clear: both;
+      }
+      
+      .faq-sectionakk {
+          background: #f5f5f5;
+          padding: 2rem;
+      }
+      .faq-containerakk {
+          max-width: 1200px;
+          margin: 0 auto;
+      }
+      .faq-itemakk {
+          background: white;
+          margin-bottom: 1rem;
+          border-radius: 8px;
+          overflow: hidden;
+      }
+      .faq-questionakk {
+          padding: 1rem;
+          background: white;
+          cursor: pointer;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+      }
+      .faq-answerakk {
+          padding: 1rem;
+          border-top: 1px solid #eee;
+          display: none;
+      }
+      .faq-itemakk.active .faq-answerakk {
+          display: block;
+      }
+      
+      .contact-buttonakk {
+          background: black;
+          color: white;
+          padding: 0.75rem 1.5rem;
+          border-radius: 8px;
+          border: none;
+          font-size: 1rem;
+          cursor: pointer;
+          margin: 1rem 0;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+          transition: box-shadow 0.3s ease;
+      
+      }
+      
+      .no-underlineakk {
+          text-decoration: none;
+          color: inherit; 
+        }
+      
+        .no-underlineakk:visited {
+          color: inherit; 
+        }
+      
+        .no-underlineakk:hover,
+        .no-underlineakk:active {
+          text-decoration: none; 
+          color: inherit; 
+        }
+      
+        .buttakk {
+          background-color: black;
+                  color: white;
+                  padding: 10px 18px;
+                  border: none;
+                  border-radius: 3px;
+                  cursor: pointer;
+                  width: 50%;
+        }
+      
+        .buttakk:hover {
+          background-color: rgb(132, 132, 228);
+      }
+      
+      .containerakk {
+          background-color: gray;
+          padding: 30px;
+          border-radius: 5px;
+          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+          width: 600px;
+          height: 300px;
+      }
+      
+      input[type="text"],
+              input[type="email"],
+              textarea {
+                  width: 100%;
+                  padding: 10px;
+                  margin-bottom: 15px;
+                  border: 1px solid #ccc;
+                  border-radius: 3px;
+                  box-sizing: border-box;
+              }
+      
+              textarea {
+                  height: 100px;
+                  resize: vertical;
+              }
+
+              
+              .akk1 {
+                display: flex;
+                width: 70%;
+                background: black;
+                border-radius: 10px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+                overflow: hidden;
+                
+            }
+            .left-panelakk {
+                width: 40%;
+                background: gray;
+                color: white;
+                padding: 30px;
+            }
+            .left-panelakk h2 {
+                margin-bottom: 15px;
+            }
+            .left-panelakk p {
+                font-size: 14px;
+                margin-bottom: 20px;
+            }
+            .contact-infoakk {
+                margin-top: 20px;
+            }
+            .contact-infoakk div {
+                display: flex;
+                align-items: center;
+                margin-bottom: 15px;
+            }
+            .contact-infoakk div img {
+                width: 24px;
+                margin-right: 10px;
+            }
+            .right-panelakk {
+                width: 60%;
+                padding: 30px;
+                background: white;
+            }
+            .right-panelakk h2 {
+                margin-bottom: 15px;
+            }
+            .right-panelakk form {
+                display: flex;
+                flex-direction: column;
+            }
+            .right-panelakk input, .right-panel textarea {
+                width: 100%;
+                padding: 10px;
+                margin-bottom: 10px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+            }
+            .right-panelakk button {
+                background: gray;
+                color: white;
+                border: none;
+                padding: 10px;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+
+            .rowakk2 {
+                display: flex;
+                justify-content: center;  /* Centers horizontally */
+                align-items: center;      /* Centers vertically */
+                height: 70vh;            /* Full viewport height */
+                background-color: white;
+                
+            }
+
+            .rowakk3 {
+                display: flex;
+                justify-content: center;  /* Centers horizontally */
+                align-items: center;      /* Centers vertically */
+                height: 70vh;            /* Full viewport height */
+                background-color: white;
+                
+            }
+
+              
+      </style>
+  </head>
+  <body>
+   <header th:insert="~{fragments/header :: header}"></header>
+    
+   <!--FAQ container-->
+    <div class="carousel-container">
+      <div class="carousel">
+        <div class="slide active">
+          <img th:src="@{/Image/home/contact_us.jpg}" alt="Curated Collections" />
+          <div class="slide-content">
+            <h2>Contact us</h2>
+          </div>
+        </div>
+      </div>
+    </div> 
+
+<!--container-->
+<div class="rowakk2">
+<div class="akk1">
+    <div class="left-panelakk">
+        <h2>Don't hesitate to contact us</h2><br>
+        <p>"We’re here to assist you—reach out anytime for support or inquiries!"</p>
+        
+        <div class="contact-infoakk">
+            <div>
+                <span><i class='fa fa-home' style="font-size:25px; color: white;"></i>
+                    Bahan, Yangon
+                </span>
+            </div>
+            <div>
+                <span><i class='fa fa-envelope' style="font-size:25px; color: white;"></i>
+                    tradesphere@gmail.com</span>
+            </div>
+            <div>
+                <span><i class='fa fa-phone' style="font-size:25px; color: white;"></i>
+                    +959 12345678</span>
+            </div>
+        </div>
+    </div>
+    <div class="right-panelakk">
+        <h2>Send us a message</h2>
+        <form>
+            <input type="text" placeholder="Name">
+            <input type="email" placeholder="Email">
+            <input type="text" placeholder="Phone">
+            <textarea placeholder="Message"></textarea>
+            <button type="submit">Send</button>
+        </form>
+    </div>
+</div>
+</div>
+
+
+    <!--map-->
+    <div class="rowakk3">
+            <iframe 
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3819.0940909927126!2d96.16178017502153!3d16.821687683972254!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x30c193f6195f9acd%3A0xa6f009224c6a6bed!2sBahan%20Township!5e0!3m2!1sen!2smm!4v1739003796871!5m2!1sen!2smm" 
+            width="1300px" 
+            height="450px" 
+            style="border:0;" 
+            allowfullscreen="" 
+            loading="lazy"
+            >
+        </iframe>
+        
+      </div>
+    
+    <!--Ask anything 
+    <div class="rowakk">
+        <div class="columnakk" style="background-color:white; height: 400px; padding-top: 30px; padding-left: 120px; ">
+          <br><br><h2>Ask Us Anything</h2><br>
+          <p>"Have any questions? Reach out to us through the details below, and we'll get back to you as soon as possible!"</p>
+    <br>
+          <p>
+            <i class='fa fa-home' style="font-size:25px; color: gray;"></i>
+            Bahan, Yangon
+        </p>
+        <br>
+          <p><i class='fa fa-envelope' style="font-size:25px; color: gray;"></i>
+            shoppie@gmail.com
+        </p>
+        <br>
+          <p><i class="fa fa-phone" style="font-size:25px; color: gray;"></i>
+            +959 12345678
+        </p>
+      </div>
+      
+        <div class="columnakk" style="background-color:white; height:400px; padding-top: 30px; ">
+          <br><br>
+          <div class="containerakk">
+            <form>
+                <div>
+                    <label for="firstName"></label>
+                    <input type="text" id="firstName" name="firstName" placeholder="Name" required>
+                </div> 
+                <div>
+                    <label for="email"></label>
+                    <input type="email" id="email" name="email" placeholder="Email" required>
+                </div>
+                <div>
+                    <label for="message"></label>
+                    <textarea id="message" name="message" placeholder="Message" required></textarea>
+                </div>
+    
+                <button type="submit" onclick="showButtonAlert(this)" class="buttakk">Send Message</button>
+            </form>
+        </div>
+      </div>-->
+    
+    <!-- Initialize Lucide Icons -->
+        <footer th:insert="~{fragments/footer :: footer}"></footer>
+    <script>
+
+      document.querySelectorAll('.faq-questionakk').forEach(question => {
+        question.addEventListener('click', () => {
+            const faqItem = question.parentElement;
+            faqItem.classList.toggle('active');
+            
+            // Toggle gray background color
+            if (faqItem.classList.contains('active')) {
+                question.style.backgroundColor = 'rgb(132, 132, 228)';
+                
+                // Set timeout to remove active class and reset background color after 3 seconds
+                setTimeout(() => {
+                    faqItem.classList.remove('active');
+                    question.style.backgroundColor = '';
+                }, 3000);
+            } else {
+                question.style.backgroundColor = '';
+            }
+        });
+    });
+    
+
+    
+
+      lucide.createIcons();
+    </script>
+
+
+  </body>
+</html>

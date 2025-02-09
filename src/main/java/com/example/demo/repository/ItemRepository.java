@@ -37,4 +37,6 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
 	Page<Item> findBySeller_UserIDOrderByApproveDesc(Long sellerUserID, Pageable pageable);
 
+	List<Item> findBySeller_UserID(Long sellerUserID);
+
 }

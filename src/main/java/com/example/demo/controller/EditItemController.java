@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -69,10 +68,10 @@ public class EditItemController {
 		}
 
 		Item item = itemOptional.get();
+		Category selectedCategory = item.getCategory(); // ✅ Get selected category
 
 		// ✅ Fetch all categories and map parent → children → grandchildren
 		List<Category> parentCategories = categoryRepository.findByParentCategoryIsNull();
-		Map<Category, List<Category>> categoryMap = new HashMap<>();
 
 		for (Category parent : parentCategories) {
 			List<Category> children = categoryRepository.findByParentCategory(parent);
@@ -80,7 +79,7 @@ public class EditItemController {
 				List<Category> grandchildren = categoryRepository.findByParentCategory(child);
 				child.setSubcategories(grandchildren); // ✅ Set grandchildren inside children
 			}
-			categoryMap.put(parent, children);
+			parent.setSubcategories(children); // ✅ Set children inside parents
 		}
 
 		// ✅ Fetch images for item
@@ -90,8 +89,8 @@ public class EditItemController {
 		String itemTags = getTagsForItem(item);
 
 		// ✅ Pass data to Thymeleaf
-		model.addAttribute("categoryMap", categoryMap);
 		model.addAttribute("categories", parentCategories); // ✅ Send structured categories
+		model.addAttribute("selectedCategory", selectedCategory); // ✅ Set selected category
 		model.addAttribute("item", item);
 		model.addAttribute("itemTags", itemTags);
 		model.addAttribute("itemImages", itemImages);

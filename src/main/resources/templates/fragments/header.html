@@ -55,19 +55,20 @@
     
             <!-- Right Navigation -->
             <div class="header-rightyoon">
+            <a th:href="@{/faq}">
               <button class="nav-buttonyoon">
                 <i data-lucide="help-circle"></i>
                 FAQs
-              </button>
-    
+              </button></a>
+    <a th:href="@{/contact}">
               <button class="nav-buttonyoon">
                 <i data-lucide="mail"></i>
                 Contact Us
-              </button>
+              </button></a>
      <th:block th:if="${session.user == null or session.user.role=='BUYER'}">
               <button class="cart-buttonyoon">
                 <i data-lucide="shopping-cart"></i>
-                <span class="cart-countyoon" id="cartCountyoon">3</span>
+               <!--   <span class="cart-countyoon" id="cartCountyoon">3</span>-->
               </button>
        </th:block>
            <th:block th:if="${session.user != null}">
@@ -95,7 +96,7 @@
               </button>
          </th:block>
          <th:block  th:if="${session.user == null}">
-         <a th:href="@{/loginPage}">
+         <a th:href="@{/register}">
               <button class="login-buttonyoon">Sign Up </button>
               </a>
          </th:block>

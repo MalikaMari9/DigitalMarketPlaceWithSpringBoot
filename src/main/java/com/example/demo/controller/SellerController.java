@@ -56,6 +56,20 @@ public class SellerController {
 		return "pendingSale";
 	}
 
+	@GetMapping("/viewSeller")
+	public String viewSeller(HttpSession session, Model model) {
+		User seller = (User) session.getAttribute("user");
+		if (seller == null) {
+			return "redirect:/loginPage?error=notLoggedIn"; // Redirect to login if user is not logged in
+		}
+		Long sellerID = seller.getUserID();
+		List<Item> itemList = itemRepo.findBySeller_UserID(sellerID);
+
+		model.addAttribute("itemList", itemList);
+		model.addAttribute("seller", seller);
+		return "viewprofile";
+	}
+
 	private void loadSubcategories(Category category) {
 		List<Category> subcategories = categoryRepo.findByParentCategory(category);
 		subcategories.forEach(this::loadSubcategories); // Recursive call to load deeper levels

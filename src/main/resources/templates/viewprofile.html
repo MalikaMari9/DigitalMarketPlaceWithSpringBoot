@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Profile</title>
      <link rel="stylesheet" th:href="@{/CSS/buyer.css}">
+      <link rel="stylesheet" th:href="@{/CSS/itemList/itemListProfile.css}">
      
          <link th:href="@{/CSS/headerFooter.css}" rel="stylesheet">
  	<script src="https://unpkg.com/lucide@latest"></script>
@@ -19,16 +20,16 @@
     <div class="profile-wrapper">
         <div class="profile-header">
             <div class="profile-picture">
-                <img src="https://png.pngtree.com/background/20230613/original/pngtree-anime-girl-listening-to-music-picture-image_3381911.jpg" alt="User Profile">
+                <img src="Image/profile/default.png" alt="User Profile">
             </div>
             <div class="profile-info">
-                <h2>Sunlight</h2>
+                <h2 th:text="${seller.username}"></h2>
                 <div class="stats">
                     <span><strong>100</strong> Posts</span>
                     
                 </div>
                 <div class="bio">
-                    <p id="bioText" data-full-text="a skincare brand that uses thermal water from the French Alps to create products for a variety of skin types. Uriage products are hypoallergenic and are designed to be soothing, hydrating, and protective. ">
+                    <p id="bioText" th:text="${seller.bio}">
                     </p>
                     <button id="toggleBioButton" onclick="toggleBio()">See More</button>
                 </div>
@@ -49,70 +50,35 @@
                 <h3>All Posts</h3>
               </div>  
                 
-                <div id="saleItemList">
-    <div id="saleItemContainer">
-        <a th:href="@{/viewItem}">
-           <div id="saleItem">
-            <img src="https://theordinary.com/on/demandware.static/-/Sites-deciem-storefront/default/dwb8af1f6f/category-images/toners-skincare-plp.jpg" alt="item image">
-            <p id="status">Available</p>
-            <p id="price">$66</p>
-           </div> 
-           <p id="name">Nikkari Aoe Nendoroid</p>
-        </a>
-    </div>
-    <div id="saleItemContainer">
-        <a href="viewSale.html">
-           <div id="saleItem">
-            <img src="https://www.dior.com/dw/image/v2/BGXS_PRD/on/demandware.static/-/Sites-master_dior/default/dw145daafa/Y0463001/Y0463001_C046300100_E01_GHC.jpg?sw=1850&sh=1850" alt="item image">
-            <p id="status">Available</p>
-            <p id="price">$66</p>
-           </div> 
-           <p id="name">Nikkari Aoe Nendoroid</p>
-        </a>
-    </div>
-    <div id="saleItemContainer">
-        <a href="viewSale.html">
-           <div id="saleItem">
-            <img src="https://target.scene7.com/is/image/Target/GUEST_868fe7c6-3162-4b82-bb94-939e761d2909?wid=488&hei=488&fmt=pjpeg" alt="item image">
-            <p id="status">Available</p>
-            <p id="price">$66</p>
-           </div> 
-           <p id="name">Nikkari Aoe Nendoroid</p>
-        </a>
-    </div>
-    <div id="saleItemContainer">
-        <a href="viewSale.html">
-           <div id="saleItem">
-            <img src="https://www.hp.com/gb-en/shop/Html/Merch/Images/c08522780_1750x1285.jpg" alt="item image">
-            <p id="status">Available</p>
-            <p id="price">$66</p>
-           </div> 
-           <p id="name">Nikkari Aoe Nendoroid</p>
-        </a>
-    </div>
-    <div id="saleItemContainer">
-        <a href="viewSale.html">
-           <div id="saleItem">
-            <img src="https://img.etimg.com/photo/msid-98945112,imgsize-13860/SamsungGalaxyS23Ultra.jpg" alt="item image">
-            <p id="status">Available</p>
-            <p id="price">$66</p>
-           </div> 
-           <p id="name">Nikkari Aoe Nendoroid</p>
-        </a>
-    </div>
-    <div id="saleItemContainer">
-        <a href="viewSale.html">
-           <div id="saleItem">
-            <img src="https://i.ebayimg.com/images/g/u3cAAOSw2g9jDfzv/s-l400.jpg" alt="item image">
-            <p id="status">Available</p>
-            <p id="price">$66</p>
-           </div> 
-           <p id="name">Nikkari Aoe Nendoroid</p>
-        </a>
-    </div>
-
-</div>
                 
+                    <div class="search-results-container">
+    <div class="pg-product-card" th:each="item : ${itemList}"
+            th:if="${item.sellType != null and item.sellType.name() != 'AUCTION'}">
+              <div class="pg-product-image">
+                <img th:src="@{${item.getThumbnail()}}" alt="Thumbnail" />
+                <button class="pg-wishlist-btn">♡</button>
+              </div>
+              <div class="pg-product-info">
+                <h3 class="pg-product-title" th:text="${item.itemName}"></h3>
+                <p class="pg-price" th:text="'$' +${item.price}"></p>
+                <p class="pg-seller" th:text="${item.seller.username}"></p>
+                <div class="pg-rating">
+                  <div class="pg-stars">★★★★☆</div>
+                  <span>4.5</span>
+                </div>
+                <div class="pg-buttons">
+                <th:block th:if="${session.user == null or session.user.userID != item.seller.userID}">
+                    <button class="pg-cart-btn">Add to Cart</button>
+                 </th:block>
+                 <th:block th:if="${session.user!=null and session.user.userID == item.seller.userID} ">
+                   <a th:href="@{/edit-item/{itemID}(itemID=${item.itemID})}" th:text="'Edit'"  class="pg-view-btn"></a> 
+                 </th:block>  
+                   <a th:href="@{/itemList/{itemID}(itemID=${item.itemID})}" th:text="'👁'"  class="pg-view-btn"></a> 
+                </div>
+              </div>
+            </div>
+</div>
+     
               
             </div>
             <div id="reviews" class="tab-content">

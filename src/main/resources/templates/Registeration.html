@@ -4,14 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>User Registration</title>
-  <link rel="stylesheet" type="text/css" href="CSS/ckstyle1.css">
-  <script src="JS/userValidation.js"></script>
+  <link rel="stylesheet" type="text/css" th:href="@{/CSS/ckstyle1.css}">
+  <script src="@{/JS/userValidation.js}"></script>
 </head>
 <body>
 
 <div class="form-container">
   <h2>Sign Up</h2>
-  <form action="Register" method="POST" onsubmit="return validateForm(event)">
+  <form action="" method="POST" onsubmit="return validateForm(event)">
     <!-- Username Field -->
     <label for="usn">Username: </label>
     <input type="text" id="usn" name="usn" required onblur="validateUsername()">
