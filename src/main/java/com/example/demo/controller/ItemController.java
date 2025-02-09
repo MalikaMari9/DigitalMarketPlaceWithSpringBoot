@@ -175,7 +175,7 @@ public class ItemController {
 			saveItemTags(item, tags);
 		}
 
-		return "redirect:/itemList";
+		return "redirect:/pending-sale";
 	}
 
 	// Auctions
