@@ -16,7 +16,6 @@
 body {
     font-family: system-ui, -apple-system, sans-serif;
     background-color: var(--background-color);
-   /* padding: 2rem;*/
 }
 
 .pg-products-section {
@@ -51,24 +50,34 @@ body {
 .pg-products-container {
     position: relative;
     padding: 0 2rem;
+    overflow: hidden;
 }
 
+/* ✅ Fix: Enable smooth horizontal scrolling */
 .pg-products-grid {
     display: flex;
     gap: 1.5rem;
     overflow-x: auto;
+    overflow-y: hidden; /* Hide vertical scroll */
     scroll-behavior: smooth;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+    white-space: nowrap; /* Prevent wrapping */
+    scrollbar-width: thin; /* Firefox */
+    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
     padding: 1rem 0;
 }
 
+/* ✅ Fix: Show scrollbar for better UX */
 .pg-products-grid::-webkit-scrollbar {
-    display: none;
+    height: 8px; /* Visible but small */
+}
+
+.pg-products-grid::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
 }
 
 .pg-product-card {
-    flex: 0 0 calc(25% - 1.125rem); /* Show exactly 4 items, accounting for gaps */
+    flex: 0 0 250px; /* Fixed width for each item */
     background: var(--white);
     border-radius: 0.5rem;
     overflow: hidden;
@@ -173,6 +182,7 @@ body {
     justify-content: center;
 }
 
+/* ✅ Fix: Navigation Arrows Position */
 .pg-nav-arrow {
     position: absolute;
     top: 50%;
@@ -202,23 +212,24 @@ body {
     right: 0;
 }
 
+/* ✅ Fix: Responsive Scroll Behavior */
 @media (max-width: 1200px) {
     .pg-products-grid {
-        grid-template-columns: repeat(3, 1fr);
+        flex-wrap: nowrap; /* Prevent wrapping */
     }
 }
 
 @media (max-width: 768px) {
     .pg-products-grid {
-        grid-template-columns: repeat(2, 1fr);
+        flex-wrap: nowrap;
     }
 }
 
 @media (max-width: 480px) {
     .pg-products-grid {
-        grid-template-columns: 1fr;
+        flex-wrap: nowrap;
     }
-    
+
     .pg-products-container {
         padding: 0 1rem;
     }

@@ -5,7 +5,7 @@
           <div class="header-contentyoon">
             <!-- Logo and Search Section -->
             <div class="header-leftyoon">
-              <a th:href="@{/home}" class="logoyoon">STORE</a>
+              <a th:href="@{/home}" class="logoyoon">TRADESPHERE</a>
     
               <div class="categories-searchyoon">
                 <div class="dropdownyoon">
@@ -64,11 +64,21 @@
                 <i data-lucide="mail"></i>
                 Contact Us
               </button>
-    
+     <th:block th:if="${session.user == null or session.user.role=='BUYER'}">
               <button class="cart-buttonyoon">
                 <i data-lucide="shopping-cart"></i>
                 <span class="cart-countyoon" id="cartCountyoon">3</span>
               </button>
+       </th:block>
+           <th:block th:if="${session.user != null}">
+          	 <th:block th:if="${session.user.role=='SELLER'}">
+              
+               <button class="cart-buttonyoon">
+                <i data-lucide="book-check"></i>
+                <span class="cart-countyoon" id="cartCountyoon">3</span>
+              </button>
+              </th:block>
+              </th:block>
     <th:block th:if="${session.user == null}">
     <a th:href="@{/loginPage}">
               <button class="login-buttonyoon">Login </button>
@@ -262,6 +272,12 @@
                 <i data-lucide="gavel"></i>Auction Item
               </button>
               </a>
+                            <a th:href="@{/pending-sale}">
+              <button class="sidebar-buttonyoon">
+                <i data-lucide="gavel"></i>Pending Sale
+              </button>
+              </a>
+     
      
             </div>
           </div>

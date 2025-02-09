@@ -265,7 +265,7 @@
                 <img th:src="@{/Image/home/Clothes.jpg}" alt="Clothing" />
                 <div class="category-content">
                   <h3>Clothing</h3>
-                  <a href="#" class="explore-btn">Explore Now</a>
+                  <a th:href="@{/category-search(categoryID=1)}" class="explore-btn">Explore Now</a>
                 </div>
               </div>
             </div>
@@ -275,7 +275,7 @@
                 <img th:src="@{/Image/home/Elec.jpg}" alt="Electronics" />
                 <div class="category-content">
                   <h3>Electronics</h3>
-                  <a href="#" class="explore-btn">Explore Now</a>
+                <a th:href="@{/category-search(categoryID=4)}" class="explore-btn">Explore Now</a>
                 </div>
               </div>
             </div>
@@ -285,7 +285,7 @@
                 <img th:src="@{/Image/home/Decor.jpg}" alt="Home" />
                 <div class="category-content">
                   <h3>Home</h3>
-                  <a href="#" class="explore-btn">Explore Now</a>
+                  <a th:href="@{/category-search(categoryID=56)}" class="explore-btn">Explore Now</a>
                 </div>
               </div>
             </div>
@@ -295,7 +295,7 @@
                 <img th:src="@{/Image/home/Shoes.jpg}" alt="Shoes" />
                 <div class="category-content">
                   <h3>Shoes</h3>
-                  <a href="#" class="explore-btn">Explore Now</a>
+                 <a th:href="@{/category-search(categoryID=2)}" class="explore-btn">Explore Now</a>
                 </div>
               </div>
             </div>
@@ -305,7 +305,7 @@
                 <img th:src="@{/Image/home/Beauty.jpg}" alt="Beauty" />
                 <div class="category-content">
                   <h3>Beauty</h3>
-                  <a href="#" class="explore-btn">Explore Now</a>
+                  <a th:href="@{/category-search(categoryID=5)}" class="explore-btn">Explore Now</a>
                 </div>
               </div>
             </div>
@@ -322,7 +322,7 @@
       <!-- First Row -->
       <div class="pg-container">
         <div class="pg-header">
-          <h2>Top picks for you</h2>
+          <h2>Top picks for you!</h2>
           <p>Explore our latest and most popular items</p>
         </div>
 
@@ -343,85 +343,26 @@
           <div class="pg-products-grid" style="width: 100%; overflow-x: auto">
           
           <!-- Pg Product Card -->
-            <div class="pg-product-card">
+            <div class="pg-product-card" th:each="item : ${placeholderitems}"th:if="${item.sellType != null and item.sellType.name() != 'AUCTION'}">
               <div class="pg-product-image">
-                <img th:src="@{/Image/home/Leather Bag.jpg}" alt="Vintage Leather Backpack" />
+                <img th:src="@{${item.getThumbnail()}}" alt="Vintage Leather Backpack" />
                 <button class="pg-wishlist-btn">♡</button>
               </div>
               <div class="pg-product-info">
-                <h3 class="pg-product-title">Vintage Leather Backpack</h3>
-                <p class="pg-price">$89.99</p>
-                <p class="pg-seller">Vintage Goods Co.</p>
+                <h3 class="pg-product-title" th:text="${item.itemName}"></h3>
+                <p class="pg-price" th:text="'$' + ${item.price}"></p>
+                <p class="pg-seller" th:text="${item.seller.username}"></p>
                 <div class="pg-rating">
                   <div class="pg-stars">★★★★☆</div>
                   <span>4.5</span>
                 </div>
                 <div class="pg-buttons">
                   <button class="pg-cart-btn">Add to Cart</button>
-                  <button class="pg-view-btn">👁</button>
+                   <a th:href="@{/itemList/{itemID}(itemID=${item.itemID})}" th:text="'👁'"  class="pg-view-btn"></a> 
                 </div>
               </div>
-            </div>
-            
-            
-            <div class="pg-product-card">
-              <div class="pg-product-image">
-                <img th:src="@{/Image/home/Wireless headphones.jpg}" alt="Wireless Headphones" />
-                <button class="pg-wishlist-btn">♡</button>
-              </div>
-              <div class="pg-product-info">
-                <h3 class="pg-product-title">Wireless Headphones</h3>
-                <p class="pg-price">$199.99</p>
-                <p class="pg-seller">Tech Haven</p>
-                <div class="pg-rating">
-                  <div class="pg-stars">★★★★★</div>
-                  <span>4.8</span>
+            </div>                    
                 </div>
-                <div class="pg-buttons">
-                  <button class="pg-cart-btn">Add to Cart</button>
-                  <button class="pg-view-btn">👁</button>
-                </div>
-              </div>
-            </div>
-            <div class="pg-product-card">
-              <div class="pg-product-image">
-                <img th:src="@{/Image/home/SmartWatch.jpg}" alt="Smart Watch" />
-                <button class="pg-wishlist-btn">♡</button>
-              </div>
-              <div class="pg-product-info">
-                <h3 class="pg-product-title">Smart Watch</h3>
-                <p class="pg-price">$299.99</p>
-                <p class="pg-seller">Tech Haven</p>
-                <div class="pg-rating">
-                  <div class="pg-stars">★★★★☆</div>
-                  <span>4.7</span>
-                </div>
-                <div class="pg-buttons">
-                  <button class="pg-cart-btn">Add to Cart</button>
-                  <button class="pg-view-btn">👁</button>
-                </div>
-              </div>
-            </div>
-            <div class="pg-product-card">
-              <div class="pg-product-image">
-                <img th:src="@{/Image/home/Coffee Maker.jpg}" alt="Coffee Maker" />
-                <button class="pg-wishlist-btn">♡</button>
-              </div>
-              <div class="pg-product-info">
-                <h3 class="pg-product-title">Coffee Maker</h3>
-                <p class="pg-price">$129.99</p>
-                <p class="pg-seller">Kitchen Essentials</p>
-                <div class="pg-rating">
-                  <div class="pg-stars">★★★★☆</div>
-                  <span>4.6</span>
-                </div>
-                <div class="pg-buttons">
-                  <button class="pg-cart-btn">Add to Cart</button>
-                  <button class="pg-view-btn">👁</button>
-                </div>
-              </div>
-            </div>
-          </div>
 
           <button class="pg-nav-arrow pg-next" aria-label="Next">
             <svg
@@ -499,6 +440,25 @@
               </div>
             </div>
             <div class="pg-product-card">
+              <div class="pg-product-image">
+                <img th:src="@{/Image/home/Fitness Tracker.jpg}" alt="Fitness Tracker" />
+                <button class="pg-wishlist-btn">♡</button>
+              </div>
+              <div class="pg-product-info">
+                <h3 class="pg-product-title">Fitness Tracker</h3>
+                <p class="pg-price">$79.99</p>
+                <p class="pg-seller">Health Tech</p>
+                <div class="pg-rating">
+                  <div class="pg-stars">★★★★☆</div>
+                  <span>4.6</span>
+                </div>
+                <div class="pg-buttons">
+                  <button class="pg-cart-btn">Add to Cart</button>
+                  <button class="pg-view-btn">👁</button>
+                </div>
+              </div>
+            </div>
+                        <div class="pg-product-card">
               <div class="pg-product-image">
                 <img th:src="@{/Image/home/Fitness Tracker.jpg}" alt="Fitness Tracker" />
                 <button class="pg-wishlist-btn">♡</button>

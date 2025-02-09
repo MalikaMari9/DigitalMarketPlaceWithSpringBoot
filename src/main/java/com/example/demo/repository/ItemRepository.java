@@ -2,6 +2,8 @@ package com.example.demo.repository;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -32,5 +34,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 			+ "LEFT JOIN FETCH it.tag t " + "LEFT JOIN FETCH Auction a ON a.item = i "
 			+ "WHERE c.catID IN (SELECT sub.catID FROM Category sub WHERE sub.catID = :categoryID OR sub.parentCategory.catID = :categoryID OR sub.parentCategory.parentCategory.catID = :categoryID)")
 	List<Item> findItemsByCategory(@Param("categoryID") Long categoryID);
+
+	Page<Item> findBySeller_UserIDOrderByApproveDesc(Long sellerUserID, Pageable pageable);
 
 }

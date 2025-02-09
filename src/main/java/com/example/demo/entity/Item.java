@@ -54,6 +54,10 @@ public class Item {
 	@Enumerated(EnumType.STRING)
 	private Condition cond;
 
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	private ApprovalStatus approve = ApprovalStatus.PENDING; // Default to PENDING
+
 	@ManyToOne
 	@JoinColumn(name = "seller_userID", nullable = false)
 	private User seller;
@@ -88,6 +92,10 @@ public class Item {
 
 	public enum Condition {
 		NEW, OLD
+	}
+
+	public enum ApprovalStatus {
+		PENDING, APPROVED, REJECTED
 	}
 
 	// Getters and Setters
@@ -185,6 +193,22 @@ public class Item {
 
 	public void setCategory(Category category) {
 		this.category = category;
+	}
+
+	public ApprovalStatus getApprove() {
+		return approve;
+	}
+
+	public void setApprove(ApprovalStatus approve) {
+		this.approve = approve;
+	}
+
+	public List<ItemTag> getItemTags() {
+		return itemTags;
+	}
+
+	public void setItemTags(List<ItemTag> itemTags) {
+		this.itemTags = itemTags;
 	}
 
 	public String getThumbnail() {

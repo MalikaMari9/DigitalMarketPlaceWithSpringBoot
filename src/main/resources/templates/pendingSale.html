@@ -1,0 +1,77 @@
+<html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <title>Pending Sale</title>
+    <link rel="stylesheet" th:href="@{CSS/saleHistory.css}">
+    
+    <link th:href="@{/CSS/headerFooter.css}" rel="stylesheet">
+     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <link th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css}" rel="stylesheet">
+     <script th:src="@{/JS/sidebar.js}"></script>
+     <script th:src="@{/JS/CategorySelect.js}"></script>
+   
+</head>
+<body>
+
+
+<header th:insert="~{fragments/header :: header}"></header>
+    <div id="container">
+    <h2 id="page-title">Pending Sales</h2>
+
+    <form id="search-form">
+        <label class="search-label">Search: </label>
+        <input type="text" id="search-field" name="searchfield" value="">
+        <label class="search-label">Sort By: </label>
+        <select id="sort-by" name="sortby">
+            <option value="date">Sale Date</option>
+            <option value="item">Item Name</option>
+            <option value="price">Price</option>
+            <option value="buyer">Buyer</option>
+            <option value="status">Delivery Status</option>
+        </select>
+        <input type="submit" id="search-button" name="search" value="Search">
+    </form>
+    <table id="sales-table">
+        <tr>
+            <th>Item No</th>
+            <th>Item Name</th>
+            <th>Item Image</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Created At</th>
+            <th>Pending Status</th>
+            
+        </tr>
+        <tr th:each="item : ${itemPage.content}">
+            <td th:text="${item.itemID}"></td>
+            <td ><a class="table-link" th:href="@{/itemList/{itemID}(itemID=${item.itemID})}" th:text="${item.itemName}"></a></td>
+            <td><img class="item-image" th:src="@{${item.getThumbnail()}}" alt=""></td>
+            <td th:text="${item.quality}"></td>
+            <td th:text="${item.price}"></td>
+            
+            <td th:text="${#temporals.format(item.createdAt, 'yyyy-MM-dd')}"></td>
+            <td th:text="${item.approve}"></td>
+           
+        </tr>
+
+
+        <!-- Additional rows -->
+    </table>
+    <div class="pagination">
+    <!-- Previous Button (Disable if on first page) -->
+    <a th:if="${currentPage > 0}" th:href="@{/pending-sale(page=${currentPage - 1}, size=6)}">Previous</a>
+
+    <!-- Page Numbers -->
+    <span th:text="'Page ' + (${currentPage + 1}) + ' of ' + ${totalPages}"></span>
+
+    <!-- Next Button (Disable if on last page) -->
+    <a th:if="${currentPage + 1 < totalPages}" th:href="@{/pending-sale(page=${currentPage + 1}, size=6)}">Next</a>
+</div>
+    
+    </div>
+    <footer th:insert="~{fragments/footer :: footer}"></footer>
+ <script>
+        lucide.createIcons();
+        </script>
+</body>
+</html>

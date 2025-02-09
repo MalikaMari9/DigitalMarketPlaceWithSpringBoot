@@ -8,8 +8,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
 import com.example.demo.entity.Category;
+import com.example.demo.entity.Item;
 import com.example.demo.repository.CategoryRepository;
+import com.example.demo.repository.ItemRepository;
 
+//Idk when and why but this code decided itself to become global
 @Controller
 public class dmpController {
 	@GetMapping("/viewItem")
@@ -99,6 +102,8 @@ public class dmpController {
 
 	@Autowired
 	private CategoryRepository categoryRepo;
+	@Autowired
+	private ItemRepository itemRepo;
 
 	// This will load categories for all pages
 	@ModelAttribute("categories")
@@ -112,6 +117,16 @@ public class dmpController {
 		List<Category> subcategories = categoryRepo.findByParentCategory(category);
 		subcategories.forEach(this::loadSubcategories);
 		category.setSubcategories(subcategories);
+	}
+
+	@ModelAttribute("placeholderitems")
+	public List<Item> loadItems() {
+		List<Item> items = itemRepo.findAll();
+
+		// Debugging: Print items to the console
+		System.out.println("Loaded Items from DB: " + items);
+
+		return items;
 	}
 
 }

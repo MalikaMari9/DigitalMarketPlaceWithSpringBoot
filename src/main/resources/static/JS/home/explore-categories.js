@@ -40,13 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Log category exploration
-    document.querySelectorAll('.explore-btn').forEach(button => {
-        button.addEventListener('click', (e) => {
-            e.preventDefault();
-            const category = e.target.closest('.category-card').querySelector('h3').textContent;
-            console.log(`Exploring ${category} category`);
-        });
-    });
+
 
     // Handle window resize
     window.addEventListener('resize', updateArrowVisibility);

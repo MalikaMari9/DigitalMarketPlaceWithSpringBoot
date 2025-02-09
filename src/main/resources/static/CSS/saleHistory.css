@@ -173,6 +173,32 @@ body {
     }
 }
 
+.pagination {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.pagination a {
+    padding: 8px 12px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.pagination a:hover {
+    background-color: #0056b3;
+}
+
+.pagination span {
+    font-size: 16px;
+    font-weight: bold;
+    margin-top:5px;
+}
+
+
 @media (max-width: 576px) {
     #search-form {
         flex-direction: column; /* Stack the form fields on small screens */

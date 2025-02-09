@@ -29,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.entity.Category;
 import com.example.demo.entity.Item;
+import com.example.demo.entity.Item.ApprovalStatus;
 import com.example.demo.entity.ItemImage;
 import com.example.demo.entity.User;
 import com.example.demo.entity.Auction.Auction;
@@ -140,6 +141,7 @@ public class ItemController {
 		item.setCreatedAt(LocalDateTime.now());
 		item.setUpdatedAt(LocalDateTime.now());
 		item.setStat(Item.Status.AVAILABLE);
+		item.setApprove(ApprovalStatus.PENDING);
 
 		// ✅ Set category
 		item.setCategory(categoryRepo.findById(categoryID)
@@ -218,7 +220,7 @@ public class ItemController {
 		item.setCreatedAt(LocalDateTime.now());
 		item.setUpdatedAt(LocalDateTime.now());
 		item.setStat(Item.Status.AVAILABLE);
-
+		item.setApprove(ApprovalStatus.PENDING);
 		// ✅ Set category
 		item.setCategory(categoryRepo.findById(categoryID)
 				.orElseThrow(() -> new RuntimeException("❌ Category ID not found: " + categoryID)));
