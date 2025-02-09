@@ -348,7 +348,7 @@ public class ItemController {
 		return "searchResults";
 	}
 
-	// Delete
+	//
 
 	@DeleteMapping("/delete/{itemId}")
 	public ResponseEntity<String> deleteItem(@PathVariable Long itemId) {
@@ -385,6 +385,8 @@ public class ItemController {
 			return ResponseEntity.status(404).body("❌ Item not found.");
 		}
 	}
+
+	// Edit
 
 	// methods
 

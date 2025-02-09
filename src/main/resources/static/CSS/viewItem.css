@@ -120,6 +120,13 @@ hr {
 }
 
 /* Button */
+
+.delete-btn {
+    text-decoration: none !important; /* Removes underline */
+    color: white !important; /* Uses parent text color */
+    display: inline-block; /* Ensures proper button behavior */
+}
+
 #desc button {
     background-color: var(--primary-color);
     color: var(--background-color);
@@ -458,20 +465,42 @@ hr {
 }
 
 /* Container for item name and heart */
+/* Container for item name and action buttons */
 .item-header {
-    display: flex; /* Use flexbox to align items horizontally */
-    align-items: center; /* Vertically align heart container with the name */
-    justify-content: space-between; /* Push heart to the right side */
-    gap: 10px; /* Add some spacing between the item name and heart */
-   
+    display: flex; /* Aligns item name & buttons in a row */
+    align-items: center; /* Ensures everything is vertically aligned */
+    justify-content: space-between; /* Pushes item name to the left, actions to the right */
+    gap: 10px; /* Adds spacing between elements */
 }
 
-.item-header h2 {
-    margin: 0; /* Remove default margin for alignment */
-    font-size: 26px; /* Keep the item name prominent */
-    color: var(--primary-color);
-    font-weight: bold;
+/* Container for edit & delete buttons */
+.item-actions {
+    display: flex; /* Aligns buttons side by side */
+    gap: 8px; /* Adds space between buttons */
 }
+
+/* Styling for buttons */
+.delete-btn, .edit-btn button {
+    background-color: var(--danger-color); /* Red for delete */
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex; /* Ensures icon and text align properly */
+    align-items: center;
+    justify-content: center;
+}
+
+.edit-btn button {
+    background-color: var(--primary-color); /* Blue for edit */
+}
+
+/* Icon size inside buttons */
+.delete-btn i, .edit-btn i {
+    font-size: 18px;
+}
+
 
 .heart-container {
     display: flex;

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" th:href="@{/CSS/editItem.css}" />
+
+    <script th:src="@{/JS/previewImageEdit.js}"></script>
+    <script th:src="@{/JS/checkdeadline.js}"></script>
+	<script th:src="@{/JS/categorySale.js}"></script>
+    <title>Edit Auction Item</title>
+</head>
+<body>
+    <form id="item-form" th:action="@{/edit-auction}" method="POST" enctype="multipart/form-data">
+        <h2 class="form-title">Edit Auction Item</h2>
+
+        <!-- Hidden Item ID -->
+        <input type="hidden" name="itemId" th:value="${item.itemID}">
+
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="item-name" class="form-label">Item Name:</label>
+                <input type="text" id="item-name" class="form-input" name="name" required th:value="${item.itemName}">
+            </div>
+
+            <div class="form-group">
+                <label for="item-price" class="form-label">Base Price:</label>
+                <input type="number" id="item-price" class="form-input" name="price" required th:value="${auction.startPrice}">
+                <small class="form-note">The price listing is in USD</small>
+            </div>
+
+            <div class="form-group">
+                <label for="item-desc" class="form-label">Item Description:</label>
+                <textarea id="item-desc" class="form-textarea" name="desc" required th:text="${item.descrip}"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="item-raising" class="form-label">Raising:</label>
+                <input type="number" id="item-raising" class="form-input" name="raising" required th:value="${auction.incrementAmount}">
+                <br>
+                <label for="item-deadline" class="form-label">Deadline:</label>
+				<input type="date" id="item-deadline" class="form-input" name="deadline" th:value="${#temporals.format(auction.endTime, 'yyyy-MM-dd')}" required>
+
+            </div>
+
+			
+			<!-- Category (Fixed Dropdown) -->
+					<div class="form-group">
+					    <label for="item-category" class="form-label">Category:</label>
+					    <div id="category-dropdown" class="dropdown">
+					        <button type="button" id="category-button" class="dropdown-button">
+					            <span id="selected-category-name" th:text="${item?.category?.name != null ? item.category.name : 'Select a Category'}"></span>
+					        </button>
+
+					        <!-- Category List -->
+					        <div id="category-list" class="dropdown-list">
+					            <ul>
+					                <th:block th:each="parent : ${categories}">
+					                    <li class="category-item parent" th:data-id="${parent.catID}" onclick="toggleSubcategories(this)">
+					                        <span th:text="${parent.name}"></span>
+					                        <span class="arrow">▶</span>
+					                    </li>
+
+					                    <!-- Child Categories -->
+					                    <ul class="subcategories" th:data-parent="${parent.catID}" style="display: none;">
+					                        <th:block th:each="child : ${parent.subcategories}">
+					                            <li class="category-item child" th:data-id="${child.catID}" onclick="toggleSubcategories(this)">
+					                                <span th:text="${child.name}"></span>
+					                                <span class="arrow"></span>
+					                            </li>
+
+					                            <!-- Grandchild Categories -->
+					                            <ul class="subcategories" th:data-parent="${child.catID}" style="display: none;">
+					                                <th:block th:each="grandchild : ${child.subcategories}">
+					                                    <li class="category-item grandchild" th:data-id="${grandchild.catID}" onclick="selectCategory(this)">
+					                                        <span th:text="${grandchild.name}"></span>
+					                                    </li>
+					                                </th:block>
+					                            </ul>
+					                        </th:block>
+					                    </ul>
+					                </th:block>
+					            </ul>
+					        </div>
+
+					        <!-- Hidden Input for Category ID -->
+					        <input type="hidden" name="categoryID" id="selected-category" th:value="${item?.category?.catID}">
+					    </div>
+					</div>
+
+			
+            <div class="form-group">
+                <label for="item-condition" class="form-label">Condition:</label>
+                <select id="item-condition" class="form-select" name="cond" required>
+                    <option value="new" th:selected="${item.cond == 'new'}">New</option>
+                    <option value="old" th:selected="${item.cond == 'old'}">Used</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="item-tags" class="form-label">Tags:</label>
+                <textarea id="item-tags" class="form-textarea" name="tags" th:text="${itemTags}"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="item-images" class="form-label">Upload Images (Max 5):</label>
+                <input type="file" id="item-images" class="form-input" name="itemImages" accept="image/*" multiple>
+                <button type="button" id="add-more-images" class="form-button" style="display:none;">Add More Images</button>
+            </div>
+			
+			<!-- Image Preview Section (Existing & New Uploads) -->
+					       <div id="image-preview" class="image-preview-container">
+					           <div th:each="imagePath : ${itemImages}" class="image-wrapper">
+					               <img th:src="@{${imagePath}}" class="image-preview-thumbnail" alt="Item Image">
+					               <button type="button" class="remove-image-btn" th:data-image="${imagePath}" th:data-item-id="${item.itemID}" onclick="removeImage(this)">✖</button>
+					           </div>
+					       </div>
+			
+			
+
+        </div>
+
+		
+			   
+			  
+
+        <input type="submit" id="submit-button" class="form-submit-button" value="Update Item">
+    </form>
+
+	
+
+</body>
+</html>

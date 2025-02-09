@@ -45,16 +45,32 @@
 </div>
     <div id="desc">
         <div class="item-header">
-            <h2 th:text="${item.itemName}"></h2>
+    <!-- Item Name -->
+    <h2 th:text="${item.itemName}"></h2>
+
+    <div class="item-actions">
+        <!-- Show Heart Icon for Everyone EXCEPT the Seller -->
+        <th:block th:if="${session.user == null or session.user.userID != item.seller.userID}">
             <p class="heart-container">
                 <img th:src="@{/Image/icon/heart.png}" width="25px" height="25px" alt="Heart Icon"> 4
-
             </p>
-            <!-- De;ete btn here -->
+        </th:block>
+
+        <!-- Edit & Delete Buttons (Only for the Seller) -->
+        <th:block th:if="${session.user != null and session.user.userID == item.seller.userID}">
             <button class="delete-btn" th:attr="data-item-id=${item.itemID}" onclick="deleteItem(this)">
-						        <i class="fas fa-trash-alt"></i> <!-- Trash Icon -->
-						    </button>
-        </div>
+                <i class="fas fa-trash-alt"></i> <!-- Trash Icon -->
+            </button>
+
+            <a th:href="@{/edit-item/{itemId}(itemId=${item.itemID})}" class="edit-btn">
+                <button>
+                    <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+            </a>
+        </th:block>
+    </div>
+</div>
+
         <div id="normal-sale"
         th:if="${item.sellType != null and item.sellType.name() != 'AUCTION'}">
         <h3 th:text="'USD'+ ${item.price}">USD  $66</h3>
