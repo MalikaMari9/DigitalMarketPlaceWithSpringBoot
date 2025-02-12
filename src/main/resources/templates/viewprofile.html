@@ -18,25 +18,33 @@
 <header th:insert="fragments/header :: header"></header>
     <div class="profile-body">
     <div class="profile-wrapper">
-        <div class="profile-header">
-            <div class="profile-picture">
-                <img src="Image/profile/default.png" alt="User Profile">
-            </div>
-            <div class="profile-info">
-                <h2 th:text="${seller.username}"></h2>
-                <div class="stats">
-                    <span><strong>100</strong> Posts</span>
-                    
-                </div>
-                <div class="bio">
-                    <p id="bioText" th:text="${seller.bio}">
-                    </p>
-                    <button id="toggleBioButton" onclick="toggleBio()">See More</button>
-                </div>
-                
-                
-            </div>
+       <div class="profile-header">
+    <div class="profile-picture">
+        <img src="Image/profile/default.png" alt="User Profile">
+    </div>
+    <div class="profile-info">
+        <h2 th:text="${seller.username}"></h2>
+
+        <!-- Show 'Edit Profile' button only if the logged-in user is viewing their own profile -->
+        <th:block th:if="${isOwnProfile}">
+            <a th:href="@{/edit-profile}" class="edit-profile-btn">Edit Profile</a>
+        </th:block>
+<th:block th:if="${!isOwnProfile}">
+    <a th:href="@{'/chat?receiverID=' + ${seller.userID}}" class="chat-button">Chat</a>
+</th:block>
+
+
+        <div class="stats">
+            <span><strong>100</strong> Posts</span>
         </div>
+
+        <div class="bio">
+            <p id="bioText" th:text="${seller.bio}"></p>
+            <button id="toggleBioButton" onclick="toggleBio()">See More</button>
+        </div>
+    </div>
+</div>
+
 
         <div class="profile-tabs">
             <button class="tab active" onclick="showSection('all-posts')">All Posts</button>
@@ -66,15 +74,21 @@
                   <div class="pg-stars">★★★★☆</div>
                   <span>4.5</span>
                 </div>
-                <div class="pg-buttons">
-                <th:block th:if="${session.user == null or session.user.userID != item.seller.userID}">
-                    <button class="pg-cart-btn">Add to Cart</button>
-                 </th:block>
-                 <th:block th:if="${session.user!=null and session.user.userID == item.seller.userID} ">
-                   <a th:href="@{/edit-item/{itemID}(itemID=${item.itemID})}" th:text="'Edit'"  class="pg-view-btn"></a> 
-                 </th:block>  
-                   <a th:href="@{/itemList/{itemID}(itemID=${item.itemID})}" th:text="'👁'"  class="pg-view-btn"></a> 
-                </div>
+               <div class="pg-buttons">
+    <!-- If the user is NOT the seller, show "Add to Cart" -->
+    <th:block th:if="${session.user == null or session.user.userID != item.seller.userID}">
+        <button class="pg-cart-btn">Add to Cart</button>
+    </th:block>
+
+    <!-- If the user is the seller, show "Edit" button -->
+    <th:block th:if="${session.user != null and session.user.userID == item.seller.userID}">
+        <a th:href="@{/edit-item/{itemID}(itemID=${item.itemID})}" th:text="'Edit'" class="pg-view-btn"></a>
+    </th:block>
+
+    <!-- View Item Button for Everyone -->
+    <a th:href="@{/itemList/{itemID}(itemID=${item.itemID})}" th:text="'👁'" class="pg-view-btn"></a>
+</div>
+
               </div>
             </div>
 </div>

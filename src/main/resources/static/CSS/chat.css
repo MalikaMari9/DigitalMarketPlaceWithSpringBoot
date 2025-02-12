@@ -1,0 +1,223 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    height: 100vh;
+    overflow: hidden;
+}
+.container {
+    display: flex;
+    height: 100%;
+}
+.user-list {
+    background-color: #2c3e50;
+    color: white;
+    width: 25%;
+    overflow-y: auto;
+}
+.user-list h2 {
+    text-align: center;
+    padding: 15px;
+    background-color: #34495e;
+}
+.user-list ul {
+    list-style: none;
+    padding: 0;
+}
+.user-list li {
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #34495e;
+    display: flex;
+    align-items: center;
+}
+.user-list li:hover {
+    background-color: #1abc9c;
+}
+.chat-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: #ecf0f1;
+}
+.chat-header {
+    background-color: #34495e;
+    color: white;
+    padding: 15px;
+    text-align: center;
+}
+.chat-messages {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-input {
+    display: flex;
+    align-items: center; 
+    padding: 10px;
+    background-color: #34495e;
+}
+.chat-input input {
+    flex: 1;
+    padding: 10px;
+    margin-right: 10px;
+}
+.chat-input button {
+    background-color: #1abc9c;
+    color: white;
+    padding: 10px 20px;
+}
+.image-upload-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    background-color: #ddd;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 20px;
+    margin-right:10px;
+}
+
+.image-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+.message-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px;
+    border-radius: 20px; /* Rounded corners to form a bubble */
+    margin: 10px 0;
+    max-width: 70%;
+    word-wrap: break-word;
+    position: relative; /* To position the arrow */
+}
+
+.message-container.sent {
+    align-self: flex-end;
+    background-color: #d4f8d4;
+    border-top-left-radius: 20px; /* Rounded top-left for sent message */
+    border-top-right-radius: 20px; /* Rounded top-right for sent message */
+}
+
+.message-container.received {
+    align-self: flex-start;
+    background-color: #A9A9A9;
+    border-top-left-radius: 20px; /* Rounded top-left for received message */
+    border-top-right-radius: 20px; /* Rounded top-right for received message */
+}
+
+/* Add message bubble "tail" */
+.message-container.sent::after, 
+.message-container.received::after {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.message-container.sent::after {
+    border-top-color: #d4f8d4; /* Tail color for sent messages */
+    right: -10px; /* Position the tail */
+}
+
+.message-container.received::after {
+    border-top-color: #A9A9A9; /* Tail color for received messages */
+    left: -10px; /* Position the tail */
+}
+
+.button-container {
+    display: none;
+     gap: 10px;
+    margin-top: 5px;
+    transition: opacity 0.3s ease-in-out;
+  
+}
+
+.message-container:hover .button-container {
+    display: flex;
+}
+
+img{
+	width:30px;
+	height:30px;
+	margin-right: 20px;
+	border-radius:50%;
+}
+
+.delete-btn,.edit-btn  {
+    background-color: #000000;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+   
+}
+
+.save-btn{
+	background-color: #2c3e50;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-top:5px;
+} 
+
+.edit-btn:hover {
+    background-color: #1abc9c;
+}
+
+.delete-btn:hover {
+    background-color: red;
+}
+
+.edit-input {
+    width: 100%;
+    padding: 5px;
+    margin-top: 5px;
+}
+
+.chat-image {
+    width: 150px;  /* ✅ Set a fixed width */
+    height: 150px; /* ✅ Set a fixed height */
+    object-fit: cover; /* ✅ Crop image to fit without distortion */
+    border-radius: 10px; /* ✅ Optional: Add rounded corners */
+    margin-top: 5px;
+}
+
+/* ✅ Remove background for message containers that ONLY contain an image */
+.message-container:has(.chat-image) {
+    background-color: transparent !important; 
+    padding: 0; /* ✅ Remove padding to avoid extra spacing */
+    border-radius: 0; /* ✅ Remove border rounding */
+}
+
+/* ✅ Center images when they are alone in a message */
+.message-container:has(.chat-image) .chat-image {
+    display: block;
+    margin: 5px auto;
+}
+.message-container:has(.chat-image)::after {
+    content: none !important;
+}
+

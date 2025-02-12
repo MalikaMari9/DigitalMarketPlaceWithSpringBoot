@@ -177,7 +177,8 @@
                 <h4 style="margin-bottom: 0px;">Seller</h4>
                 <div class="profile-container">
                     <img th:src="@{/Image/profile/default.png}" alt="Profile Picture" width="50px" height="50px">
-                    <a href="#"><h4 th:text="${item.seller.username}"></h4></a>
+                    <h4><a th:href="@{/viewSeller/{sellerID}(sellerID=${item.seller.userID})}" th:text="${item.seller.username}"></a></h4>
+
                 </div>
                 <div class="profile-info">
                     <div class="star-rating">
