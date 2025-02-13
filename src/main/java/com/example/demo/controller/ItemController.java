@@ -292,7 +292,9 @@ public class ItemController {
 
 		List<Item> searchResults;
 
-		if (categoryID != null) {
+		if (categoryID != null && query != null) {
+			searchResults = itemRepo.searchItemsByCategory(query, categoryID); // ✅ Use the correct method
+		} else if (categoryID != null) {
 			searchResults = itemRepo.findItemsByCategory(categoryID);
 		} else if (query != null) {
 			searchResults = itemRepo.searchItems(query);
