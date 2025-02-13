@@ -155,4 +155,23 @@ public class User {
 	public LocalDateTime getCreatedAt() {
 		return createdAt;
 	}
+
+	// Seller Buyer Conversion
+	public boolean canSwitchToBuyer() {
+		return this.seller != null && "C2C".equalsIgnoreCase(this.seller.getBusinessType());
+	}
+
+	// ✅ Convert Buyer to C2C Seller
+	public void convertToSeller(Seller sellerData) {
+		this.seller = sellerData;
+		this.role = "SELLER";
+	}
+
+	// ✅ Convert C2C Seller back to Buyer
+	public void convertToBuyer() {
+		if (canSwitchToBuyer()) {
+			this.seller = null; // Remove seller profile
+			this.role = "BUYER";
+		}
+	}
 }

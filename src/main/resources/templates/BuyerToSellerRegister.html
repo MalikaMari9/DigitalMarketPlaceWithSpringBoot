@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seller Registration</title>
+  <link rel="stylesheet" type="text/css" th:href="@{/CSS/ckstyle.css}">
+  <link rel="stylesheet" th:href="@{/CSS/dividingNRC.css}">
+      <script th:src="@{/JS/userValidation.js}"></script>
+      <script th:src="@{/JS/ImagePreview.js}"></script>
+      <script th:src="@{/JS/DropDown.js}"></script>
+      <script src="https://cdn.jsdelivr.net/npm/lucide@latest"></script>
+      
+
+</head>
+<body>
+  <div class="form-container">
+    <h2>Seller Sign Up</h2>
+    <form action="/register-seller" method="POST" enctype="multipart/form-data" onsubmit="return validateFormSeller(event)">
+    
+      <!-- First Column -->
+      <div class="column">
+    <div class="form-group">
+      <label for="bsn">Business Name (Username):</label>
+      <input type="text" id="bsn" name="bsn" th:value="${session.user.username}" readonly>
+    </div>
+  
+        <div class="form-group">
+      <label>Business Type:</label>
+     
+      <input type="radio" name="businessType" value="C2C" checked> C2C
+    </div>
+
+    <div class="form-group">
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" th:value="${session.user.email}" readonly>
+    </div>
+    
+    <div class="form-group">
+      <label for="phone">Phone:</label>
+      <input type="text" id="phone" name="phone" th:value="${session.user.phone}" readonly>
+    </div>
+  </div>
+       
+  
+      <!-- Second Column -->
+      <div class="column">
+        <fieldset class="personal-info">
+          <legend>
+            Personal Information
+            <span 
+              class="info-icon">&#9432;</span>
+          </legend>
+          <div class="form-group">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
+          </div>
+          <div class="form-group">
+            <label for="dob">Date of Birth:</label>
+            <input type="date" id="dob" name="dob" required>
+          </div>
+          <div class="form-group">
+            <label for="nrc">NRC No:</label>
+            <div id="nrc_dropdown">
+              <select id="citycode" name="citycode" >
+                <option value="0">-- Select Area --</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+                <option value="11">11</option>
+                <option value="12">12</option>
+                <option value="13">13</option>
+                <option value="14">14</option>
+         
+              </select>
+  
+              <select id="name_en" name="name_en">
+                <option value="">-- Select Area Name --</option>
+                <option value="MAGADA">MAGADA</option>
+              </select>
+  
+              <select id="card_type" name="card_type">
+                <option value="N">N</option>
+                <option value="A">A</option>
+                <option value="P">P</option>
+              </select>
+  
+              <input type="text" id="nrc_code" name="nrc_code" required maxlength="6">
+            </div>
+          </div>
+          <div id="nrc_images">
+            <label for="nrc_front">Image (NRC FRONT):</label>
+            <input type="file" name="nrc_front" id="nrc_front" accept="image/*" required>
+            <br><br>
+            <label for="nrc_back">Image (NRC BACK):</label>
+            <input type="file" name="nrc_back" id="nrc_back" accept="image/*" required>
+            <br><br>
+        </div>
+        
+       
+          
+  
+         
+          <div id="image_preview" class="image-preview">
+            <div class="preview-container">
+                <p>Front Preview:</p>
+                <img id="preview_front" src="#" alt="NRC Front Preview" class="preview-image hidden">
+            </div>
+            <div class="preview-container">
+                <p>Back Preview:</p>
+                <img id="preview_back" src="#" alt="NRC Back Preview" class="preview-image hidden">
+            </div>
+        </div>
+       
+        </fieldset>
+      </div>
+      
+      <!-- Submit Button -->
+      <button type="submit" class="submit-btn">Register</button>
+    </form>
+  </div>
+
+  
+</body>
+</html>

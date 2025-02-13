@@ -143,4 +143,9 @@ public class Seller {
 	public void setNrcFront(String nrcFront) {
 		this.nrcFront = nrcFront;
 	}
+
+	// Conversion
+	public boolean canRevertToBuyer() {
+		return "C2C".equalsIgnoreCase(this.businessType);
+	}
 }

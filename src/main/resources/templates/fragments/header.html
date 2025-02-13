@@ -72,7 +72,7 @@
               </button>
        </th:block>
            <th:block th:if="${session.user != null}">
-          	 <th:block th:if="${session.user.role=='SELLER' and session.user.seller.approval!='pending'}">
+          	 <th:block th:if="${session.user.role=='SELLER' and session.user.seller.approval!='pending'} ">
               
                <button class="cart-buttonyoon">
                 <i data-lucide="book-check"></i>
@@ -204,9 +204,11 @@
             <div class="sidebar-sectionyoon">
               <h3 class="section-titleyoon">Other</h3>
               <div class="sidebar-buttonsyoon">
+              <a th:href="@{/convert-to-seller}">
                 <button class="sidebar-buttonyoon">
                   <i data-lucide="store"></i>Sell with Us
                 </button>
+           </a>
                 <button class="sidebar-buttonyoon">
                   <i data-lucide="log-out"></i>Log Out
                 </button>
@@ -258,7 +260,7 @@
               </a>
             </div>
           </div>
-<th:block th:if="${session.user.seller.approval=='accepted'}">
+<th:block th:if="${session.user.seller.approval=='accepted'}" >
           <!-- Sell Section -->
           <div class="sidebar-sectionyoon">
             <h3 class="section-titleyoon">Sell</h3>
@@ -268,11 +270,13 @@
                 <i data-lucide="package"></i>Sell Item
               </button>
               </a>
+               <th:block th:if="${session.user.seller.businessType=='C2C'}">
               <a th:href="@{/auction-item}">
               <button class="sidebar-buttonyoon">
                 <i data-lucide="gavel"></i>Auction Item
               </button>
               </a>
+              </th:block>
                             <a th:href="@{/pending-sale}">
               <button class="sidebar-buttonyoon">
                 <i data-lucide="gavel"></i>Pending Sale
@@ -287,19 +291,21 @@
           <div class="sidebar-sectionyoon">
             <h3 class="section-titleyoon">Analysis</h3>
             <div class="sidebar-buttonsyoon">
-           
+           <th:block th:if="${session.user.seller.businessType=='B2C'}">
               <button class="sidebar-buttonyoon">
                 <i data-lucide="warehouse"></i>Warehouse Track
               </button>
+              </th:block>
               <a th:href="@{/saleHistory}">
               <button class="sidebar-buttonyoon">
                 <i data-lucide="history"></i>Sale History
               </button>
               </a>
+              <th:block th:if="${session.user.seller.businessType=='C2C'}">
              <a th:href="@{/auctionHistory}">
               <button class="sidebar-buttonyoon">
                 <i data-lucide="award"></i>Auction History
-              </button>
+              </button></a></th:block>
             </div>
           </div>
 
@@ -328,6 +334,13 @@
               <button class="sidebar-buttonyoon">
                 <i data-lucide="message-square"></i>Chat
               </button>
+              <th:block th:if="${session.user.seller.businessType=='C2C'}">
+             <button class="sidebar-buttonyoon">
+             <a th:href="@{/convert-to-buyer}">              
+                <i data-lucide="message-square"></i>Buy with us!
+              </button>
+              </a>
+              </th:block>
               <button class="sidebar-buttonyoon">
                 <i data-lucide="log-out"></i>Log Out
               </button>
