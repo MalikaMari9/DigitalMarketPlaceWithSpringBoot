@@ -5,56 +5,57 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>User Registration</title>
   <link rel="stylesheet" type="text/css" th:href="@{/CSS/ckstyle1.css}">
-  <script src="@{/JS/userValidation.js}"></script>
+  <script th:src="@{/JS/userValidation.js}"></script>
 </head>
 <body>
 
 <div class="form-container">
   <h2>Sign Up</h2>
-  <form action="" method="POST" onsubmit="return validateForm(event)">
-    <!-- Username Field -->
-    <label for="usn">Username: </label>
-    <input type="text" id="usn" name="usn" required onblur="validateUsername()">
-    <span class="error" id="usernameError"></span>
 
-    <!-- Email Field -->
-    <label for="email">Email: </label>
-    <input type="email" id="email" name="email" required>
+  <form action="/register" method="POST" onsubmit="return validateForm(event)" th:object="${user}">
+    
+    <!-- Username -->
+    <label for="usn">Username:</label>
+    <input type="text" id="usn" name="username" th:field="*{username}" required onblur="validateUsername()">
+    <span class="error" id="usernameError" th:if="${usernameError}" th:text="${usernameError}"></span>
+
+    <!-- Email -->
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" th:field="*{email}" required>
     <span class="error" id="emailError"></span>
 
-    <!-- Password Field -->
-    <label for="psw">Password: </label>
-    <input type="password" id="psw" name="psw" required onblur="validatePassword()">
+    <!-- Password -->
+    <label for="psw">Password:</label>
+    <input type="password" id="psw" name="password" th:field="*{password}" required onblur="validatePassword()">
     <span class="error" id="passwordMessage"></span>
 
-    <!-- Confirm Password Field -->
-    <label for="confirmpsw">Confirm Password: </label>
-    <input type="password" id="confirmpsw" name="confirmpsw" required onblur="checkPasswords()">
+    <!-- Confirm Password -->
+    <label for="confirmpsw">Confirm Password:</label>
+    <input type="password" id="confirmpsw" required onblur="checkPasswords()">
     <span class="error" id="message"></span>
-<!-- Phone Number Field -->
-<label for="phone">Phone: </label>
-<input type="text" id="phone" name="phone" required onblur="validatePhone()">
-<span class="error" id="phoneMessage"></span>
 
-<!-- Date of Birth Field -->
-<label for="dob">Date Of Birth: </label>
-<input type="date" id="dob" name="dob" required onblur="validateDate()">
-<span class="error" id="dobMessage"></span>
-    <!-- Gender Field -->
-    <label>Gender: </label>
+    <!-- Phone -->
+    <label for="phone">Phone:</label>
+    <input type="text" id="phone" name="phone" th:field="*{phone}" required onblur="validatePhone()">
+    <span class="error" id="phoneMessage"></span>
+
+    <!-- Date of Birth -->
+    <label for="dob">Date Of Birth:</label>
+    <input type="date" id="dob" name="dob" th:field="*{dob}" required onblur="validateDate()">
+    <span class="error" id="dobMessage"></span>
+
+    <!-- Gender -->
+    <label>Gender:</label>
     <div class="gender-container">
-        <input type="radio" id="male" name="gender" value="male"> Male
-        <input type="radio" id="female" name="gender" value="female"> Female
-        <input type="radio" id="other" name="gender" value="other"> Other
+        <input type="radio" id="male" name="gender" value="male" th:field="*{gender}"> Male
+        <input type="radio" id="female" name="gender" value="female" th:field="*{gender}"> Female
+        <input type="radio" id="other" name="gender" value="other" th:field="*{gender}"> Other
     </div>
 
-    
-
-    <!-- Submit Button -->
-    <!-- Submit Button -->
-<div style="display: flex; justify-content: center;">
-  <input type="submit" name="Register" value="Register">
-</div>
+    <!-- Submit -->
+    <div style="display: flex; justify-content: center;">
+      <input type="submit" value="Register">
+    </div>
 
   </form>
 </div>

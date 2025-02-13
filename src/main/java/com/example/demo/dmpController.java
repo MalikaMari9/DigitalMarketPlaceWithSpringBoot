@@ -45,11 +45,6 @@ public class dmpController {
 
 	}
 
-	@GetMapping("/register")
-	public String reg() {
-		return "Registeration.html";
-	}
-
 	@GetMapping("/contact")
 	public String contact() {
 		return "contactus";
@@ -108,6 +103,11 @@ public class dmpController {
 	@GetMapping("/trackDelivery")
 	public String trackDelivery() {
 		return "deliverytrack";
+	}
+
+	@GetMapping("/signup")
+	public String signupchoice() {
+		return "SignUpChoice";
 	}
 
 	@Autowired

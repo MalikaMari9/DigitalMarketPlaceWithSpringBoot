@@ -1,19 +1,23 @@
-function fetchNames() {
-          var citycode = document.getElementById("citycode").value;
-          var xhr = new XMLHttpRequest();
-          xhr.open("GET", "FetchNamesServlet?citycode=" + citycode, true);
-          xhr.onreadystatechange = function () {
-              if (xhr.readyState === 4 && xhr.status === 200) {
-                  var names = JSON.parse(xhr.responseText);
-                  var nameDropdown = document.getElementById("name_en");
-                  nameDropdown.innerHTML = ""; // Clear existing options
-                  names.forEach(function (name) {
-                      var option = document.createElement("option");
-                      option.value = name;
-                      option.text = name;
-                      nameDropdown.add(option);
-                  });
-              }
-          };
-          xhr.send();
-      }
+document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById("citycode").addEventListener("change", function () {
+        var cityCode = this.value;
+        var nameDropdown = document.getElementById("name_en");
+
+        // Clear previous options
+        nameDropdown.innerHTML = '<option value="">-- Select Area Name --</option>';
+
+        if (cityCode !== "0") {
+            fetch(`/getNames?cityCode=${cityCode}`)
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(name => {
+                        var option = document.createElement("option");
+                        option.value = name;
+                        option.textContent = name;
+                        nameDropdown.appendChild(option);
+                    });
+                })
+                .catch(error => console.error("Error fetching names:", error));
+        }
+    });
+});

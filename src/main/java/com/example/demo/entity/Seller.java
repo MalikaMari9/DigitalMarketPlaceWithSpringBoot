@@ -51,8 +51,8 @@ public class Seller {
 	public Seller() {
 	}
 
-	public Seller(User user, String businessName, String businessType, String name, String nrcNo, String nrcBack,
-			String nrcFront) {
+	public Seller(User user, String businessType, String name, String nrcNo, String nrcBack, String nrcFront,
+			String businessName) {
 		this.user = user;
 		this.businessName = businessName;
 		this.businessType = businessType;

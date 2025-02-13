@@ -72,7 +72,7 @@
               </button>
        </th:block>
            <th:block th:if="${session.user != null}">
-          	 <th:block th:if="${session.user.role=='SELLER'}">
+          	 <th:block th:if="${session.user.role=='SELLER' and session.user.seller.approval!='pending'}">
               
                <button class="cart-buttonyoon">
                 <i data-lucide="book-check"></i>
@@ -96,7 +96,7 @@
               </button>
          </th:block>
          <th:block  th:if="${session.user == null}">
-         <a th:href="@{/register}">
+         <a th:href="@{/signup}">
               <button class="login-buttonyoon">Sign Up </button>
               </a>
          </th:block>
@@ -258,7 +258,7 @@
               </a>
             </div>
           </div>
-
+<th:block th:if="${session.user.seller.approval=='accepted'}">
           <!-- Sell Section -->
           <div class="sidebar-sectionyoon">
             <h3 class="section-titleyoon">Sell</h3>
@@ -333,6 +333,7 @@
               </button>
             </div>
           </div>
+          </th:block>
         </div>
       </div>
     </div>

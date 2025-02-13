@@ -4,11 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Seller Registration</title>
-  <link rel="stylesheet" type="text/css" href="CSS/ckstyle.css">
-  <link rel="stylesheet" href="CSS/dividingNRC.css">
-      <script src="JS/userValidation.js"></script>
-      <script src="JS/ImagePreview.js"></script>
-      <script src="JS/DropDown.js"></script>
+  <link rel="stylesheet" type="text/css" th:href="@{/CSS/ckstyle.css}">
+  <link rel="stylesheet" th:href="@{/CSS/dividingNRC.css}">
+      <script th:src="@{/JS/userValidation.js}"></script>
+      <script th:src="@{/JS/ImagePreview.js}"></script>
+      <script th:src="@{/JS/DropDown.js}"></script>
       <script src="https://cdn.jsdelivr.net/npm/lucide@latest"></script>
       
 
@@ -16,7 +16,8 @@
 <body>
   <div class="form-container">
     <h2>Seller Sign Up</h2>
-    <form action="SellerRegister" method="POST" onsubmit="return validateFormSeller(event)">
+    <form action="/SellerRegister" method="POST" enctype="multipart/form-data" onsubmit="return validateFormSeller(event)">
+    
       <!-- First Column -->
       <div class="column">
         <div class="form-group">
@@ -73,22 +74,22 @@
           <div class="form-group">
             <label for="nrc">NRC No:</label>
             <div id="nrc_dropdown">
-              <select id="citycode" name="citycode" onchange="fetchNames()">
+              <select id="citycode" name="citycode" >
                 <option value="0">-- Select Area --</option>
                 <option value="1">1</option>
                 <option value="2">2</option>
                 <option value="3">3</option>
-                <option value="1">4</option>
-                <option value="2">5</option>
-                <option value="3">6</option>
-                <option value="1">7</option>
-                <option value="2">8</option>
-                <option value="3">9</option>
-                <option value="1">10</option>
-                <option value="2">11</option>
-                <option value="3">12</option>
-                <option value="1">13</option>
-                <option value="2">14</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+                <option value="11">11</option>
+                <option value="12">12</option>
+                <option value="13">13</option>
+                <option value="14">14</option>
          
               </select>
   
@@ -137,6 +138,7 @@
       <button type="submit" class="submit-btn">Register</button>
     </form>
   </div>
+
   
 </body>
 </html>
