@@ -400,103 +400,34 @@
             </svg>
           </button>
 
-          <div class="pg-products-grid" style="width: 100%; overflow-x: auto">
-            <div class="pg-product-card">
-              <div class="pg-product-image">
-                <img th:src="@{/Image/home/Premium Earbuds.jpg}" alt="Premium Earbuds" />
-                <button class="pg-wishlist-btn">♡</button>
-              </div>
-              <div class="pg-product-info">
-                <h3 class="pg-product-title">Premium Earbuds</h3>
-                <p class="pg-price">$149.99</p>
-                <p class="pg-seller">Audio Pro</p>
-                <div class="pg-rating">
-                  <div class="pg-stars">★★★★★</div>
-                  <span>4.8</span>
-                </div>
-                <div class="pg-buttons">
-                  <button class="pg-cart-btn">Add to Cart</button>
-                  <button class="pg-view-btn">👁</button>
-                </div>
-              </div>
+         <div class="pg-products-grid" style="width: 100%; overflow-x: auto">
+    
+  
+    <!-- Pg Product Card -->
+    <div class="pg-product-card" th:each="item : ${recommendedItems}" th:if="${item.sellType != null and item.sellType.name() != 'AUCTION'}">
+        <div class="pg-product-image">
+            <img th:src="@{${item.getThumbnail()}}" alt="Product Image" />
+            <button class="pg-wishlist-btn">♡</button>
+        </div>
+        <div class="pg-product-info">
+            <h3 class="pg-product-title" th:text="${item.itemName}"></h3>
+            <p class="pg-price" th:text="'$' + ${item.price}"></p>
+            <p class="pg-seller" th:text="${item.seller.username}"></p>
+            <div class="pg-rating">
+                <div class="pg-stars">★★★★☆</div>
+                <span>4.5</span>
             </div>
-            <div class="pg-product-card">
-              <div class="pg-product-image">
-                <img th:src="@{/Image/home/Smart Home Hub.jpg}" alt="Smart Home Hub" />
-                <button class="pg-wishlist-btn">♡</button>
-              </div>
-              <div class="pg-product-info">
-                <h3 class="pg-product-title">Smart Home Hub</h3>
-                <p class="pg-price">$199.99</p>
-                <p class="pg-seller">Smart Living</p>
-                <div class="pg-rating">
-                  <div class="pg-stars">★★★★☆</div>
-                  <span>4.7</span>
-                </div>
-                <div class="pg-buttons">
-                  <button class="pg-cart-btn">Add to Cart</button>
-                  <button class="pg-view-btn">👁</button>
-                </div>
-              </div>
+            <div class="pg-buttons">
+                <button class="pg-cart-btn">Add to Cart</button>
+                <a th:href="@{/itemList/{itemID}(itemID=${item.itemID})}" th:text="'👁'" class="pg-view-btn"></a> 
             </div>
-            <div class="pg-product-card">
-              <div class="pg-product-image">
-                <img th:src="@{/Image/home/Fitness Tracker.jpg}" alt="Fitness Tracker" />
-                <button class="pg-wishlist-btn">♡</button>
-              </div>
-              <div class="pg-product-info">
-                <h3 class="pg-product-title">Fitness Tracker</h3>
-                <p class="pg-price">$79.99</p>
-                <p class="pg-seller">Health Tech</p>
-                <div class="pg-rating">
-                  <div class="pg-stars">★★★★☆</div>
-                  <span>4.6</span>
-                </div>
-                <div class="pg-buttons">
-                  <button class="pg-cart-btn">Add to Cart</button>
-                  <button class="pg-view-btn">👁</button>
-                </div>
-              </div>
-            </div>
-                        <div class="pg-product-card">
-              <div class="pg-product-image">
-                <img th:src="@{/Image/home/Fitness Tracker.jpg}" alt="Fitness Tracker" />
-                <button class="pg-wishlist-btn">♡</button>
-              </div>
-              <div class="pg-product-info">
-                <h3 class="pg-product-title">Fitness Tracker</h3>
-                <p class="pg-price">$79.99</p>
-                <p class="pg-seller">Health Tech</p>
-                <div class="pg-rating">
-                  <div class="pg-stars">★★★★☆</div>
-                  <span>4.6</span>
-                </div>
-                <div class="pg-buttons">
-                  <button class="pg-cart-btn">Add to Cart</button>
-                  <button class="pg-view-btn">👁</button>
-                </div>
-              </div>
-            </div>
-            <div class="pg-product-card">
-              <div class="pg-product-image">
-                <img th:src="@{/Image/home/Portable Charger.jpg}" alt="Portable Charger" />
-                <button class="pg-wishlist-btn">♡</button>
-              </div>
-              <div class="pg-product-info">
-                <h3 class="pg-product-title">Portable Charger</h3>
-                <p class="pg-price">$49.99</p>
-                <p class="pg-seller">Power Solutions</p>
-                <div class="pg-rating">
-                  <div class="pg-stars">★★★★☆</div>
-                  <span>4.5</span>
-                </div>
-                <div class="pg-buttons">
-                  <button class="pg-cart-btn">Add to Cart</button>
-                  <button class="pg-view-btn">👁</button>
-                </div>
-              </div>
-            </div>
-          </div>
+        </div>
+    </div>
+    
+
+</div>
+
+        
 
           <button class="pg-nav-arrow pg-next" aria-label="Next">
             <svg
@@ -511,7 +442,7 @@
             </svg>
           </button>
         </div>
-      </div>
+ </div>
     </section>
 
     <!--Admin Announcement-->

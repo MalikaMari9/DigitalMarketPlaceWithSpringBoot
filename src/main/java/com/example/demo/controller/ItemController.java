@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -32,6 +33,7 @@ import com.example.demo.entity.Item;
 import com.example.demo.entity.Item.ApprovalStatus;
 import com.example.demo.entity.ItemImage;
 import com.example.demo.entity.User;
+import com.example.demo.entity.View;
 import com.example.demo.entity.Auction.Auction;
 import com.example.demo.entity.tag.ItemTag;
 import com.example.demo.entity.tag.Tag;
@@ -39,6 +41,7 @@ import com.example.demo.repository.CategoryRepository;
 import com.example.demo.repository.ItemImageRepository;
 import com.example.demo.repository.ItemRepository;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.repository.ViewRepository;
 import com.example.demo.repository.Auction.AuctionRepository;
 import com.example.demo.repository.Auction.AuctionTrackRepository;
 import com.example.demo.repository.tag.ItemTagRepository;
@@ -67,6 +70,8 @@ public class ItemController {
 	TagRepository tagRepo;
 	@Autowired
 	ItemTagRepository itemTagRepo;
+	@Autowired
+	ViewRepository viewRepo;
 
 	@GetMapping("/sell-item")
 	public String showSellItemForm(Model model) {
@@ -95,7 +100,7 @@ public class ItemController {
 	}
 
 	@GetMapping("itemList/{itemID}")
-	public String viewItem(@PathVariable("itemID") Long itemID, Model model) {
+	public String viewItem(@PathVariable("itemID") Long itemID, Model model, HttpSession session) {
 		Item item = itemRepo.getReferenceById(itemID);
 		Auction auction = auctionRepo.findByItem_ItemID(itemID);
 
@@ -103,6 +108,15 @@ public class ItemController {
 		int AuctionCount = auctionTrackRepo.countByAuction_AuctionID(auctionID);
 		Double maxBid = auctionTrackRepo.findMaxPriceByAuctionID(auctionID);
 
+		// views
+		// ✅ Retrieve user from session
+		User user = (User) session.getAttribute("user");
+
+		// ✅ Log the view (Prevent duplicate logging)
+		if (user != null && !viewRepo.existsByItemAndUser(item, user)) {
+			View view = new View(user, item);
+			viewRepo.save(view);
+		}
 		// tags
 
 		List<String> tagNames = itemRepo.findTagNamesByItemId(itemID);
@@ -352,7 +366,31 @@ public class ItemController {
 		return "searchResults";
 	}
 
-	//
+	// Recommendations in HOME
+	// ModelAttribute wasnt working if we call it so I had to forcced it from home
+	// on dmpcontroller
+	@ModelAttribute("recommendedItems")
+	public List<Item> getRecommendations(HttpSession session) {
+		User user = (User) session.getAttribute("user");
+		List<Item> recommendedItems = new ArrayList<>();
+
+		if (user != null) {
+			System.out.println("Fetching recommendations for user ID: " + user.getUserID());
+
+			List<Item> byCategory = itemRepo.findRecommendedItemsByCategory(user.getUserID());
+			List<Item> byTag = itemRepo.findRecommendedItemsByTag(user.getUserID());
+
+			System.out.println("Category-based recommendations: " + byCategory.size());
+			System.out.println("Tag-based recommendations: " + byTag.size());
+
+			recommendedItems.addAll(byCategory);
+			recommendedItems.addAll(byTag);
+		}
+
+		return recommendedItems;
+	}
+
+	// Delete
 
 	@DeleteMapping("/delete/{itemId}")
 	public ResponseEntity<String> deleteItem(@PathVariable Long itemId) {

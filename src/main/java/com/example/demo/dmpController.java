@@ -1,16 +1,24 @@
 package com.example.demo;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
 import com.example.demo.entity.Category;
 import com.example.demo.entity.Item;
+import com.example.demo.entity.User;
 import com.example.demo.repository.CategoryRepository;
 import com.example.demo.repository.ItemRepository;
+
+import jakarta.servlet.http.HttpSession;
 
 //Idk when and why but this code decided itself to become global
 @Controller
@@ -28,9 +36,21 @@ public class dmpController {
 	}
 
 	@GetMapping("/home")
-	public String viewHome() {
-		return "home";
+	public String viewHome(HttpSession session, Model model) {
+		User user = (User) session.getAttribute("user");
+		Set<Item> recommendedItems = new HashSet<>(); // ✅ Use a Set to avoid duplicates
 
+		if (user != null) {
+			recommendedItems.addAll(itemRepo.findRecommendedItemsByCategory(user.getUserID()));
+			recommendedItems.addAll(itemRepo.findRecommendedItemsByTag(user.getUserID()));
+		} else {
+			// ✅ Fetch only the latest 10 items for guests
+			List<Item> latestItems = itemRepo.findLatestItems(PageRequest.of(0, 10)).getContent();
+			recommendedItems.addAll(latestItems);
+		}
+
+		model.addAttribute("recommendedItems", new ArrayList<>(recommendedItems)); // ✅ Convert Set back to List
+		return "home";
 	}
 
 	@GetMapping("/test")

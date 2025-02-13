@@ -35,6 +35,17 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 			+ "WHERE c.catID IN (SELECT sub.catID FROM Category sub WHERE sub.catID = :categoryID OR sub.parentCategory.catID = :categoryID OR sub.parentCategory.parentCategory.catID = :categoryID)")
 	List<Item> findItemsByCategory(@Param("categoryID") Long categoryID);
 
+	@Query("SELECT i FROM Item i WHERE i.category.catID IN (" + "SELECT it.category.catID FROM View v "
+			+ "JOIN v.item it WHERE v.user.userID = :userID " + "GROUP BY it.category.catID ORDER BY COUNT(v) DESC)")
+	List<Item> findRecommendedItemsByCategory(@Param("userID") Long userID);
+
+	@Query("SELECT DISTINCT i FROM Item i " + "JOIN i.itemTags it WHERE it.tag.tagID IN ("
+			+ "SELECT t.tag.tagID FROM View v " + "JOIN v.item.itemTags t WHERE v.user.userID = :userID)")
+	List<Item> findRecommendedItemsByTag(@Param("userID") Long userID);
+
+	@Query("SELECT i FROM Item i ORDER BY i.createdAt DESC")
+	Page<Item> findLatestItems(Pageable pageable);
+
 	Page<Item> findBySeller_UserIDOrderByApproveDesc(Long sellerUserID, Pageable pageable);
 
 	List<Item> findBySeller_UserID(Long sellerUserID);

@@ -258,6 +258,13 @@
                 <i data-lucide="map-pin"></i>Address Book
               </button>
               </a>
+              <th:block th:if="${session.user.seller.businessType=='C2C' and session.user.seller.approval!='accepted' }">
+             <button class="sidebar-buttonyoon">
+             <a th:href="@{/convert-to-buyer}">              
+                <i data-lucide="message-square"></i>Buy with us!
+              </button>
+              </a>
+              </th:block>
             </div>
           </div>
 <th:block th:if="${session.user.seller.approval=='accepted'}" >
