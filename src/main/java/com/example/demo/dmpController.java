@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -12,9 +13,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
+import com.example.demo.entity.Cart;
 import com.example.demo.entity.Category;
 import com.example.demo.entity.Item;
 import com.example.demo.entity.User;
+import com.example.demo.repository.CartRepository;
 import com.example.demo.repository.CategoryRepository;
 import com.example.demo.repository.ItemRepository;
 
@@ -23,6 +26,10 @@ import jakarta.servlet.http.HttpSession;
 //Idk when and why but this code decided itself to become global
 @Controller
 public class dmpController {
+
+	@Autowired
+	CartRepository cartRepo;
+
 	@GetMapping("/viewItem")
 	public String viewItem() {
 		return "viewSale";
@@ -41,8 +48,36 @@ public class dmpController {
 		Set<Item> recommendedItems = new HashSet<>(); // ✅ Use a Set to avoid duplicates
 
 		if (user != null) {
-			recommendedItems.addAll(itemRepo.findRecommendedItemsByCategory(user.getUserID()));
-			recommendedItems.addAll(itemRepo.findRecommendedItemsByTag(user.getUserID()));
+			System.out.println("Fetching recommendations for user ID: " + user.getUserID());
+
+			List<Item> byCategory = itemRepo.findRecommendedItemsByCategory(user.getUserID());
+			List<Item> byTag = itemRepo.findRecommendedItemsByTag(user.getUserID());
+
+			System.out.println("Category-based recommendations before filtering: " + byCategory.size());
+			System.out.println("Tag-based recommendations before filtering: " + byTag.size());
+
+			// ✅ Fetch items in the user's cart
+			List<Item> cartItems = cartRepo.findByUser(user).stream().map(Cart::getItem).collect(Collectors.toList());
+
+			System.out.println("Items in cart: " + cartItems.size());
+
+			// ✅ Remove items that are already in the cart
+			byCategory.removeAll(cartItems);
+			byTag.removeAll(cartItems);
+
+			System.out.println("Category-based recommendations after filtering: " + byCategory.size());
+			System.out.println("Tag-based recommendations after filtering: " + byTag.size());
+
+			recommendedItems.addAll(byCategory);
+			recommendedItems.addAll(byTag);
+
+			// ✅ If no recommendations found, show latest 10 items (same as non-logged-in
+			// users)
+			if (recommendedItems.isEmpty()) {
+				System.out.println("No recommendations found, showing latest items instead.");
+				List<Item> latestItems = itemRepo.findLatestItems(PageRequest.of(0, 10)).getContent();
+				recommendedItems.addAll(latestItems);
+			}
 		} else {
 			// ✅ Fetch only the latest 10 items for guests
 			List<Item> latestItems = itemRepo.findLatestItems(PageRequest.of(0, 10)).getContent();

@@ -3,128 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Completed Orders</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="CSS/proceedCheckout.css">
+    <title>Your Cart</title>
+    <link rel="stylesheet" th:href="@{/CSS/proceedCheckout.css}">
+    <link th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css}" rel="stylesheet">
+	<script th:src="@{/JS/cart/trash.js}"></script>
+	      <link th:href="@{/CSS/headerFooter.css}" rel="stylesheet">
+ 	<script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <link th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css}" rel="stylesheet">
+ 	<script th:src="@{/JS/sidebar.js}"></script>
+ 	 <script th:src="@{/JS/CategorySelect.js}"></script>
+	<style>
+			a{
+				text-decoration:none;
+				color:black;
+			}
+			
+			   	
+		</style>
+   
+
 </head>
 <body>
+<header th:insert="fragments/header :: header"></header>
     <div class="checkout-body">
+        <h1>Your Cart</h1>
 
-        <!-- Order 1 Wrapper -->
-        <div class="completed-orders-wrapper">
-            <h2>Unprocessed orders from <a href="viewprofile.html" class="shop-name">Seller</a> </h2> 
-            <div class="order-card">
-                <div class="order-card-header">
-                    <img src="https://marksandspencer.com.ph/cdn/shop/products/SD_01_T01_1026C_Y0_X_EC_90.jpg?v=1673598246" alt="Leather Tote Bag" class="order-image">
-                    <div class="order-info">
-                        <h4 class="order-title">Leather Tote Bag</h4>
-                        
-                        <p class="order-date"><i class="fas fa-calendar-alt"></i> 2024-12-27 12:11</p>
-                    </div>
-                    <div class="order-actions">
-                        <button class="trash-button" title="Delete">
-                            <i class="fas fa-heart"></i> 
-                        </button>
-                        <button class="trash-button" title="Delete">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
-                        
-                    </div>
-                   
-                </div>
-                
-                <div class="order-details">
-                    <p><strong>Order No:</strong> 18965808N</p>
-                    <p><strong>Price × Quantity:</strong> <span class="order-price">MMK 50,000 × 1</span></p>
-                   
-                </div> 
-            </div>
-            <div class="order-footer">
-            <p><strong>Total:</strong> <span class="order-price">MMK 50,000 </span></p>
-            </div>
-             		<div class="order-footer">
-       				 <button class="proceed-button">Proceed to Order</button>
-    				</div>
-    				
-    				
+        <input type="hidden" id="cartCountValue" th:value="${cartCount}" />
+
+        <!-- If cart is empty, show message -->
+        <div th:if="${emptyCartMessage}" class="empty-cart">
+            <p th:text="${emptyCartMessage}"></p>
         </div>
 
-        <!-- Order 2 Wrapper -->
-        <div class="completed-orders-wrapper">
-            <h2>Unprocessed orders from <a href="viewprofile.html" class="shop-name">Seller</a> </h2> 
-            <div class="order-card">
+        <!-- Grouped items by seller -->
+        <div th:each="entry : ${groupedCart}" class="completed-orders-wrapper">
+            <h2> Unprocessed Orders from 
+                <a th:href="@{/viewSeller/{sellerID}(sellerID=${entry.key.userID})}" 
+                   th:text="${entry.key.username}"  
+                   class="seller-link">
+                </a>
+            </h2>
+
+            <div th:each="cartItem : ${entry.value}" class="order-card">
                 <div class="order-card-header">
-                    <img src="https://callashoes.co.uk/cdn/shop/files/emily_heels_for_bunions_calla_shoes_4.jpg?v=1676998804&width=1080" alt="Heels" class="order-image">
+                    <img th:src="@{${cartItem.item.getThumbnail()}}" alt="Product Image" class="order-image">
                     <div class="order-info">
-                        <h4 class="order-title">Heels</h4>
+                   <h4 class="order-title">   <a th:if="${cartItem.item != null}" th:href="@{/itemList/{itemID}(itemID=${cartItem.item.itemID})}"  th:text="${cartItem.item.itemName}"> </a></h4>
+ 
+
+
+
+                        <p class="order-date"><i class="fas fa-calendar-alt"></i> <span th:text="${cartItem.formattedCreatedAt}"></span>
+</p>
+                    </div>
                     
-                        <p class="order-date"><i class="fas fa-calendar-alt"></i> 2024-12-27 12:10</p>
-                    </div>
+                    <!-- Wishlist & Remove Buttons -->
                     <div class="order-actions">
-                        <button class="trash-button" title="Delete">
+                        <button class="wishlist-button" title="Add to Wishlist">
                             <i class="fas fa-heart"></i> 
                         </button>
-                        <button class="trash-button" title="Delete">
+                        <button class="trash-button" title="Remove from Cart" th:data-cart-id="${cartItem.cartID}">
                             <i class="fas fa-trash-alt"></i>
                         </button>
-                        
                     </div>
-                     
-                   
                 </div>
-                
-                <div class="order-details">
-                    <p><strong>Order No:</strong> 18965798T</p>
-                    <p><strong>Price × Quantity:</strong> <span class="order-price">MMK 45,000 × 1</span></p>
-               
-                </div>
-                 
-            </div>
-            <div class="order-footer">
-            <p><strong>Total:</strong> <span class="order-price">MMK 50,000 </span></p>
-            </div>
-             <div class="order-footer">
-       				 <button class="proceed-button">Proceed to Order</button>
-    				</div>
-        </div>
 
-        <!-- Order 3 Wrapper -->
-        <div class="completed-orders-wrapper">
-            <h2>Unprocessed orders from <a href="viewprofile.html" class="shop-name">Seller</a> </h2> 
-            <div class="order-card">
-                <div class="order-card-header">
-                    <img src="https://market99.com/cdn/shop/products/blue-ceramic-curvy-vase-engraved-floral-pattern-flower-holder-vases-1-29122137587882.jpg?crop=center&height=1403&v=1725536221&width=1080" alt="Vase" class="order-image">
-                    <div class="order-info">
-                        <h4 class="order-title">Vase</h4>
-                        
-                        <p class="order-date"><i class="fas fa-calendar-alt"></i> 2024-12-28 10:15</p>
-                    </div>
-                    <div class="order-actions">
-                        <button class="trash-button" title="Delete">
-                            <i class="fas fa-heart"></i> 
-                        </button>
-                        <button class="trash-button" title="Delete">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
-                        
-                    </div>
-                </div>
-                
                 <div class="order-details">
-                    <p><strong>Order No:</strong> 18965988W</p>
-                    <p><strong>Price × Quantity:</strong> <span class="order-price">MMK 60,000 × 2</span></p>
-                 
+                    <p><strong>Quantity:</strong> <span th:text="${cartItem.quantity}"></span></p>
+                    <p><strong>Price:</strong> USD <span th:text="${cartItem.item.price}"></span></p>
                 </div>
             </div>
-            <div class="order-footer">
-            <p><strong>Total:</strong> <span class="order-price">MMK 50,000 </span></p>
-            </div>
-             <div class="order-footer">
-       				 <button class="proceed-button">Proceed to Order</button>
-    				</div>
-        </div>
 
+            <!-- Total price for this seller's items -->
+            <div class="order-footer">
+                <p><strong>Total:</strong> USD 
+                    <span th:text="${#aggregates.sum(entry.value.![item.price * quantity])}"></span>
+                </p>
+            </div>
+
+            <div class="order-footer">
+                <button class="proceed-button">Proceed to Order</button>
+            </div>
+        </div>
     </div>
-    
+	
+	
+    <footer th:insert="fragments/footer :: footer"></footer>
+ <script>
+        lucide.createIcons();
+      </script>
 </body>
 </html>

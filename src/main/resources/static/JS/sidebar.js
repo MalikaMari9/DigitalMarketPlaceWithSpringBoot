@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const categoriesDropdown = document.getElementById('categoriesDropdownyoon');
     
     // Cart count
-    let cartCount = 3;
+    let cartCount = 0;
     
     // Scroll handler
     window.addEventListener('scroll', () => {
@@ -95,3 +95,25 @@ document.addEventListener('DOMContentLoaded', function() {
     // Create icons
     lucide.createIcons();
 });
+
+async function updateCartCount() {
+    try {
+        const response = await fetch("/cart/count"); // Ensure this matches your backend endpoint
+        if (!response.ok) {
+            throw new Error("Failed to fetch cart count");
+        }
+
+        const data = await response.json();
+        const cartCountElement = document.getElementById("cartCountyoon");
+
+        if (cartCountElement) {
+            cartCountElement.textContent = data.cartCount;
+            cartCountElement.style.display = data.cartCount > 0 ? "inline" : "none";
+        }
+    } catch (error) {
+        console.error("❌ Error fetching cart count:", error);
+    }
+}
+
+// ✅ Fetch cart count on every page load
+document.addEventListener("DOMContentLoaded", updateCartCount);

@@ -21,6 +21,8 @@
     <script th:src="@{/JS/home/admin-announcement.js}"></script>
     <script th:src="@{/JS/home/journey-section.js}"></script>
      <script th:src="@{/JS/CategorySelect.js}"></script>
+     <!-- Cart -->
+     	<script th:src="@{/JS/cart/cartIcon.js}"></script>
 
     <!-- External Libraries -->
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -357,7 +359,9 @@
                   <span>4.5</span>
                 </div>
                 <div class="pg-buttons">
-                  <button class="pg-cart-btn">Add to Cart</button>
+                                    <button class="pg-cart-btn"  
+				  th:data-item-id="${item.itemID}"
+				  th:data-user-id="${session.user != null ? session.user.userID : ''}">Add to Cart</button>
                    <a th:href="@{/itemList/{itemID}(itemID=${item.itemID})}" th:text="'👁'"  class="pg-view-btn"></a> 
                 </div>
               </div>
@@ -418,7 +422,9 @@
                 <span>4.5</span>
             </div>
             <div class="pg-buttons">
-                <button class="pg-cart-btn">Add to Cart</button>
+                               <button class="pg-cart-btn"  
+				  th:data-item-id="${item.itemID}"
+				  th:data-user-id="${session.user != null ? session.user.userID : ''}">Add to Cart</button>
                 <a th:href="@{/itemList/{itemID}(itemID=${item.itemID})}" th:text="'👁'" class="pg-view-btn"></a> 
             </div>
         </div>

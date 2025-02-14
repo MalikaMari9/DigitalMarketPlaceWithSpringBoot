@@ -16,11 +16,12 @@
     <!-- JavaScript Links -->
     <script th:src="@{/JS/sidebar.js}"></script>
      <script th:src="@{/JS/CategorySelect.js}"></script>
-    <script th:src="@{/JS/quanManipulation.js}"></script>
+    
     <script th:src="@{/JS/countdown.js}"></script>
      <script th:src="@{/JS/ImageSwap.js}" defer></script>
+         <script th:src="@{/JS/cart/cartIcon.js}" defer></script>
 </head>
-<body>
+<body th:attr="data-user-id=${session.user != null ? session.user.userID : ''}">
 <header th:insert="~{fragments/header :: header}"></header>
 <!-- Normal Sale -->
 <div id="saleItem">
@@ -73,17 +74,23 @@
 
         <div id="normal-sale"
         th:if="${item.sellType != null and item.sellType.name() != 'AUCTION'}">
-        <h3 th:text="'USD'+ ${item.price}">USD  $66</h3>
+        <h3 th:text="'USD'+ ${item.price}"></h3>
         <div class="quantity-control">
             <label>Quantity: </label>
             <button class="decrease">-</button>
-            <input type="number" value="0" name="quan" class="quantity-input" readonly>
+            			<input type="number" value="1" name="quan" class="quantity-input" min="1" 
+			       th:attr="data-max-stock=${item.quality}">
             <button class="increase">+</button>
         </div>
         
         
 
-        <button id="addToCartBtn">Add to Cart</button>
+<button class="addToCartBtn" 
+        th:data-item-id="${item.itemID}"
+        th:data-user-id="${session.user != null ? session.user.userID : ''}">
+    Add to Cart
+</button>
+
         <div id="popupNotification" class="hidden">
             <p>Item has been added to the cart!</p>
         </div>

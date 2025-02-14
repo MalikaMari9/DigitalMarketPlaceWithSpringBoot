@@ -1,6 +1,8 @@
 package com.example.demo.entity;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -71,5 +73,42 @@ public class Cart {
 
 	public void setUser(User user) {
 		this.user = user;
+	}
+
+	public String getTimeAgo() {
+		if (createdAt == null)
+			return "Unknown";
+
+		LocalDateTime now = LocalDateTime.now();
+		Duration duration = Duration.between(createdAt, now);
+
+		long seconds = duration.getSeconds();
+		if (seconds < 60)
+			return seconds + " seconds ago";
+		long minutes = seconds / 60;
+		if (minutes < 60)
+			return minutes + " minutes ago";
+		long hours = minutes / 60;
+		if (hours < 24)
+			return hours + " hours ago";
+		long days = hours / 24;
+		if (days == 1)
+			return "Yesterday";
+		if (days < 7)
+			return days + " days ago";
+		long weeks = days / 7;
+		if (weeks < 4)
+			return weeks + " weeks ago";
+		long months = days / 30;
+		if (months < 12)
+			return months + " months ago";
+		long years = months / 12;
+		return years + " years ago";
+	}
+
+	// ✅ Option to format the exact date-time if needed
+	public String getFormattedCreatedAt() {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy 'at' hh:mm a");
+		return createdAt != null ? createdAt.format(formatter) : "Unknown date";
 	}
 }

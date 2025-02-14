@@ -19,15 +19,37 @@ public interface ViewRepository extends JpaRepository<View, Long> {
 	Long countViewsByItem(@Param("itemID") Long itemID);
 
 	// ✅ Find most viewed categories by a user
-	@Query("SELECT v.item.category.catID FROM View v WHERE v.user.userID = :userID GROUP BY v.item.category.catID ORDER BY COUNT(v) DESC")
+	@Query("""
+			    SELECT v.item.category.catID
+			    FROM View v
+			    WHERE v.user.userID = :userID
+			    AND v.item.itemID NOT IN (SELECT c.item.itemID FROM Cart c WHERE c.user.userID = :userID)
+			    GROUP BY v.item.category.catID
+			    ORDER BY COUNT(v) DESC
+			""")
 	List<Long> findMostViewedCategoriesByUser(@Param("userID") Long userID);
 
 	// ✅ Find most viewed tags by a user
-	@Query("SELECT it.tag.tagID FROM View v JOIN v.item.itemTags it WHERE v.user.userID = :userID GROUP BY it.tag.tagID ORDER BY COUNT(it) DESC")
+	@Query("""
+			    SELECT it.tag.tagID
+			    FROM View v
+			    JOIN v.item.itemTags it
+			    WHERE v.user.userID = :userID
+			    AND it.item.itemID NOT IN (SELECT c.item.itemID FROM Cart c WHERE c.user.userID = :userID)
+			    GROUP BY it.tag.tagID
+			    ORDER BY COUNT(it) DESC
+			""")
 	List<Long> findMostViewedTagsByUser(@Param("userID") Long userID);
 
 	// ✅ Find items viewed by users who viewed the same item
-	@Query("SELECT DISTINCT v2.item FROM View v1 JOIN View v2 ON v1.user.userID = v2.user.userID WHERE v1.item.itemID = :itemID AND v1.user.userID != :userID")
+	@Query("""
+			    SELECT DISTINCT v2.item
+			    FROM View v1
+			    JOIN View v2 ON v1.user.userID = v2.user.userID
+			    WHERE v1.item.itemID = :itemID
+			    AND v1.user.userID != :userID
+			    AND v2.item.itemID NOT IN (SELECT c.item.itemID FROM Cart c WHERE c.user.userID = :userID)
+			""")
 	List<Item> findItemsViewedBySimilarUsers(@Param("itemID") Long itemID, @Param("userID") Long userID);
 
 	@Query("SELECT COUNT(v) > 0 FROM View v WHERE v.item = :item AND v.user = :user")

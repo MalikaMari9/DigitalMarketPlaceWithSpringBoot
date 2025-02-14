@@ -66,9 +66,15 @@
                 Contact Us
               </button></a>
      <th:block th:if="${session.user == null or session.user.role=='BUYER'}">
-              <button class="cart-buttonyoon">
-                <i data-lucide="shopping-cart"></i>
-               <!--   <span class="cart-countyoon" id="cartCountyoon">3</span>-->
+              <a th:href="@{/cart/view}">
+					        <button class="cart-buttonyoon">
+					            <i data-lucide="shopping-cart"></i>
+					            <span class="cart-countyoon" id="cartCountyoon"
+					                  th:text="${cartCount}" 
+					                  th:style="${cartCount > 0 ? 'display:inline;' : 'display:none;'}">
+					            </span>
+					        </button>
+					    </a>
               </button>
        </th:block>
            <th:block th:if="${session.user != null}">
@@ -76,7 +82,7 @@
               
                <button class="cart-buttonyoon">
                 <i data-lucide="book-check"></i>
-                <span class="cart-countyoon" id="cartCountyoon">3</span>
+               
               </button>
               </th:block>
               </th:block>

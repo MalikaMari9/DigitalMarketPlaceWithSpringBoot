@@ -1,19 +1,32 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const decreaseButton = document.querySelector(".decrease");
-    const increaseButton = document.querySelector(".increase");
-    const quantityInput = document.querySelector(".quantity-input");
+    document.querySelectorAll(".quantity-control").forEach((control) => {
+        const decreaseButton = control.querySelector(".decrease");
+        const increaseButton = control.querySelector(".increase");
+        const quantityInput = control.querySelector(".quantity-input");
 
-    // Event listener for the decrease button
-    decreaseButton.addEventListener("click", () => {
-        const currentValue = parseInt(quantityInput.value, 10);
-        if (currentValue > 0) {
-            quantityInput.value = currentValue - 1;
-        }
-    });
+        if (!quantityInput) return;
 
-    // Event listener for the increase button
-    increaseButton.addEventListener("click", () => {
-        const currentValue = parseInt(quantityInput.value, 10);
-        quantityInput.value = currentValue + 1;
+        let maxStock = parseInt(quantityInput.getAttribute("data-max-stock"), 10) || 1; // Ensure a valid stock limit
+
+        // ✅ Prevent duplicate event listeners
+        decreaseButton.addEventListener("click", (event) => {
+            event.preventDefault(); // ✅ Prevent unintended form submissions
+
+            let currentValue = parseInt(quantityInput.value, 10) || 1;
+            if (currentValue > 1) {
+                quantityInput.value = currentValue - 1;
+            }
+        });
+
+        increaseButton.addEventListener("click", (event) => {
+            event.preventDefault(); // ✅ Prevent unintended form submissions
+
+            let currentValue = parseInt(quantityInput.value, 10) || 1;
+            if (currentValue < maxStock) {
+                quantityInput.value = currentValue + 1;
+            } else {
+                alert("⚠️ Maximum stock limit reached!");
+            }
+        });
     });
 });
