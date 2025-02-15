@@ -233,6 +233,7 @@
             <img src="Image/profile/default.png"  alt="User" id="userAvataryoon" />
           </div>
           <h3 th:text="${session.user.username}"></h3>
+          <span th:text="'<' + ${session.user.seller.businessType} + '>'"></span>
         </div>
         <button class="close-buttonyoon" id="closeBtnyoon">
           <i data-lucide="x"></i>
