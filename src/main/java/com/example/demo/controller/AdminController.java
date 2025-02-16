@@ -16,12 +16,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.example.demo.entity.Item;
 import com.example.demo.entity.Item.ApprovalStatus;
 import com.example.demo.entity.ItemApproval;
+import com.example.demo.entity.Notification;
 import com.example.demo.entity.Seller;
 import com.example.demo.entity.User;
 import com.example.demo.repository.CategoryRepository;
 import com.example.demo.repository.ItemApprovalRepository;
 import com.example.demo.repository.ItemImageRepository;
 import com.example.demo.repository.ItemRepository;
+import com.example.demo.repository.NotificationRepository;
 import com.example.demo.repository.SellerRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.repository.ViewRepository;
@@ -58,6 +60,8 @@ public class AdminController {
 	ItemApprovalRepository itemApprovalRepo;
 	@Autowired
 	SellerRepository sellerRepo;
+	@Autowired
+	NotificationRepository notificationRepo;
 
 	@GetMapping("/admin/viewDashboard")
 	public String viewDashboard() {
@@ -93,15 +97,21 @@ public class AdminController {
 
 		// ✅ Check if an approval record already exists
 		ItemApproval itemApproval = itemApprovalRepo.findByItem(item);
-
 		if (itemApproval == null) {
 			itemApproval = new ItemApproval();
 			itemApproval.setItem(item);
 		}
-
 		itemApproval.setApprovalDate(LocalDateTime.now());
 		itemApproval.setRejectionReason(null); // ✅ No rejection reason for approved items
 		itemApprovalRepo.save(itemApproval);
+
+		// ✅ Notify Seller
+		User seller = item.getSeller();
+		if (seller != null) {
+			Notification notification = new Notification(seller, item,
+					"Your item '" + item.getItemName() + "' has been approved!", "ITEM_APPROVAL");
+			notificationRepo.save(notification);
+		}
 
 		return ResponseEntity.ok("✅ Item Approved!");
 	}
@@ -122,7 +132,6 @@ public class AdminController {
 
 		// ✅ Check if an approval record already exists
 		ItemApproval itemApproval = itemApprovalRepo.findByItem(item);
-
 		if (itemApproval == null) {
 			itemApproval = new ItemApproval();
 			itemApproval.setItem(item);
@@ -131,6 +140,14 @@ public class AdminController {
 		itemApproval.setApprovalDate(LocalDateTime.now());
 		itemApproval.setRejectionReason(reason);
 		itemApprovalRepo.save(itemApproval);
+
+		// ✅ Notify Seller
+		User seller = item.getSeller();
+		if (seller != null) {
+			Notification notification = new Notification(seller, item,
+					"Your item '" + item.getItemName() + "' has been rejected. Reason: " + reason, "ITEM_REJECTION");
+			notificationRepo.save(notification);
+		}
 
 		return ResponseEntity.ok("❌ Item Rejected!");
 	}
@@ -153,13 +170,16 @@ public class AdminController {
 		if (user != null) {
 			user.setRole("SELLER");
 			userRepo.save(user);
+			Notification notification = new Notification(user, "Your seller account has been approved!",
+					"SELLER_APPROVAL");
+			notificationRepo.save(notification);
 		}
 
 		sellerRepo.save(seller);
 		return ResponseEntity.ok("✅ Seller Approved!");
 	}
 
-	// ✅ Reject Seller with Reason
+	// ✅ Reject Seller
 	@PostMapping("admin/reject-seller/{sellerID}")
 	@ResponseBody
 	public ResponseEntity<?> rejectSeller(@PathVariable Long sellerID) {
@@ -172,6 +192,13 @@ public class AdminController {
 		// ✅ Update Seller Approval Status
 		seller.setApproval("rejected");
 		seller.setApprovalDate(LocalDateTime.now());
+
+		User user = seller.getUser();
+		if (user != null) {
+			Notification notification = new Notification(user, "Your seller application has been rejected.",
+					"SELLER_REJECTION");
+			notificationRepo.save(notification);
+		}
 
 		sellerRepo.save(seller);
 

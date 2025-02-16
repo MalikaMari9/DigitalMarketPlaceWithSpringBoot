@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications</title>
+    <link rel="stylesheet" th:href="@{/CSS/noti.css}">
+    <script th:src="@{/JS/noti.js}"></script>
+</head>
+<body>
+
+    <h2>Your Notifications</h2>
+
+    <div class="notifications-container">
+        <div th:if="${notifications.isEmpty()}">
+            <p>No new notifications.</p>
+        </div>
+
+        <div th:each="noti : ${notifications}" 
+             class="notification-item" 
+             th:classappend="${noti.seen ? '' : 'unread'}">
+            
+            <!-- ✅ Notification Icon -->
+            <span class="notification-icon">
+                <i th:if="${noti.notiType == 'ITEM_APPROVAL'}" class="fas fa-check-circle"></i>
+                <i th:if="${noti.notiType == 'ITEM_REJECTION'}" class="fas fa-times-circle"></i>
+                <i th:if="${noti.notiType == 'NEW_MESSAGE'}" class="fas fa-envelope"></i>
+                <i th:if="${noti.notiType == 'ORDER_PLACED'}" class="fas fa-shopping-cart"></i>
+            </span>
+
+            <!-- ✅ Notification Content -->
+            <span class="notification-text" th:text="${noti.notiText}"></span>
+
+            <!-- ✅ Notification Actions -->
+            <div class="notification-actions">
+                <a th:if="${noti.item != null}" th:href="@{/itemList/{itemID}(itemID=${noti.item.itemID})}">View Item</a>
+                <a th:if="${noti.sender != null}" th:href="@{/chat/{userID}(userID=${noti.sender.userID})}">View Message</a>
+            </div>
+
+            <!-- ✅ Timestamp -->
+            <span class="notification-time" th:text="${#temporals.format(noti.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
+        </div>
+
+        <!-- ✅ Clear All Button -->
+        <a href="#" class="clear-all">Clear All Notifications</a>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,107 @@
+/* ✅ General Styling */
+body {
+    font-family: "Poppins", sans-serif;
+    background-color: #f5f6fa;
+    margin: 0;
+    padding: 0;
+}
+
+h2 {
+    text-align: center;
+    margin: 20px 0;
+    color: #333;
+}
+
+/* ✅ Notification Container */
+.notifications-container {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 10px;
+}
+
+/* ✅ Notification Item */
+.notification-item {
+    background: #fff;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    transition: 0.3s ease;
+}
+
+/* ✅ Unread notifications (highlighted) */
+.notification-item.unread {
+    background: #e8f0fe;
+}
+
+/* ✅ Notification Icon */
+.notification-icon {
+    font-size: 18px;
+    margin-right: 12px;
+    color: #4caf50;
+}
+
+/* ✅ Notification Text */
+.notification-text {
+    flex: 1;
+    font-size: 14px;
+    color: #333;
+}
+
+/* ✅ Notification Time */
+.notification-time {
+    font-size: 12px;
+    color: #777;
+}
+
+/* ✅ Action Buttons */
+.notification-actions a {
+    background-color: #007bff;
+    color: white;
+    padding: 6px 10px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 12px;
+    transition: 0.3s;
+}
+
+.notification-actions a:hover {
+    background-color: #0056b3;
+}
+
+/* ✅ Clear All Button */
+.clear-all {
+    display: block;
+    text-align: center;
+    margin: 20px auto;
+    background-color: #ff3b3b;
+    color: white;
+    padding: 10px 15px;
+    text-decoration: none;
+    border-radius: 5px;
+    max-width: 200px;
+}
+
+.clear-all:hover {
+    background-color: #d63232;
+}
+
+/* ✅ Responsive Design */
+@media (max-width: 600px) {
+    .notifications-container {
+        padding: 10px;
+    }
+
+    .notification-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .notification-actions {
+        margin-top: 8px;
+    }
+}
