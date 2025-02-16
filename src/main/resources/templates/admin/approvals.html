@@ -9,7 +9,7 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script src="https://unpkg.com/feather-icons"></script>
-    <script th:src="@{/JS/admin/approvals.js}"></script>
+     <script th:src="@{/JS/admin/approvals.js}"></script> 
     
     
      <link th:href="@{/CSS/admin/admin-header.css}" rel="stylesheet">
@@ -30,25 +30,46 @@
             </div>
             <div class="card-content">
               <div class="table-container">
-                <table class="approvals-table">
-                  <thead>
-                    <tr>
-                      <th>Seller ID</th>
-                      <th>Business Name</th>
-                      <th>Business Type</th>
-                      <th>Approval</th>
-                      <th>User ID</th>
-                      <th>Name</th>
-                      <th>NRC No</th>
-                      <th>NRC Front</th>
-                      <th>NRC Back</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody id="sellerApprovalsTableBody">
-                    <!-- Table content will be populated by JavaScript -->
-                  </tbody>
-                </table>
+
+<table class="approvals-table">
+    <thead>
+        <tr>
+            <th>Seller ID</th>
+            <th>Business Name</th>
+            <th>Business Type</th>
+            <th>Approval</th>
+            <th>Name</th>
+            <th>NRC No</th>
+            <th>NRC Front</th>
+            <th>NRC Back</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="seller : ${pendingSellers}">
+            <td th:text="${seller.sellerID}"></td>
+            <td th:text="${seller.businessName}"></td>
+            <td th:text="${seller.businessType}"></td>
+            <td th:text="${seller.approval}"></td>
+            <td th:text="${seller.name}"></td>
+            <td th:text="${seller.nrcNo}"></td>
+            <td><img th:src="@{'/Images/NRC/' + ${seller.nrcFront}}" alt="NRC Front" width="50"></td>
+            <td><img th:src="@{'/Images/NRC/' + ${seller.nrcBack}}" alt="NRC Back" width="50"></td>
+            <td>
+                <button class="accept-btn" th:onclick="|handleSellerApproval(${seller.sellerID}, true)|">
+                    ✅ Approve
+                </button>
+                <button class="decline-btn" th:onclick="|handleSellerApproval(${seller.sellerID}, false)|">
+                    ❌ Reject
+                </button>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+
+
+
               </div>
             </div>
           </div>
@@ -62,27 +83,57 @@
             </div>
             <div class="card-content">
               <div class="table-container">
-                <table class="approvals-table">
-                  <thead>
-                    <tr>
-                      <th>Item ID</th>
-                      <th>Item Name</th>
-                      <th>Description</th>
-                      <th>Price</th>
-                      <th>Quality</th>
-                      <th>Sell Type</th>
-                      <th>Status</th>
-                      <th>Condition</th>
-                      <th>Seller ID</th>
-                      <th>Category ID</th>
-                      <th>View</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody id="itemApprovalsTableBody">
-                    <!-- Table content will be populated by JavaScript -->
-                  </tbody>
-                </table>
+<table class="approvals-table">
+    <thead>
+        <tr>
+            <th>Item ID</th>
+            <th>Item Name</th>
+            <th>Price</th>
+            <th>Condition</th>
+            <th>Quantity</th>
+            <th>Sell Type</th>
+           <th>Seller</th>
+            <th>Category</th>
+            <th>Approval/Rejection Date</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="item : ${pendingItems}">
+            <td th:text="${item.itemID}"></td>
+            <td th:text="${item.itemName}"></td>
+            <td th:text="'$' + ${item.price}"></td>
+            <td th:text="${item.cond}"></td>
+            <td th:text="${item.quality}"></td>
+            <td th:text="${item.sellType}"></td>
+   
+            <td th:text="${item.seller.username}"></td>
+            <td th:text="${item.category.name}"></td>
+            <td th:text="${item.itemApproval.getApprovalDate() != null ? item.itemApproval.getApprovalDate() : 'Pending'}"></td>
+            <td>
+                <button class="accept-btn" th:onclick="|handleItemApproval(${item.itemID}, true)|">
+    <i data-lucide="circle-check"></i>
+</button>
+
+<button class="decline-btn" th:onclick="|handleItemApproval(${item.itemID}, false)|">
+    <i data-lucide="circle-x"></i>
+</button>
+
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<!-- Modal for Rejection Reason -->
+<div id="rejectionModal" class="modal">
+    <div class="modal-content">
+        <h3>Reject Item</h3>
+        <textarea id="rejectionReason" placeholder="Enter rejection reason..."></textarea>
+        <button onclick="confirmRejection()">Submit</button>
+        <button onclick="closeModal()">Cancel</button>
+    </div>
+</div>
+
               </div>
             </div>
           </div>

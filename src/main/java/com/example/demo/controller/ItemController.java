@@ -31,6 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.example.demo.entity.Category;
 import com.example.demo.entity.Item;
 import com.example.demo.entity.Item.ApprovalStatus;
+import com.example.demo.entity.ItemApproval;
 import com.example.demo.entity.ItemImage;
 import com.example.demo.entity.User;
 import com.example.demo.entity.View;
@@ -38,6 +39,7 @@ import com.example.demo.entity.Auction.Auction;
 import com.example.demo.entity.tag.ItemTag;
 import com.example.demo.entity.tag.Tag;
 import com.example.demo.repository.CategoryRepository;
+import com.example.demo.repository.ItemApprovalRepository;
 import com.example.demo.repository.ItemImageRepository;
 import com.example.demo.repository.ItemRepository;
 import com.example.demo.repository.UserRepository;
@@ -72,6 +74,8 @@ public class ItemController {
 	ItemTagRepository itemTagRepo;
 	@Autowired
 	ViewRepository viewRepo;
+	@Autowired
+	ItemApprovalRepository itemApprovalRepo;
 
 	@GetMapping("/sell-item")
 	public String showSellItemForm(Model model) {
@@ -177,6 +181,13 @@ public class ItemController {
 		// ✅ Save Item first
 		item = itemRepo.save(item);
 
+		// Save item Approval
+		ItemApproval itemApproval = new ItemApproval();
+		itemApproval.setItem(item);
+		itemApproval.setApprovalDate(null); // ✅ Approval date remains NULL for PENDING status
+		itemApproval.setRejectionReason(null); // ✅ No rejection reason initially
+		itemApprovalRepo.save(itemApproval);
+
 		// ✅ Save Images
 		if (images != null && !images.isEmpty()) {
 			saveItemImages(item, images);
@@ -235,6 +246,14 @@ public class ItemController {
 		item.setUpdatedAt(LocalDateTime.now());
 		item.setStat(Item.Status.AVAILABLE);
 		item.setApprove(ApprovalStatus.PENDING);
+
+		// Save item Approval
+		ItemApproval itemApproval = new ItemApproval();
+		itemApproval.setItem(item);
+		itemApproval.setApprovalDate(null); // ✅ Approval date remains NULL for PENDING status
+		itemApproval.setRejectionReason(null); // ✅ No rejection reason initially
+		itemApprovalRepo.save(itemApproval);
+
 		// ✅ Set category
 		item.setCategory(categoryRepo.findById(categoryID)
 				.orElseThrow(() -> new RuntimeException("❌ Category ID not found: " + categoryID)));

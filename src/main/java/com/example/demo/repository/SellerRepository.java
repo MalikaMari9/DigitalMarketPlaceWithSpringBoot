@@ -15,4 +15,6 @@ public interface SellerRepository extends JpaRepository<Seller, Long> {
 	List<String> findNamesByCityCode(@Param("cityCode") Integer cityCode);
 
 	Seller findByUser(User user);
+
+	List<Seller> findByApproval(String string);
 }

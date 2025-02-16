@@ -18,6 +18,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -73,8 +74,19 @@ public class Item {
 	@OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<ItemTag> itemTags; // ✅ Relation with `itemtag_tbl`
 
+	@OneToOne(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
+	private ItemApproval itemApproval;
+
 	public List<ItemImage> getImages() {
 		return images;
+	}
+
+	public ItemApproval getItemApproval() {
+		return itemApproval;
+	}
+
+	public void setItemApproval(ItemApproval itemApproval) {
+		this.itemApproval = itemApproval;
 	}
 
 	public void setImages(List<ItemImage> images) {

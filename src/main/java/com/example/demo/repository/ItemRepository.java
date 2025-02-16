@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.example.demo.entity.Item;
+import com.example.demo.entity.Item.ApprovalStatus;
 
 public interface ItemRepository extends JpaRepository<Item, Long> {
 
@@ -106,5 +107,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 	Page<Item> findBySeller_UserIDOrderByApproveDesc(Long sellerUserID, Pageable pageable);
 
 	List<Item> findBySeller_UserID(Long sellerUserID);
+
+	List<Item> findByApprove(ApprovalStatus pending);
 
 }
