@@ -21,6 +21,8 @@
     <script th:src="@{/JS/home/admin-announcement.js}"></script>
     <script th:src="@{/JS/home/journey-section.js}"></script>
      <script th:src="@{/JS/CategorySelect.js}"></script>
+     
+       <script th:src="@{/JS/previewWishlistToggle.js}"></script>
      <!-- Cart -->
      	<script th:src="@{/JS/cart/cartIcon.js}"></script>
 
@@ -348,7 +350,11 @@
             <div class="pg-product-card" th:each="item : ${placeholderitems}"th:if="${item.sellType != null and item.sellType.name() != 'AUCTION'}">
               <div class="pg-product-image">
                 <img th:src="@{${item.getThumbnail()}}" alt="Vintage Leather Backpack" />
-                <button class="pg-wishlist-btn">♡</button>
+                <button class="pg-wishlist-btn"
+            th:classappend="${wishlistedItemIds.contains(item.itemID) ? 'wishlisted' : ''}"
+            th:data-item-id="${item.itemID}">
+        ♡
+    </button>
               </div>
               <div class="pg-product-info">
                 <h3 class="pg-product-title" th:text="${item.itemName}"></h3>
@@ -411,7 +417,11 @@
     <div class="pg-product-card" th:each="item : ${recommendedItems}" th:if="${item.sellType != null and item.sellType.name() != 'AUCTION'}">
         <div class="pg-product-image">
             <img th:src="@{${item.getThumbnail()}}" alt="Product Image" />
-            <button class="pg-wishlist-btn">♡</button>
+           <button class="pg-wishlist-btn"
+            th:classappend="${wishlistedItemIds.contains(item.itemID) ? 'wishlisted' : ''}"
+            th:data-item-id="${item.itemID}">
+        ♡
+    </button>
         </div>
         <div class="pg-product-info">
             <h3 class="pg-product-title" th:text="${item.itemName}"></h3>

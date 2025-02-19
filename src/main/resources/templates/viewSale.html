@@ -20,7 +20,7 @@
     <script th:src="@{/JS/countdown.js}"></script>
      <script th:src="@{/JS/ImageSwap.js}" defer></script>
          <script th:src="@{/JS/cart/cartIcon.js}" defer></script>
-         
+          <script th:src="@{/JS/wishlistBtn.js}"></script>
          	 <script th:src="@{/JS/bid.js}" defer></script>
 	 <script th:src="@{/JS/deadline.js}" defer></script>
 </head>
@@ -54,11 +54,17 @@
 
     <div class="item-actions">
         <!-- Show Heart Icon for Everyone EXCEPT the Seller -->
-        <th:block th:if="${session.user == null or session.user.userID != item.seller.userID}">
-            <p class="heart-container">
-                <img th:src="@{/Image/icon/heart.png}" width="25px" height="25px" alt="Heart Icon"> 4
-            </p>
-        </th:block>
+      <th:block th:if="${session.user == null or session.user.userID != item.seller.userID}">
+    <button class="wishlist-btn" 
+            th:attr="data-item-id=${item.itemID}, data-wishlisted=${isWishlisted}">
+        <img th:src="@{${isWishlisted} ? '/Image/icon/heart-filled.png' : '/Image/icon/heart.png'}"
+             class="wishlist-icon"
+             width="25px" height="25px" alt="Wishlist Icon">
+        <span class="wishlist-count" th:text="${wishlistCount}">0</span>
+    </button>
+</th:block>
+
+
 
         <!-- Edit & Delete Buttons (Only for the Seller) -->
         <th:block th:if="${session.user != null and session.user.userID == item.seller.userID}">

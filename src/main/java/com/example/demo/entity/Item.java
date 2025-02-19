@@ -77,6 +77,9 @@ public class Item {
 	@OneToOne(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
 	private ItemApproval itemApproval;
 
+	@OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Wishlist> wishlistedByUsers;
+
 	public List<ItemImage> getImages() {
 		return images;
 	}
@@ -221,6 +224,14 @@ public class Item {
 
 	public void setItemTags(List<ItemTag> itemTags) {
 		this.itemTags = itemTags;
+	}
+
+	public List<Wishlist> getWishlistedByUsers() {
+		return wishlistedByUsers;
+	}
+
+	public void setWishlistedByUsers(List<Wishlist> wishlistedByUsers) {
+		this.wishlistedByUsers = wishlistedByUsers;
 	}
 
 	public String getThumbnail() {

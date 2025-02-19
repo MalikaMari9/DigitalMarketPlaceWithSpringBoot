@@ -20,6 +20,7 @@ import com.example.demo.entity.User;
 import com.example.demo.repository.CartRepository;
 import com.example.demo.repository.CategoryRepository;
 import com.example.demo.repository.ItemRepository;
+import com.example.demo.repository.WishlistRepository;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -29,6 +30,8 @@ public class dmpController {
 
 	@Autowired
 	CartRepository cartRepo;
+	@Autowired
+	private WishlistRepository wishlistRepo;
 
 	@GetMapping("/viewItem")
 	public String viewItem() {
@@ -46,7 +49,7 @@ public class dmpController {
 	public String viewHome(HttpSession session, Model model) {
 		User user = (User) session.getAttribute("user");
 		Set<Item> recommendedItems = new HashSet<>(); // ✅ Use a Set to avoid duplicates
-
+		List<Long> wishlistedItemIds = new ArrayList<>();
 		if (user != null) {
 			System.out.println("Fetching recommendations for user ID: " + user.getUserID());
 
@@ -71,6 +74,8 @@ public class dmpController {
 			recommendedItems.addAll(byCategory);
 			recommendedItems.addAll(byTag);
 
+			wishlistedItemIds = wishlistRepo.findItemIdsByUser(user.getUserID());
+
 			// ✅ If no recommendations found, show latest 10 items (same as non-logged-in
 			// users)
 			if (recommendedItems.isEmpty()) {
@@ -85,6 +90,7 @@ public class dmpController {
 		}
 
 		model.addAttribute("recommendedItems", new ArrayList<>(recommendedItems)); // ✅ Convert Set back to List
+		model.addAttribute("wishlistedItemIds", wishlistedItemIds);
 		return "home";
 	}
 

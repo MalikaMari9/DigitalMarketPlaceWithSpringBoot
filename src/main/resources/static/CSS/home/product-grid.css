@@ -112,8 +112,21 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 1.5rem;
+    color: var(--primary-color);
     cursor: pointer;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: background 0.2s ease-in-out, transform 0.1s ease-in-out, color 0.2s ease-in-out;
+}
+
+/* ✅ Hover Effect */
+.pg-wishlist-btn:hover {
+    transform: scale(1.1);
+}
+
+/* ✅ Wishlisted State */
+.pg-wishlist-btn.wishlisted {
+    color: var(--accent-color); /* Change text color when wishlisted */
 }
 
 .pg-product-info {

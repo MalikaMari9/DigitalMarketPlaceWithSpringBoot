@@ -46,6 +46,7 @@ import com.example.demo.repository.ItemRepository;
 import com.example.demo.repository.NotificationRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.repository.ViewRepository;
+import com.example.demo.repository.WishlistRepository;
 import com.example.demo.repository.Auction.AuctionRepository;
 import com.example.demo.repository.Auction.AuctionTrackRepository;
 import com.example.demo.repository.tag.ItemTagRepository;
@@ -80,6 +81,8 @@ public class ItemController {
 	ItemApprovalRepository itemApprovalRepo;
 	@Autowired
 	NotificationRepository notificationRepo;
+	@Autowired
+	WishlistRepository wishlistRepo;
 
 	@GetMapping("/sell-item")
 	public String showSellItemForm(Model model, HttpSession session) {
@@ -130,6 +133,13 @@ public class ItemController {
 			View view = new View(user, item);
 			viewRepo.save(view);
 		}
+
+		// wishlist
+		int wishlistCount = wishlistRepo.countWishlistByItem(item);
+		boolean isWishlisted = false; // Default: Not wishlisted
+		if (user != null) {
+			isWishlisted = wishlistRepo.findByUserAndItem(user, item).isPresent();
+		}
 		// tags
 
 		List<String> tagNames = itemRepo.findTagNamesByItemId(itemID);
@@ -142,6 +152,9 @@ public class ItemController {
 		model.addAttribute("maxBid", maxBid);
 
 		model.addAttribute("tagOutput", tagOutput);
+
+		model.addAttribute("wishlistCount", wishlistCount);
+		model.addAttribute("isWishlisted", isWishlisted);
 		return "viewSale";
 	}
 
