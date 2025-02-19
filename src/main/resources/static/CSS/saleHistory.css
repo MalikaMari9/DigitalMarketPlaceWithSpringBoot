@@ -70,6 +70,20 @@ body {
     font-size: 14px;
 }
 
+#clear-filters{
+    padding: 8px 15px;
+    background-color: var(--primary-color);
+    color: var(--background-color);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+#clear-filters:hover {
+    background-color: var(--secondary-color);
+}
+
 #search-button:hover {
     background-color: var(--secondary-color);
 }
@@ -146,14 +160,19 @@ body {
     box-sizing: border-box;
 }
 
-.save-button:disabled {
-    background-color: #ccc; /* Light gray to indicate it is inactive */
-    color: #666; /* Slightly darker gray for text */
-    cursor: not-allowed; /* Change cursor to indicate it's not clickable */
-    opacity: 0.7; /* Slightly transparent for a "disabled" look */
-    box-shadow: none; /* Remove any shadow for a flat look */
+/* Hide save button by default */
+/* Hide button by default */
+.save-button {
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out, visibility 0.3s;
 }
 
+/* Show when active */
+.save-button.active {
+    visibility: visible;
+    opacity: 1;
+}
 
 
 /* Responsive Design */
@@ -197,6 +216,45 @@ body {
     font-weight: bold;
     margin-top:5px;
 }
+
+/* ✅ Style for Info Icon */
+.info-icon {
+    margin-left: 5px;
+    cursor: pointer;
+    color: gray;
+    position: relative;
+    display: inline-block;
+}
+
+/* ✅ Tooltip Effect (Now uses `data-reason`) */
+.info-icon:hover::after {
+    content: attr(data-reason); /* ✅ Uses `data-reason` instead of `title` */
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    font-size: 12px;
+    padding: 5px 8px;
+    border-radius: 5px;
+    white-space: nowrap;
+    bottom: 120%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 1;
+    transition: opacity 0.3s ease-in-out;
+}
+
+/* ✅ Hide tooltip by default */
+.info-icon::after {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* ✅ Slightly enlarge on hover */
+.info-icon:hover {
+    transform: scale(1.1);
+    color: black;
+}
+
 
 
 @media (max-width: 576px) {

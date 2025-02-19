@@ -24,6 +24,15 @@ public class TBDLoginController {
 		return "TBDLogin";
 	}
 
+	@GetMapping("/sellerDashboard")
+	public String sellerLogin(HttpSession session) {
+		User seller = (User) session.getAttribute("user");
+		if (seller == null) {
+			return "redirect:/loginPage";
+		}
+		return "sellerDashboard";
+	}
+
 	@PostMapping("/loginPage")
 	public String login(@RequestParam String username, HttpSession session) {
 		if (username.equals("ADMIN")) {
@@ -38,7 +47,12 @@ public class TBDLoginController {
 			System.out.print("User's role is" + user.getRole());
 			System.out.print("Session ID is" + session.getId());
 			// Redirect based on role
-			return "redirect:/home";
+			if (user.getRole() == "BUYER") {
+				return "redirect:/home";
+			} else {
+				return "redirect:/sellerDashboard";
+			}
+
 		} else {
 			// Redirect back to login with an error
 			return "redirect:/loginPage?error=User not found";

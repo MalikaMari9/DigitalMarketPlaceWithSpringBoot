@@ -1,24 +1,38 @@
 <html xmlns:th="http://www.thymeleaf.org">
     <head>
         <title>Track Stock</title>
-        <link rel="stylesheet" href="CSS/saleHistory.css">
-        <script src="JS/stockManipulation.js"></script>
+        <link rel="stylesheet" th:href="@{/CSS/saleHistory.css}">
+        <script th:src="@{/JS/stockManipulation.js}"></script>
+        
+           <link th:href="@{/CSS/headerFooter.css}" rel="stylesheet">
+     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <link th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css}" rel="stylesheet">
+     <script th:src="@{/JS/sidebar.js}"></script>
+     <script th:src="@{/JS/CategorySelect.js}"></script>
     </head>
 <body>
+<header th:insert="~{fragments/header :: header}"></header>
     <div id="container">
         <h2 id="page-title">Warehouse Track</h2>
-        <form id="search-form">
-            <label class="search-label">Search: </label>
-            <input type="text" id="search-field" name="searchfield" value="">
-            <label class="search-label">Sort By: </label>
-            <select id="sort-by" name="sortby">
+<form id="search-form" method="get" action="/warehouseTrack">
+    <label class="search-label">Search: </label>
+    <input type="text" id="search-field" name="searchfield" th:value="${searchfield}">
 
-                <option value="item">Item Name</option>
-                <option value="price">Price</option>
+    <label class="search-label">Sort By: </label>
+    <select id="sort-by" name="sortby">
+        <option value="itemID" th:selected="${sortby == 'itemID'}">Item ID</option>
+        <option value="itemName" th:selected="${sortby == 'itemName'}">Item Name</option>
+        <option value="price" th:selected="${sortby == 'price'}">Price</option>
+    </select>
 
-            </select>
-            <input type="submit" id="search-button" name="search" value="Search">
-        </form>
+    <input type="submit" id="search-button" name="search" value="Search">
+    
+    <!-- ✅ Clear Filters Button -->
+    <a href="/warehouseTrack" id="search-button">Clear Filters</a>
+</form>
+
+
     <table id="sales-table">
         <tr>
         <th>Item ID</th>
@@ -30,23 +44,94 @@
         <th>Delete</th>
         <th></th>
         </tr>
-        <tr>
-            <td>AI0w3534</td>
-            <td><a class="table-link" href="">Nikkari Aoe Nendoroid</a></td>
-            <td><img src="Image/nendo1.jpg" class="item-image"></td>
-            <td>USD $66.00</td>
-            <td>
-                <button class="btn decrement">-</button>
-                <input type="number" name="stock" class="stock-input" value="9" readonly>
-                <button class="btn increment">+</button>
-            </td>
-            <td><a href="" class="btn edit-link">Edit</a></td>
-            <td><a href="" class="btn delete-link">Delete</a></td>
-            <td><button class="btn save-button disabled" disabled>Save</button></td>
-        </tr>
-    </table>
-</div>
+<tr th:each="item : ${itemPage.content}">
+    <td th:text="${item.itemID}"></td>
+    <td><a class="table-link" th:href="@{/itemList/{itemID}(itemID=${item.itemID})}" th:text="${item.itemName}"></a></td>
+    <td><img class="item-image" th:src="@{${item.getThumbnail()}}" alt=""></td>
+    <td th:text="${item.price}"></td>
+    <td>
+        <button class="btn decrement">-</button>
+        <input type="number" name="stock" class="stock-input" th:value="${item.quality}" readonly>
+        <button class="btn increment">+</button>
+    </td>
+    <td>
+        <a th:href="@{/edit-item/{itemID}(itemID=${item.itemID})}" class="btn edit-link">
+            <i class="fa-solid fa-pen-to-square"></i>
+        </a>
+    </td>
+    <td>
+        <button class="delete-btn" th:attr="data-item-id=${item.itemID}" onclick="deleteItem(this)">
+            <i class="fas fa-trash-alt"></i>
+        </button>
+    </td>
+    <td><button class="btn save-button disabled" disabled>Save</button></td>
+</tr>
 
+    </table>
+    <div class="pagination">
+    <!-- Previous Button -->
+    <a th:if="${currentPage > 0}"
+       th:href="@{/warehouseTrack(page=${currentPage - 1}, size=6)}">
+        Previous
+    </a>
+
+    <!-- Page Numbers -->
+    <span th:text="'Page ' + (${currentPage + 1}) + ' of ' + ${totalPages}"></span>
+
+    <!-- Next Button -->
+    <a th:if="${currentPage + 1 < totalPages}"
+       th:href="@{/warehouseTrack(page=${currentPage + 1}, size=6)}">
+        Next
+    </a>
+</div>
+    
+</div>
+    <footer th:insert="~{fragments/footer :: footer}"></footer>
+<script>
+        lucide.createIcons();
+        
+        function deleteItem(button) {
+            const itemId = button.getAttribute("data-item-id");
+
+            if (!itemId) {
+                alert("⚠️ Error: Item ID is missing.");
+                return;
+            }
+
+            // ✅ Show confirmation prompt
+            const confirmDelete = confirm("Are you sure you want to delete this item? This action cannot be undone.");
+            
+            if (!confirmDelete) {
+                return; // ✅ Stop execution if user cancels
+            }
+
+            // ✅ Preserve search & sort parameters from the current URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const searchText = urlParams.get("searchText") || "";
+            const sortBy = urlParams.get("sortBy") || "";
+
+            fetch(`/delete/${itemId}`, {
+                method: "DELETE",
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.text();
+                } else {
+                    throw new Error("Failed to delete item");
+                }
+            })
+            .then(message => {
+                alert("✅ " + message);
+                
+                // ✅ Redirect back to pending-sale with search & sort params
+                window.location.href = `/warehouseTrack`;
+            })
+            .catch(error => {
+                alert("❌ Failed to delete item: " + error.message);
+            });
+        }
+
+  </script>
 </body>
 
 </html>

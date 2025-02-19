@@ -1,0 +1,171 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller Dashboard</title>
+    <link rel="stylesheet" th:href="@{/CSS/sellerDashboard.css}">
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <link th:href="@{/CSS/headerFooter.css}" rel="stylesheet">
+    <script th:src="@{/JS/sidebar.js}"></script>
+     <script th:src="@{/JS/CategorySelect.js}"></script>
+</head>
+<body class="bg-dark">
+<header th:insert="~{fragments/header :: header}"></header>
+    <div class="min-h-screen p-8">
+        <div class="grid">
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="card">
+                    <div class="card-content">
+                        <div class="stat-header">
+                            <div class="stat-icon-wrapper">
+                                <div class="stat-icon blue">
+                                    <i data-feather="package"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <p class="stat-label">Total Orders</p>
+                                    <h3 class="stat-value">1,482</h3>
+                                </div>
+                            </div>
+                            <span class="trend-up">+24%</span>
+                        </div>
+                        <div class="chart-container" id="ordersChart">
+                            <canvas></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-content">
+                        <div class="stat-header">
+                            <div class="stat-icon-wrapper">
+                                <div class="stat-icon green">
+                                    <i data-feather="dollar-sign"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <p class="stat-label">Total Sales</p>
+                                    <h3 class="stat-value">$28,947</h3>
+                                </div>
+                            </div>
+                            <span class="trend-up">+14%</span>
+                        </div>
+                        <div class="chart-container" id="salesChart">
+                            <canvas></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-content">
+                        <div class="stat-header">
+                            <div class="stat-icon-wrapper">
+                                <div class="stat-icon purple">
+                                    <i data-feather="users"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <p class="stat-label">Total Visits</p>
+                                    <h3 class="stat-value">142,593</h3>
+                                </div>
+                            </div>
+                            <span class="trend-down">-35%</span>
+                        </div>
+                        <div class="chart-container" id="visitsChart">
+                            <canvas></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Grid -->
+            <div class="charts-grid">
+                <div class="card overview-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Sales & Views Overview</h2>
+                    </div>
+                    <div class="card-content">
+                        <div class="large-chart-container" id="overviewChart">
+                            <canvas></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="top-selling-header">
+                            <h2 class="card-title">Top Selling Products</h2>
+                            <a href="#" class="see-all">See All Products</a>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="top-selling-list">
+                            <div class="product-item">
+                                <img src="sports shoes.jpg" alt="Sports Shoes">
+                                <div class="product-info">
+                                    <h4>Red Tape Sports Shoes for Men</h4>
+                                    <div class="product-stats">
+                                        <span class="sales">12,429 Sales</span>
+                                        <span class="stock available">135 Stocks Remaining</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="product-item">
+                                <img src="Smart Watch.jpg" alt="Smartwatch">
+                                <div class="product-info">
+                                    <h4>Fastrack FS1 Pro Smartwatch</h4>
+                                    <div class="product-stats">
+                                        <span class="sales">1,543 Sales</span>
+                                        <span class="stock available">76 Stocks Remaining</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="product-item">
+                                <img src="Fashion shirt.jpg" alt="Fashion Shirt">
+                                <div class="product-info">
+                                    <h4>Leriya Fashion Men's Shirt</h4>
+                                    <div class="product-stats">
+                                        <span class="sales">7,222 Sales</span>
+                                        <span class="stock available">465 Stocks Remaining</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="product-item">
+                                <img src="Wireless headphones.jpg" alt="Wireless Headphones">
+                                <div class="product-info">
+                                    <h4>Sony WH-1000XM4 Headphones</h4>
+                                    <div class="product-stats">
+                                        <span class="sales">5,129 Sales</span>
+                                        <span class="stock available">89 Stocks Remaining</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="product-item">
+                                <img src="Gaming laptop.jpg" alt="Gaming Laptop">
+                                <div class="product-info">
+                                    <h4>ASUS ROG Gaming Laptop</h4>
+                                    <div class="product-stats">
+                                        <span class="sales">3,877 Sales</span>
+                                        <span class="stock available">42 Stocks Remaining</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+
+    </div>
+
+    <script th:src="@{/JS/sellerDashboard.js}"></script>
+<footer th:insert="fragments/footer :: footer"></footer>
+ <script>
+        lucide.createIcons();
+      </script>
+</body>
+</html>

@@ -1,5 +1,6 @@
 package com.example.demo.repository.Auction;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,4 +16,6 @@ public interface AuctionRepository extends JpaRepository<Auction, Long> {
 
 	@Query("SELECT a FROM Auction a WHERE a.item IN :items")
 	List<Auction> findAllByItemIn(@Param("items") List<Item> items);
+
+	List<Auction> findByEndTimeBeforeAndStat(LocalDateTime now, Auction.AuctionStatus status);
 }

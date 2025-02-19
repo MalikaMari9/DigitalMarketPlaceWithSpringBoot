@@ -2,7 +2,9 @@ package com.example.demo.controller;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -107,6 +109,25 @@ public class UserController {
 		notificationRepo.saveAll(notifications);
 
 		return "notification"; // ✅ Thymeleaf file
+	}
+
+	@GetMapping("/notifications/unread-count")
+	public ResponseEntity<Map<String, Integer>> getUnreadNotificationCount(HttpSession session) {
+		User user = (User) session.getAttribute("user");
+
+		int unreadCount = (user != null) ? notificationRepo.findByUserAndSeenFalseOrderByCreatedAtDesc(user).size() : 0; // Default
+																															// to
+																															// 0
+																															// if
+																															// user
+																															// is
+																															// not
+																															// logged
+																															// in
+
+		Map<String, Integer> response = new HashMap<>();
+		response.put("unreadCount", unreadCount);
+		return ResponseEntity.ok(response);
 	}
 
 	// ✅ Get only unread notifications for logged-in user

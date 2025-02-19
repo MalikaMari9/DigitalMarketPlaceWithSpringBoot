@@ -18,60 +18,113 @@
     <div id="container">
     <h2 id="page-title">Pending Sales</h2>
 
-    <form id="search-form">
-        <label class="search-label">Search: </label>
-        <input type="text" id="search-field" name="searchfield" value="">
-        <label class="search-label">Sort By: </label>
-        <select id="sort-by" name="sortby">
-            <option value="date">Sale Date</option>
-            <option value="item">Item Name</option>
-            <option value="price">Price</option>
-            <option value="buyer">Buyer</option>
-            <option value="status">Delivery Status</option>
-        </select>
-        <input type="submit" id="search-button" name="search" value="Search">
-    </form>
+<form id="search-form" action="/pending-sale" method="get">
+    <label class="search-label">Search: </label>
+    <input type="text" id="search-field" name="searchfield" th:value="${searchfield}">
+    
+    <label class="search-label">Sort By: </label>
+    <select id="sort-by" name="sortby">
+        <option value="itemID" th:selected="${sortby == 'itemID'}">Item ID</option>
+        <option value="itemName" th:selected="${sortby == 'itemName'}">Item Name</option>
+        <option value="price" th:selected="${sortby == 'price'}">Price</option>
+        <option value="approvalStatus" th:selected="${sortby == 'approvalStatus'}">Approval Status</option>
+    </select>
+    
+    <input type="submit" id="search-button" name="search" value="Search">
+    <button type="button" id="clear-filters">Clear Filters</button>
+</form>
+
     <table id="sales-table">
         <tr>
             <th>Item No</th>
             <th>Item Name</th>
             <th>Item Image</th>
-            <th>Quantity</th>
+            
             <th>Price</th>
-            <th>Created At</th>
-            <th>Pending Status</th>
+
+            <th>Approval Status</th>
+            <th>Approval Date</th>
             
         </tr>
         <tr th:each="item : ${itemPage.content}">
             <td th:text="${item.itemID}"></td>
             <td ><a class="table-link" th:href="@{/itemList/{itemID}(itemID=${item.itemID})}" th:text="${item.itemName}"></a></td>
             <td><img class="item-image" th:src="@{${item.getThumbnail()}}" alt=""></td>
-            <td th:text="${item.quality}"></td>
+          
             <td th:text="${item.price}"></td>
             
-            <td th:text="${#temporals.format(item.createdAt, 'yyyy-MM-dd')}"></td>
-            <td th:text="${item.approve}"></td>
+            
+<td>
+    <span class="status-badge"
+        th:classappend="${item.approve.name() == 'PENDING' ? 'pending' : 
+                         (item.approve.name() == 'APPROVED' ? 'approved' : 'rejected')}"
+        th:text="${item.approve.name()}">
+    </span>
+
+    <!-- ✅ Show Info Icon for Rejected Items -->
+    <span th:if="${item.approve.name() == 'REJECTED' and item.itemApproval != null}" 
+          class="info-icon"
+          th:data-reason="${item.itemApproval.rejectionReason}">
+        <i data-lucide="info"></i>
+    </span>
+
+    <!-- ✅ Show "Resubmit for Approval" button only for rejected items -->
+    <button th:if="${item.approve.name() == 'REJECTED'}"
+            class="resubmit-btn"
+            th:data-item-id="${item.itemID}"
+            onclick="resubmitItem(this)">
+        Resubmit
+    </button>
+
+</td>
+
+             <td th:text="${#temporals.format(item.itemApproval.approvalDate, 'yyyy-MM-dd')}"></td>
            
         </tr>
 
 
-        <!-- Additional rows -->
     </table>
-    <div class="pagination">
-    <!-- Previous Button (Disable if on first page) -->
-    <a th:if="${currentPage > 0}" th:href="@{/pending-sale(page=${currentPage - 1}, size=6)}">Previous</a>
-
-    <!-- Page Numbers -->
+<div class="pagination">
+    <a th:if="${currentPage > 0}" 
+       th:href="@{/pending-sale(page=${currentPage - 1}, size=6, searchfield=${searchfield}, sortby=${sortby})}">
+       Previous
+    </a>
+    
     <span th:text="'Page ' + (${currentPage + 1}) + ' of ' + ${totalPages}"></span>
-
-    <!-- Next Button (Disable if on last page) -->
-    <a th:if="${currentPage + 1 < totalPages}" th:href="@{/pending-sale(page=${currentPage + 1}, size=6)}">Next</a>
+    
+    <a th:if="${currentPage + 1 < totalPages}" 
+       th:href="@{/pending-sale(page=${currentPage + 1}, size=6, searchfield=${searchfield}, sortby=${sortby})}">
+       Next
+    </a>
 </div>
+
     
     </div>
     <footer th:insert="~{fragments/footer :: footer}"></footer>
  <script>
         lucide.createIcons();
-        </script>
+  
+        document.getElementById("clear-filters").addEventListener("click", function () {
+            window.location.href = "/pending-sale"; // ✅ Redirects to default Pending Sale page (resets filters)
+        });
+        
+        
+        async function resubmitItem(button) {
+            let itemID = button.getAttribute("data-item-id");
+
+            if (confirm("Are you sure you want to resubmit this item for approval?")) {
+                const response = await fetch(`/seller/resubmit/${itemID}`, {
+                    method: "POST"
+                });
+
+                const message = await response.text();
+                alert(message);
+                location.reload(); // ✅ Refresh the page to update status
+            }
+        }
+ 
+
+    </script>
+
 </body>
 </html>

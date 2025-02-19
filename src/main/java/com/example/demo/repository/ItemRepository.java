@@ -108,6 +108,38 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
 	List<Item> findBySeller_UserID(Long sellerUserID);
 
+	Page<Item> findBySeller_UserID(Long sellerUserID, Pageable pageable);
+
 	List<Item> findByApprove(ApprovalStatus pending);
+
+	@Query("""
+			    SELECT i FROM Item i
+			    LEFT JOIN FETCH i.itemApproval ia
+			    WHERE i.seller.userID = :sellerID
+			    AND (:searchText IS NULL OR LOWER(i.itemName) LIKE LOWER(CONCAT('%', :searchText, '%')))
+			    ORDER BY
+			    CASE
+			        WHEN :sortBy = 'itemID' THEN i.itemID
+			        WHEN :sortBy = 'itemName' THEN i.itemName
+			        WHEN :sortBy = 'price' THEN i.price
+			        WHEN :sortBy = 'approvalStatus' THEN i.approve
+			    END ASC
+			""")
+	Page<Item> findPendingSales(@Param("sellerID") Long sellerID, @Param("searchText") String searchText,
+			@Param("sortBy") String sortBy, Pageable pageable);
+
+	@Query("""
+			    SELECT i FROM Item i
+			    WHERE i.seller.userID = :sellerID
+			    AND (:searchText IS NULL OR LOWER(i.itemName) LIKE LOWER(CONCAT('%', :searchText, '%')))
+			    ORDER BY
+			    CASE
+			        WHEN :sortBy = 'itemID' THEN i.itemID
+			        WHEN :sortBy = 'itemName' THEN i.itemName
+			        WHEN :sortBy = 'price' THEN i.price
+			    END ASC
+			""")
+	Page<Item> findWarehouseItems(@Param("sellerID") Long sellerID, @Param("searchText") String searchText,
+			@Param("sortBy") String sortBy, Pageable pageable);
 
 }

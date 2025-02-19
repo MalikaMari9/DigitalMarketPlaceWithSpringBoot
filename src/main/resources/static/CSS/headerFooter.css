@@ -265,6 +265,40 @@ body {
     border-radius: 9999px;
 }
 
+/* ✅ Notification Button (Same as Cart) */
+/* ✅ Notification Button (Same as Cart) */
+.notif-buttonyoon {
+    position: relative;
+    padding: 0.5rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+/* ✅ Notification Count (Matches Cart Count Style) */
+.notif-countyoon {
+    position: absolute;
+    top: -0.25rem;
+    right: -0.25rem;
+    height: 1.25rem;
+    width: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--accent-color);
+    color: white;
+    font-size: 0.75rem;
+    border-radius: 9999px;
+    display: none; /* ✅ Initially hidden */
+}
+
+/* ✅ Ensure icon is properly sized */
+#notifIcon {
+    font-size: 20px;
+}
+
+
+
 .login-buttonyoon {
     padding: 0.5rem 1rem;
     font-size: 0.875rem;

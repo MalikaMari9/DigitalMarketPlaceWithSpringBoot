@@ -114,6 +114,35 @@ async function updateCartCount() {
         console.error("❌ Error fetching cart count:", error);
     }
 }
+async function updateNotificationIcon() {
+    try {
+        const response = await fetch("/notifications/unread-count");
+        if (!response.ok) throw new Error("Failed to fetch unread notifications");
+
+        const data = await response.json();
+        const notifCountElement = document.getElementById("notifCount");
+        const notifIconElement = document.getElementById("notifIcon");
+
+        if (notifCountElement && notifIconElement) {
+            if (data.unreadCount > 0) {
+                notifCountElement.textContent = data.unreadCount;
+                notifCountElement.style.display = "flex"; // ✅ Show when unread exists
+                notifIconElement.setAttribute("data-lucide", "bell-ring"); // 🔔 Unread notifications
+            } else {
+                notifCountElement.style.display = "none";
+                notifIconElement.setAttribute("data-lucide", "bell"); // 🔕 Default bell
+            }
+        }
+
+        lucide.createIcons(); // ✅ Refresh Lucide icons dynamically
+    } catch (error) {
+        console.error("❌ Error fetching unread notifications:", error);
+    }
+}
+
+// ✅ Auto-update on page load
+document.addEventListener("DOMContentLoaded", updateNotificationIcon);
+
 
 // ✅ Fetch cart count on every page load
 document.addEventListener("DOMContentLoaded", updateCartCount);

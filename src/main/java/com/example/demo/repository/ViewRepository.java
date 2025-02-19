@@ -14,6 +14,12 @@ import com.example.demo.entity.View;
 @Repository
 public interface ViewRepository extends JpaRepository<View, Long> {
 
+	// ✅ Find all views by item
+	List<View> findByItem(Item item);
+
+	// ✅ Delete all views related to an item
+	void deleteAllByItem(Item item);
+
 	// ✅ Count views of an item
 	@Query("SELECT COUNT(v) FROM View v WHERE v.item.itemID = :itemID")
 	Long countViewsByItem(@Param("itemID") Long itemID);

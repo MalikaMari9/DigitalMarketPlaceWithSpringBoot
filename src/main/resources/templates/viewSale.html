@@ -228,6 +228,11 @@
                 return; // ✅ Stop execution if user cancels
             }
 
+            // ✅ Preserve search & sort parameters from the current URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const searchText = urlParams.get("searchText") || "";
+            const sortBy = urlParams.get("sortBy") || "";
+
             fetch(`/delete/${itemId}`, {
                 method: "DELETE",
             })
@@ -241,13 +246,14 @@
             .then(message => {
                 alert("✅ " + message);
                 
-                // ✅ Redirect to itemList after successful deletion
-                window.location.href = "/itemList"; // I think it is a better idea if we could link it with the profile insead
+                // ✅ Redirect back to pending-sale with search & sort params
+                window.location.href = `/pending-sale`;
             })
             .catch(error => {
                 alert("❌ Failed to delete item: " + error.message);
             });
         }
+
 
 
       </script>

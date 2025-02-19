@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,6 +43,7 @@ import com.example.demo.repository.CategoryRepository;
 import com.example.demo.repository.ItemApprovalRepository;
 import com.example.demo.repository.ItemImageRepository;
 import com.example.demo.repository.ItemRepository;
+import com.example.demo.repository.NotificationRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.repository.ViewRepository;
 import com.example.demo.repository.Auction.AuctionRepository;
@@ -76,14 +78,21 @@ public class ItemController {
 	ViewRepository viewRepo;
 	@Autowired
 	ItemApprovalRepository itemApprovalRepo;
+	@Autowired
+	NotificationRepository notificationRepo;
 
 	@GetMapping("/sell-item")
-	public String showSellItemForm(Model model) {
+	public String showSellItemForm(Model model, HttpSession session) {
+		User seller = (User) session.getAttribute("user");
+		if (seller == null) {
+			return "redirect:/loginPage"; // Redirect if not logged in
+		}
 		List<Category> categories = categoryRepo.findByParentCategoryIsNull();
 		model.addAttribute("categories", categories);
 		return "sellItemNormal";
 	}
 
+	// Not necessarily needed since we already got other pages
 	@GetMapping("/itemList")
 	public String viewItems(Model model) {
 		List<Item> itemList = itemRepo.findAll();
@@ -206,7 +215,14 @@ public class ItemController {
 	// Auctions
 
 	@GetMapping("/auction-item")
-	public String showSellAuctionForm(Model model) {
+	public String showSellAuctionForm(Model model, HttpSession session) {
+
+		User seller = (User) session.getAttribute("user");
+
+		if (seller == null) {
+			return "redirect:/loginPage"; // Redirect if not logged in
+		}
+
 		// Fetch all top-level categories (where parentCategory is NULL)
 		List<Category> parentCategories = categoryRepo.findByParentCategoryIsNull();
 
@@ -303,7 +319,7 @@ public class ItemController {
 			saveItemTags(item, tags);
 		}
 
-		return "redirect:/itemList";
+		return "redirect:/pending-sale";
 	}
 
 	// Search Header
@@ -312,11 +328,6 @@ public class ItemController {
 		List<Category> parentCategories = categoryRepo.findByParentCategoryIsNull();
 		parentCategories.forEach(this::loadSubcategories);
 		return parentCategories;
-	}
-
-	@GetMapping("/searchbar")
-	public String searchbar() {
-		return "search";
 	}
 
 	@GetMapping("/search")
@@ -412,6 +423,7 @@ public class ItemController {
 	// Delete
 
 	@DeleteMapping("/delete/{itemId}")
+	@Transactional // ✅ Ensures everything is part of a transaction
 	public ResponseEntity<String> deleteItem(@PathVariable Long itemId) {
 		Optional<Item> itemOptional = itemRepo.findById(itemId);
 
@@ -420,6 +432,15 @@ public class ItemController {
 
 			try {
 				System.out.println("🔹 Deleting item with ID: " + itemId);
+
+				// ✅ Delete Related Notifications (notification_tbl)
+				notificationRepo.deleteAllByItem(item);
+
+				// ✅ Delete Related Views (view_tbl)
+				viewRepo.deleteAll(viewRepo.findByItem(item));
+
+				// ✅ Delete Item Approval Records (item_approval_tbl)
+				itemApprovalRepo.deleteByItem(item);
 
 				// ✅ Delete Related Item Tags
 				itemTagRepo.deleteAll(itemTagRepo.findByItem(item));
@@ -437,7 +458,8 @@ public class ItemController {
 				// ✅ Delete Item from Database
 				itemRepo.delete(item);
 
-				return ResponseEntity.ok("Item deleted successfully.");
+				return ResponseEntity.ok("✅ Item deleted successfully.");
+
 			} catch (Exception e) {
 				e.printStackTrace();
 				return ResponseEntity.status(500).body("❌ Failed to delete item: " + e.getMessage());
@@ -446,7 +468,6 @@ public class ItemController {
 			return ResponseEntity.status(404).body("❌ Item not found.");
 		}
 	}
-
 	// Edit
 
 	// methods
