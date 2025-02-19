@@ -20,6 +20,9 @@
     <script th:src="@{/JS/countdown.js}"></script>
      <script th:src="@{/JS/ImageSwap.js}" defer></script>
          <script th:src="@{/JS/cart/cartIcon.js}" defer></script>
+         
+         	 <script th:src="@{/JS/bid.js}" defer></script>
+	 <script th:src="@{/JS/deadline.js}" defer></script>
 </head>
 <body th:attr="data-user-id=${session.user != null ? session.user.userID : ''}">
 <header th:insert="~{fragments/header :: header}"></header>
@@ -115,20 +118,35 @@
 						</td>
                 </tr>
 
-                <tr>
-                    <th>Your Max Bid</th><td><input type="number" name="userBid"></td>
-                </tr>
+               <tr id="bidSection">
+				    <th>Your Max Bid</th>
+				    <td>
+				        <input type="number" id="userBid" name="userBid" min="1" placeholder="Enter your bid"
+				               th:disabled="${auction.endTime != null and auction.endTime.isBefore(T(java.time.LocalDateTime).now())}">
+				    </td>
+				</tr>
+				
             </table>
         </div>
         
         
         <div id="bid-btn">
-        <button id="addToCartBtn"><img th:src="@{/Image/icon/bid.png}" width="25px" height="25px">Real Time Bid</button>
-        <div id="popupNotification" class="hidden">
-            <p>Item has been added to the cart!</p>
-        </div>
-        <button id="addToCartBtn"><img th:src="@{/Image/icon/target.png}" width="25px" height="25px">Place Sniper Bid</button>
-        <div class="tooltip-container">
+        <button class="bid-btn" id="realTimeBidBtn" 
+				                th:data-auction-id="${auction.auctionID}"
+				                th:data-user-id="${session.user != null ? session.user.userID : ''}"
+				                data-bid-type="real-time"
+				                th:disabled="${auction.endTime != null and auction.endTime.isBefore(T(java.time.LocalDateTime).now())}">
+				            <img th:src="@{/Image/icon/bid.png}" width="25px" height="25px"> Real Time Bid
+				        </button>
+
+				        <button class="bid-btn" id="sniperBidBtn" 
+				                th:data-auction-id="${auction.auctionID}"
+				                th:data-user-id="${session.user != null ? session.user.userID : ''}"
+				                data-bid-type="sniper"
+				                th:disabled="${auction.endTime != null and auction.endTime.isBefore(T(java.time.LocalDateTime).now())}">
+				            <img th:src="@{/Image/icon/target.png}" width="25px" height="25px"> Place Sniper Bid
+				        </button>
+				        <div class="tooltip-container">
             <img th:src="@{/Image/icon/circle-help.png}" width="25px" height="25px" alt="Help Icon">
             <span class="tooltip-text">If you choose the sniper bid option, your bid will be placed within the last 10 minutes of the auction.<br>
                 After placing a sniper bid, please be aware that there are several cases where you bid will not be made:<br>
@@ -253,6 +271,16 @@
                 alert("❌ Failed to delete item: " + error.message);
             });
         }
+        
+        document.addEventListener("DOMContentLoaded", function () {
+	        fetch("/auction/processExpiredAuctions", {
+	            method: "POST",
+	        })
+	        .then(response => response.text())
+	        .then(message => console.log("✅ " + message))
+	        .catch(error => console.error("❌ Error processing expired auctions:", error));
+	    });
+	
 
 
 

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -150,6 +151,28 @@ public class CartController {
 
 		cartRepository.deleteById(cartID); // ✅ Delete from database
 		return ResponseEntity.ok(Map.of("success", true, "message", "Item removed from cart"));
+	}
+
+	@PutMapping("/update/{cartID}")
+	public ResponseEntity<?> updateCartQuantity(@PathVariable Long cartID, @RequestBody Map<String, Integer> payload) {
+		Optional<Cart> cartItemOpt = cartRepository.findById(cartID);
+
+		if (cartItemOpt.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND)
+					.body(Map.of("success", false, "message", "Cart item not found"));
+		}
+
+		Cart cartItem = cartItemOpt.get();
+		int newQuantity = payload.get("quantity");
+
+		if (newQuantity <= 0) {
+			return ResponseEntity.badRequest().body(Map.of("success", false, "message", "Quantity must be at least 1"));
+		}
+
+		cartItem.setQuantity(newQuantity);
+		cartRepository.save(cartItem);
+
+		return ResponseEntity.ok(Map.of("success", true, "message", "Quantity updated"));
 	}
 
 	// ✅ DTO for Cart Count Response

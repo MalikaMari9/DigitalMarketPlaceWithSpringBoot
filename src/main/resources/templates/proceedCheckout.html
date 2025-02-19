@@ -13,11 +13,22 @@
     <link th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css}" rel="stylesheet">
  	<script th:src="@{/JS/sidebar.js}"></script>
  	 <script th:src="@{/JS/CategorySelect.js}"></script>
-	<style>
+	 <script th:src="@{/JS/cartQuantity.js}"></script>
+		<style>
 			a{
 				text-decoration:none;
 				color:black;
 			}
+			
+			.quantity-input {
+			    width: 50px; /* Adjust the width as needed */
+			    text-align: center; /* Center-align the number */
+			    padding: 5px;
+			    border: 1px solid #ddd;
+			    border-radius: 4px;
+			    font-size: 14px;
+			}
+
 			
 			   	
 		</style>
@@ -69,10 +80,28 @@
                     </div>
                 </div>
 
-                <div class="order-details">
-                    <p><strong>Quantity:</strong> <span th:text="${cartItem.quantity}"></span></p>
-                    <p><strong>Price:</strong> USD <span th:text="${cartItem.item.price}"></span></p>
-                </div>
+				<div class="order-details">
+				    <p><strong>Quantity:</strong> 
+				        <th:block th:if="${cartItem.item.sellType != null and cartItem.item.sellType.name() == 'AUCTION'}">
+				            <input type="text" class="quantity-input" th:value="${cartItem.quantity}" readonly>
+				            <span>(Auction Item)</span> <!-- Show indicator -->
+				        </th:block>
+
+				        <th:block th:if="${cartItem.item.sellType == null or cartItem.item.sellType.name() != 'AUCTION'}">
+				            <button class="quantity-btn decrease" th:data-cart-id="${cartItem.cartID}">-</button>
+				            <input type="text" class="quantity-input" th:value="${cartItem.quantity}" th:data-cart-id="${cartItem.cartID}" readonly>
+				            <button class="quantity-btn increase" th:data-cart-id="${cartItem.cartID}">+</button>
+				        </th:block>
+				    </p>
+
+				    <p>
+				        <strong>Price: </strong> 
+				        <span th:text="${cartItem.quantity}"></span> x $ 
+				        <span th:text="${cartItem.item.price}"></span> = $
+				        <span th:text="${cartItem.quantity * cartItem.item.price}"></span>
+				    </p>
+				</div>
+
             </div>
 
             <!-- Total price for this seller's items -->

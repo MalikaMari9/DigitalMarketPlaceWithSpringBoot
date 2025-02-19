@@ -1,0 +1,140 @@
+package com.example.demo.controller;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.demo.entity.Cart;
+import com.example.demo.entity.User;
+import com.example.demo.entity.Auction.Auction;
+import com.example.demo.entity.Auction.AuctionTrack;
+import com.example.demo.repository.CartRepository;
+import com.example.demo.repository.ItemRepository;
+import com.example.demo.repository.UserRepository;
+import com.example.demo.repository.Auction.AuctionRepository;
+import com.example.demo.repository.Auction.AuctionTrackRepository;
+
+import jakarta.transaction.Transactional;
+
+@RestController
+@RequestMapping("/auction")
+public class AuctionTrackController {
+
+	@Autowired
+	private AuctionTrackRepository auctionTrackRepository;
+
+	@Autowired
+	private AuctionRepository auctionRepository;
+
+	@Autowired
+	private UserRepository userRepository;
+
+	@Autowired
+	private CartRepository cartRepository;
+
+	@Autowired
+	private ItemRepository itemRepository;
+
+	@PostMapping("/placeBid")
+	@Transactional
+	public ResponseEntity<?> placeBid(@RequestBody Map<String, Object> payload) {
+		try {
+			// Extract auctionID and userID from the request payload
+			Long auctionID = Long.valueOf(payload.get("auctionID").toString());
+			Long userID = Long.valueOf(payload.get("userID").toString());
+			Double bidAmount = Double.valueOf(payload.get("bidAmount").toString());
+
+			System.out.println(
+					"📥 Received bid request: AuctionID=" + auctionID + ", UserID=" + userID + ", Price=" + bidAmount);
+
+			Optional<Auction> auctionOpt = auctionRepository.findById(auctionID);
+			Optional<User> userOpt = userRepository.findById(userID);
+
+			if (auctionOpt.isEmpty() || userOpt.isEmpty()) {
+				return ResponseEntity.badRequest()
+						.body(Map.of("success", false, "message", "Invalid auction or user."));
+			}
+
+			Auction auction = auctionOpt.get();
+			User user = userOpt.get();
+
+			// ✅ Fetch the latest bid of the user in this auction
+			List<AuctionTrack> existingBids = auctionTrackRepository.findLatestBidByAuctionAndUser(auctionID, userID);
+
+			if (!existingBids.isEmpty()) {
+				// ✅ Update the latest bid
+				AuctionTrack latestBid = existingBids.get(0); // Always take the most recent one
+				latestBid.setPrice(bidAmount); // Update bid amount
+				latestBid.setCreatedAt(LocalDateTime.now()); // Update timestamp
+				auctionTrackRepository.save(latestBid);
+				System.out.println("🔄 Updated existing bid: " + latestBid.getPrice());
+			} else {
+				// ✅ Insert a new bid if no previous bid exists
+				AuctionTrack newBid = new AuctionTrack();
+				newBid.setAuction(auction);
+				newBid.setUser(user);
+				newBid.setPrice(bidAmount);
+				newBid.setCreatedAt(LocalDateTime.now());
+				auctionTrackRepository.save(newBid);
+				System.out.println("✅ Inserted new bid: " + newBid.getPrice());
+			}
+
+			return ResponseEntity.ok(Map.of("success", true, "message", "Bid placed successfully!"));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(500)
+					.body(Map.of("success", false, "message", "Error processing bid: " + e.getMessage()));
+		}
+	}
+
+	// ✅ Check expired auctions and move the highest bidder's item to their cart
+	@PostMapping("/processExpiredAuctions")
+	public String processExpiredAuctions() {
+		System.out.println("🔍 Checking for expired auctions...");
+
+		List<Auction> expiredAuctions = auctionRepository.findByEndTimeBeforeAndStat(LocalDateTime.now(),
+				Auction.AuctionStatus.ACTIVE);
+
+		if (expiredAuctions.isEmpty()) {
+			System.out.println("✅ No expired auctions found.");
+			return "No expired auctions found.";
+		}
+
+		for (Auction auction : expiredAuctions) {
+			System.out.println("📌 Processing auction ID: " + auction.getAuctionID());
+
+			Optional<AuctionTrack> highestBid = auctionTrackRepository.findTopByAuctionOrderByPriceDesc(auction);
+			if (highestBid.isPresent()) {
+				AuctionTrack winningBid = highestBid.get();
+				System.out.println("🏆 Highest bidder ID: " + winningBid.getUser().getUserID() + " | Bid Price: "
+						+ winningBid.getPrice());
+
+				// ✅ Add item to the winner's cart
+				Cart cart = new Cart();
+				cart.setItem(auction.getItem());
+				cart.setUser(winningBid.getUser());
+				cart.setQuantity(1);
+				cart.setCreatedAt(LocalDateTime.now());
+
+				cartRepository.save(cart);
+				System.out.println("✅ Item added to cart for User ID: " + winningBid.getUser().getUserID());
+
+				// ✅ Mark auction as completed
+				auction.setStat(Auction.AuctionStatus.COMPLETED);
+				auctionRepository.save(auction);
+				System.out.println("✅ Auction ID " + auction.getAuctionID() + " marked as COMPLETED.");
+			} else {
+				System.out.println("⚠️ No bids found for auction ID: " + auction.getAuctionID());
+			}
+		}
+		return "Processed expired auctions successfully.";
+	}
+}
