@@ -17,6 +17,7 @@ import com.example.demo.entity.Cart;
 import com.example.demo.entity.Category;
 import com.example.demo.entity.Item;
 import com.example.demo.entity.User;
+import com.example.demo.entity.Wishlist;
 import com.example.demo.repository.CartRepository;
 import com.example.demo.repository.CategoryRepository;
 import com.example.demo.repository.ItemRepository;
@@ -126,9 +127,22 @@ public class dmpController {
 	}
 
 	@GetMapping("/wishList")
-	public String wishList() {
-		return "wish";
+	public String viewWishlist(HttpSession session, Model model) {
+		User user = (User) session.getAttribute("user");
 
+		if (user == null) {
+			return "redirect:/loginPage"; // Redirect if not logged in
+		}
+
+		// ✅ Fetch all wishlisted items for the user
+		List<Wishlist> wishlistedItems = wishlistRepo.findByUser(user);
+
+		// ✅ Fetch all items in the user's cart
+		List<Item> cartItems = cartRepo.findByUser(user).stream().map(Cart::getItem).collect(Collectors.toList());
+
+		model.addAttribute("wishlistedItems", wishlistedItems);
+		model.addAttribute("cartItems", cartItems); // ✅ Add cart items to the model
+		return "wish"; // Ensure Thymeleaf file is named `wishlist.html`
 	}
 
 	@GetMapping("/editProfile")

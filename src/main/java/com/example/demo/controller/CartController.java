@@ -51,20 +51,25 @@ public class CartController {
 	// ✅ Add item to cart
 	@PostMapping("/add")
 	@Transactional
-	public @ResponseBody Response addToCart(@RequestBody CartRequest request) {
-		System.out
-				.println("📥 Received Add to Cart request: " + request.getItemId() + ", User: " + request.getUserId());
+	public @ResponseBody Response addToCart(@RequestBody CartRequest request, HttpSession session) {
+		// ✅ Retrieve the logged-in user from session
+		User user = (User) session.getAttribute("user");
+
+		if (user == null) {
+			System.out.println("❌ User not logged in.");
+			return new Response(false, "User not logged in.");
+		}
+
+		System.out.println("📥 Received Add to Cart request: " + request.getItemId() + ", User: " + user.getUserID());
 
 		Optional<Item> itemOpt = itemRepository.findById(request.getItemId());
-		Optional<User> userOpt = userRepository.findById(request.getUserId());
 
-		if (itemOpt.isEmpty() || userOpt.isEmpty()) {
-			System.out.println("❌ Invalid item or user.");
-			return new Response(false, "Invalid item or user.");
+		if (itemOpt.isEmpty()) {
+			System.out.println("❌ Invalid item.");
+			return new Response(false, "Invalid item.");
 		}
 
 		Item item = itemOpt.get();
-		User user = userOpt.get();
 
 		if (request.getQuantity() > item.getQuality()) {
 			System.out.println("⚠️ Not enough stock.");

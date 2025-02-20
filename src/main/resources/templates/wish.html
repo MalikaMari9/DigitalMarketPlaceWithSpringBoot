@@ -3,104 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Completed Orders</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>Wishlist</title>
     <link rel="stylesheet" th:href="@{/CSS/wish.css}">
     
-    	<link th:href="@{/CSS/headerFooter.css}" rel="stylesheet">
- 	<script src="https://unpkg.com/lucide@latest"></script>
+    <link th:href="@{/CSS/headerFooter.css}" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-    <link th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css}" rel="stylesheet">
- 	<script th:src="@{/JS/sidebar.js}"></script>
- 	 <script th:src="@{/JS/CategorySelect.js}"></script>
- 
+    <script th:src="@{/JS/sidebar.js}"></script>
+    <script th:src="@{/JS/CategorySelect.js}"></script>
 </head>
 <body>
 <header th:insert="fragments/header :: header"></header>
-    <div class="checkout-body">
+<div class="checkout-body">
+    <h2 class="wishlist-title">Wishlist <i class="fas fa-heart"></i></h2>
 
-        <!-- Order 1 Wrapper -->
-        <div class="completed-orders-wrapper">
-            <div class="order-card">
-                <div class="order-card-header">
-                    <img src="https://marksandspencer.com.ph/cdn/shop/products/SD_01_T01_1026C_Y0_X_EC_90.jpg?v=1673598246" alt="Leather Tote Bag" class="order-image">
-                    <div class="order-info">
-                        <h4 class="order-title">Leather Tote Bag</h4>
-                        <p class="order-date"><i class="fas fa-calendar-alt"></i> 2024-12-27 12:11</p>
-                        <a href="viewprofile.html" class="shop-name">Shop Name</a>
-                        <div class="order-details">
-                            <p><strong>Price:</strong> MMK 50,000</p>
-                        </div>
-                    </div>
-                    <div class="order-actions-wrapper">
-                    <button class="icon-button cart-button" title="Add to Cart">
-                            <i class="fas fa-cart-plus"></i>
-                        </button>
-                        <button class="icon-button" title="Delete">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
-                       
+    <!-- ✅ Show message if wishlist is empty -->
+    <p class="empty-wishlist" th:if="${wishlistedItems.isEmpty()}">Your wishlist is empty. Start adding items! ❤️</p>
+
+    <!-- ✅ Loop through wishlisted items -->
+    <div class="completed-orders-wrapper" th:each="wishlist : ${wishlistedItems}">
+        <div class="order-card">
+            <div class="order-card-header">
+                <img th:src="@{${wishlist.item.getThumbnail()}}" alt="Item Image" class="order-image">
+                <div class="order-info">
+                    <h4 class="order-title" th:text="${wishlist.item.itemName}"></h4>
+                    <p class="order-date">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span th:text="${#temporals.format(wishlist.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
+                    </p>
+                    <a th:href="@{/viewProfile/{sellerID}(sellerID=${wishlist.item.seller.userID})}" 
+                       class="shop-name" 
+                       th:text="${wishlist.item.seller.username}">
+                    </a>
+                    <div class="order-details">
+                        <p><strong>Price:</strong> MMK <span th:text="${wishlist.item.price}"></span></p>
                     </div>
                 </div>
-            </div>
-        </div>
+                <div class="order-actions-wrapper">
+                    <!-- ✅ Add to Cart Button -->
+                   <button class="icon-button cart-button"
+    th:data-item-id="${wishlist.item.itemID}"
+    onclick="addToCart(this)">
+    <i data-lucide="shopping-cart"></i>
+</button>
 
-        <!-- Order 2 Wrapper -->
-        <div class="completed-orders-wrapper">
-            <div class="order-card">
-                <div class="order-card-header">
-                    <img src="https://callashoes.co.uk/cdn/shop/files/emily_heels_for_bunions_calla_shoes_4.jpg?v=1676998804&width=1080" alt="Heels" class="order-image">
-                    <div class="order-info">
-                        <h4 class="order-title">Heels</h4>
-                        <p class="order-date"><i class="fas fa-calendar-alt"></i> 2024-12-27 12:10</p>
-                        <a href="viewprofile.html" class="shop-name">Shop Name</a>
-                        <div class="order-details">
-                            <p><strong>Price:</strong> MMK 45,000</p>
-                        </div>
-                    </div>
-                    <div class="order-actions-wrapper">
-                    <button class="icon-button cart-button" title="Add to Cart">
-                            <i class="fas fa-cart-plus"></i>
-                        </button>
-                        <button class="icon-button" title="Delete">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
-                       
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- Order 3 Wrapper -->
-        <div class="completed-orders-wrapper">
-            <div class="order-card">
-                <div class="order-card-header">
-                    <img src="https://market99.com/cdn/shop/products/blue-ceramic-curvy-vase-engraved-floral-pattern-flower-holder-vases-1-29122137587882.jpg?crop=center&height=1403&v=1725536221&width=1080" alt="Vase" class="order-image">
-                    <div class="order-info">
-                        <h4 class="order-title">Vase</h4>
-                        <p class="order-date"><i class="fas fa-calendar-alt"></i> 2024-12-28 10:15</p>
-                        <a href="viewprofile.html" class="shop-name">Shop Name</a>
-                        <div class="order-details">
-                            <p><strong>Price:</strong> MMK 60,000</p>
-                        </div>
-                    </div>
-                    <div class="order-actions-wrapper">
-                    <button class="icon-button cart-button" title="Add to Cart">
-                            <i class="fas fa-cart-plus"></i>
-                        </button>
-                        <button class="icon-button" title="Delete">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
+                    
+                    <!-- ❌ Remove from Wishlist Button -->
+                    <button class="icon-button delete-button" title="Remove from Wishlist" th:data-item-id="${wishlist.item.itemID}" onclick="removeFromWishlist(this)">
                         
-                    </div>
+                        <i data-lucide="trash-2"></i>
+                    </button>
                 </div>
             </div>
         </div>
-
     </div>
-    <footer th:insert="fragments/footer :: footer"></footer>
- <script>
-        lucide.createIcons();
-      </script>
+</div>
+
+<footer th:insert="fragments/footer :: footer"></footer>
+
+<script>
+    lucide.createIcons();
+
+    async function removeFromWishlist(button) {
+        const itemId = button.getAttribute("data-item-id");
+
+        if (!itemId) {
+            alert("⚠️ Error: Item ID is missing.");
+            return;
+        }
+
+        try {
+            const response = await fetch(`/wishlist/toggle/${itemId}`, { method: "POST" });
+            const data = await response.json();
+
+            if (data.success) {
+                alert("❌ Removed from Wishlist!");
+                location.reload(); // ✅ Refresh page after removal
+            } else {
+                alert("⚠️ Error: " + data.message);
+            }
+        } catch (error) {
+            console.error("❌ Wishlist removal failed:", error);
+            alert("❌ Error removing from wishlist.");
+        }
+    }
+
+    async function addToCart(button) {
+        const itemId = button.getAttribute("data-item-id");
+
+        if (!itemId) {
+            alert("⚠️ Error: Item ID is missing.");
+            return;
+        }
+
+        try {
+            const response = await fetch(`/wishlist/addToCart/${itemId}`, { method: "POST" });
+            const message = await response.text();
+
+            if (response.ok) {
+                alert("✅ " + message);
+            } else {
+                alert("⚠️ " + message); // Show error message from server
+            }
+        } catch (error) {
+            console.error("❌ Add to Cart failed:", error);
+            alert("❌ Error adding to cart.");
+        }
+    }
+
+
+
+</script>
 </body>
 </html>
