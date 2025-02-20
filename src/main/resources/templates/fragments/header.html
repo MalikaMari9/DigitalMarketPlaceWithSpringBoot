@@ -5,7 +5,13 @@
           <div class="header-contentyoon">
             <!-- Logo and Search Section -->
             <div class="header-leftyoon">
-              <a th:href="@{/home}" class="logoyoon">TRADESPHERE</a>
+           <th:block th:if="${session.user == null or session.user.role == 'BUYER'}">
+    <a th:href="@{/home}" class="logoyoon">TRADESPHERE</a>
+</th:block>
+<th:block th:if="${session.user != null and session.user.role == 'SELLER'}">
+    <a th:href="@{/sellerDashboard}" class="logoyoon">TRADESPHERE</a>
+</th:block>
+
     
               <div class="categories-searchyoon">
                 <div class="dropdownyoon">

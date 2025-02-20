@@ -38,21 +38,22 @@ public class TBDLoginController {
 		if (username.equals("ADMIN")) {
 			return "redirect:/admin/viewDashboard";
 		}
+
 		// Fetch user from database by username
 		Optional<User> optionalUser = userRepository.findByUsername(username);
 
 		if (optionalUser.isPresent()) {
 			User user = optionalUser.get();
 			session.setAttribute("user", user); // Store user in session
-			System.out.print("User's role is" + user.getRole());
-			System.out.print("Session ID is" + session.getId());
+			System.out.println("User's role is " + user.getRole());
+			System.out.println("Session ID is " + session.getId());
+
 			// Redirect based on role
-			if (user.getRole() == "BUYER") {
+			if ("BUYER".equals(user.getRole())) { // Corrected string comparison
 				return "redirect:/home";
 			} else {
 				return "redirect:/sellerDashboard";
 			}
-
 		} else {
 			// Redirect back to login with an error
 			return "redirect:/loginPage?error=User not found";

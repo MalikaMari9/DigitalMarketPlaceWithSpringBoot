@@ -50,7 +50,7 @@ public class SellerConversionController {
 			session.setAttribute("user", user); // Update session
 
 			redirectAttributes.addFlashAttribute("success", "You are now a seller again!");
-			return "redirect:/home";
+			return "redirect:/sellerDashboard";
 		} else {
 			// ✅ First-time seller, redirect to registration
 			return "redirect:/seller-register";
