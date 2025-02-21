@@ -71,6 +71,9 @@ public class User {
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Wishlist> wishlistItems;
 
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Address> addresses; // ✅ User can have multiple addresses
+
 	@PrePersist
 	protected void onCreate() {
 		this.createdAt = LocalDateTime.now();

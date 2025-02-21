@@ -123,8 +123,10 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 			        WHEN :sortBy = 'itemName' THEN i.itemName
 			        WHEN :sortBy = 'price' THEN i.price
 			        WHEN :sortBy = 'approvalStatus' THEN i.approve
+			        ELSE i.itemID
 			    END ASC
 			""")
+
 	Page<Item> findPendingSales(@Param("sellerID") Long sellerID, @Param("searchText") String searchText,
 			@Param("sortBy") String sortBy, Pageable pageable);
 

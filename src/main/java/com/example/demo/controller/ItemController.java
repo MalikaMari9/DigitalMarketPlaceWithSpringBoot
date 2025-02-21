@@ -222,7 +222,8 @@ public class ItemController {
 			saveItemTags(item, tags);
 		}
 
-		return "redirect:/pending-sale";
+		return "redirect:/pending-sale?searchfield=&sortby=itemID";
+
 	}
 
 	// Auctions
@@ -332,7 +333,8 @@ public class ItemController {
 			saveItemTags(item, tags);
 		}
 
-		return "redirect:/pending-sale";
+		return "redirect:/pending-sale?searchfield=&sortby=itemID";
+
 	}
 
 	// Search Header
