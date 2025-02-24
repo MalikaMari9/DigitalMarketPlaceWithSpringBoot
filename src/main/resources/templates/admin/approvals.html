@@ -53,8 +53,17 @@
             <td th:text="${seller.approval}"></td>
             <td th:text="${seller.name}"></td>
             <td th:text="${seller.nrcNo}"></td>
-            <td><img th:src="@{'/Images/NRC/' + ${seller.nrcFront}}" alt="NRC Front" width="50"></td>
-            <td><img th:src="@{'/Images/NRC/' + ${seller.nrcBack}}" alt="NRC Back" width="50"></td>
+            <td>
+    <img th:src="@{'/Images/NRC/' + ${seller.nrcFront}}" 
+         alt="NRC Front" width="50" class="nrc-image" 
+         onclick="openImageModal(this)">
+</td>
+<td>
+    <img th:src="@{'/Images/NRC/' + ${seller.nrcBack}}" 
+         alt="NRC Back" width="50" class="nrc-image" 
+         onclick="openImageModal(this)">
+</td>
+
             <td>
                 <button class="accept-btn" th:onclick="|handleSellerApproval(${seller.sellerID}, true)|">
                     ✅ Approve
@@ -66,6 +75,7 @@
         </tr>
     </tbody>
 </table>
+
 
 
 
@@ -142,9 +152,16 @@
     </div>
 
     <!-- Modal for viewing NRC images -->
+    
+    <div id="imageModal" class="modal" onclick="closeImageModal()">
+   
+    <img class="modal-content" id="modalImage">
+</div>
+    
     <div id="nrcImageModal" class="modal">
       <div class="modal-content">
-        <span class="close-modal">&times;</span>
+        <span class="close-modal" onclick="closeImageModal(event)">&times;</span>
+
         <img id="nrcImage" src="" alt="NRC Image" />
       </div>
     </div>

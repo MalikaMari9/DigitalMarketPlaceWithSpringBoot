@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -67,27 +68,34 @@ public class SellerController {
 	public String pendingSale(HttpSession session, Model model, @RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "6") int size,
 			@RequestParam(required = false, defaultValue = "") String searchfield,
-			@RequestParam(required = false, defaultValue = "itemID") String sortby) { // ✅ Default sorting by Item ID
-
+			@RequestParam(required = false, defaultValue = "itemID") String sortby) {
 		User seller = (User) session.getAttribute("user");
 
 		if (seller == null) {
 			return "redirect:/loginPage";
 		}
 
-		Pageable pageable = PageRequest.of(page, size);
+		// ✅ Define Sorting Order Dynamically
+		Sort sort = Sort.by(Sort.Direction.ASC, "itemID"); // Default sorting
 
-		// ✅ Allow sorting to work even if search is empty
-		if (searchfield.isEmpty()) {
-			searchfield = null;
+		if ("itemName".equals(sortby)) {
+			sort = Sort.by(Sort.Direction.ASC, "itemName");
+		} else if ("price".equals(sortby)) {
+			sort = Sort.by(Sort.Direction.ASC, "price");
+		} else if ("approvalStatus".equals(sortby)) {
+			sort = Sort.by(Sort.Direction.ASC, "approve");
 		}
 
-		Page<Item> itemPage = itemRepo.findPendingSales(seller.getUserID(), searchfield, sortby, pageable);
+		Pageable pageable = PageRequest.of(page, size, sort);
+
+		// ✅ Use updated repository method
+		Page<Item> itemPage = itemRepo.findPendingSales(seller.getUserID(), searchfield.isEmpty() ? null : searchfield,
+				pageable);
 
 		model.addAttribute("itemPage", itemPage);
 		model.addAttribute("currentPage", page);
 		model.addAttribute("totalPages", itemPage.getTotalPages());
-		model.addAttribute("searchfield", searchfield != null ? searchfield : "");
+		model.addAttribute("searchfield", searchfield);
 		model.addAttribute("sortby", sortby);
 
 		return "pendingSale";

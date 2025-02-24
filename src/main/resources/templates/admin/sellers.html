@@ -42,10 +42,44 @@
                       <th>NRC Back</th>
                     </tr>
                   </thead>
-                  <tbody id="sellersTableBody">
-                    <!-- Table content will be populated by JavaScript -->
-                  </tbody>
-                </table>
+                  <tbody>
+        <tr th:each="seller : ${sellerPage.content}">
+            <td th:text="${seller.sellerID}"></td>
+            <td th:text="${#strings.isEmpty(seller.businessName) ? seller.user.username : seller.businessName}"></td>
+
+            <td th:text="${seller.businessType}"></td>
+            <td>
+    <span class="approval-badge"
+          th:classappend="${seller.approval == 'accepted' ? 'approved' : 
+                          (seller.approval == 'pending' ? 'pending' : 'rejected')}">
+        <i th:class="${seller.approval == 'accepted' ? 'lucide-check-circle' : 
+                     (seller.approval == 'pending' ? 'lucide-clock' : 'lucide-x-circle')}"></i>
+        <span th:text="${#strings.capitalize(seller.approval)}"></span>
+    </span>
+</td>
+
+            <td th:text="${#temporals.format(seller.approvalDate, 'yyyy-MM-dd')}"></td>
+            <td th:text="${seller.user.userID}"></td>
+            <td th:text="${seller.name}"></td>
+            <td th:text="${seller.nrcNo}"></td>
+            <td>
+                <img th:src="@{'/Images/NRC/' + ${seller.nrcFront}}" width="50" class="nrc-image" 
+                     onclick="openImageModal(this)">
+            </td>
+            <td>
+                <img th:src="@{'/Images/NRC/' + ${seller.nrcBack}}" width="50" class="nrc-image" 
+                     onclick="openImageModal(this)">
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<!-- Pagination -->
+<div class="pagination">
+    <a th:if="${currentPage > 0}" th:href="@{/admin/sellers(page=${currentPage - 1}, approval=${approval})}">Previous</a>
+    <span th:text="'Page ' + (${currentPage + 1}) + ' of ' + ${totalPages}"></span>
+    <a th:if="${currentPage + 1 < totalPages}" th:href="@{/admin/sellers(page=${currentPage + 1}, approval=${approval})}">Next</a>
+</div>
               </div>
             </div>
           </div>

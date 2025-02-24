@@ -32,6 +32,28 @@ async function confirmRejection() {
     location.reload();
 }
 
+function openImageModal(img) {
+    const modal = document.getElementById("imageModal");
+    const modalImage = document.getElementById("modalImage");
+
+    modal.style.display = "flex";
+    modalImage.src = img.src;
+}
+
+function closeImageModal(event) {
+    // ✅ If no event (clicked directly from JS), just close the modal
+    if (!event || !event.target) {
+        document.getElementById("imageModal").style.display = "none";
+        return;
+    }
+
+    // ✅ Prevent closing when clicking inside the modal
+    if (event.target.classList.contains("modal")) {
+        document.getElementById("imageModal").style.display = "none";
+    }
+}
+
+
 function closeModal() {
     document.getElementById("rejectionModal").style.display = "none";
 }

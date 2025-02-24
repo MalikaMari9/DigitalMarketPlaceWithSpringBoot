@@ -53,8 +53,19 @@
                     </div>
 
                     <div class="pg-buttons">
-                        <button class="pg-cart-btn">Add to Cart</button>
-                        <a th:href="@{/itemList/{itemID}(itemID=${item.itemID})}" class="pg-view-btn">👁</a> 
+                       <th:block th:if="${session.user == null or session.user.userID != item.seller.userID}">
+                                  <button class="pg-cart-btn"  
+				  th:data-item-id="${item.itemID}"
+				  th:data-user-id="${session.user != null ? session.user.userID : ''}">Add to Cart</button>
+    </th:block>
+
+    <!-- If the user is the seller, show "Edit" button -->
+    <th:block th:if="${session.user != null and session.user.userID == item.seller.userID}">
+        <a th:href="@{/edit-item/{itemID}(itemID=${item.itemID})}" th:text="'Edit'" class="pg-view-btn"></a>
+    </th:block>
+
+    <!-- View Item Button for Everyone -->
+    <a th:href="@{/itemList/{itemID}(itemID=${item.itemID})}" th:text="'👁'" class="pg-view-btn"></a>
                     </div>
                 </div>
             </div>
@@ -84,8 +95,19 @@
                     </div>
 
                     <div class="pg-buttons">
-                        <button class="pg-cart-btn">Add to Cart</button>
-                        <a th:href="@{/itemList/{itemID}(itemID=${item.itemID})}" class="pg-view-btn">👁</a> 
+<th:block th:if="${session.user == null or session.user.userID != item.seller.userID}">
+                                  <button class="pg-cart-btn"  
+				  th:data-item-id="${item.itemID}"
+				  th:data-user-id="${session.user != null ? session.user.userID : ''}">Add to Cart</button>
+    </th:block>
+
+    <!-- If the user is the seller, show "Edit" button -->
+    <th:block th:if="${session.user != null and session.user.userID == item.seller.userID}">
+        <a th:href="@{/edit-item/{itemID}(itemID=${item.itemID})}" th:text="'Edit'" class="pg-view-btn"></a>
+    </th:block>
+
+    <!-- View Item Button for Everyone -->
+    <a th:href="@{/itemList/{itemID}(itemID=${item.itemID})}" th:text="'👁'" class="pg-view-btn"></a>
                     </div>
                 </div>
             </div>

@@ -77,6 +77,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 	@Query("""
 			    SELECT i FROM Item i
 			    WHERE i.approve = 'APPROVED'
+			    AND i.seller.userID <> :userID
 			    AND i.category.catID IN (
 			        SELECT it.category.catID FROM View v
 			        JOIN v.item it WHERE v.user.userID = :userID
@@ -89,6 +90,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 			    SELECT DISTINCT i FROM Item i
 			    JOIN i.itemTags it
 			    WHERE i.approve = 'APPROVED'
+			    AND i.seller.userID <> :userID
 			    AND it.tag.tagID IN (
 			        SELECT t.tag.tagID FROM View v
 			        JOIN v.item.itemTags t WHERE v.user.userID = :userID
@@ -117,18 +119,10 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 			    LEFT JOIN FETCH i.itemApproval ia
 			    WHERE i.seller.userID = :sellerID
 			    AND (:searchText IS NULL OR LOWER(i.itemName) LIKE LOWER(CONCAT('%', :searchText, '%')))
-			    ORDER BY
-			    CASE
-			        WHEN :sortBy = 'itemID' THEN i.itemID
-			        WHEN :sortBy = 'itemName' THEN i.itemName
-			        WHEN :sortBy = 'price' THEN i.price
-			        WHEN :sortBy = 'approvalStatus' THEN i.approve
-			        ELSE i.itemID
-			    END ASC
 			""")
-
 	Page<Item> findPendingSales(@Param("sellerID") Long sellerID, @Param("searchText") String searchText,
-			@Param("sortBy") String sortBy, Pageable pageable);
+			Pageable pageable // ✅ Pageable will now handle sorting
+	);
 
 	@Query("""
 			    SELECT i FROM Item i

@@ -1,9 +1,14 @@
 package com.example.demo.controller;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -230,15 +235,59 @@ public class AdminController {
 	}
 
 	@GetMapping("/admin/sellers")
-	public String viewSellers() {
-		return "admin/sellers";
+	public String viewSellers(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "6") int size,
+			@RequestParam(required = false) String approval, Model model) {
+		Pageable pageable = PageRequest.of(page, size);
 
+		Page<Seller> sellerPage;
+
+		if (approval != null && !approval.isEmpty()) {
+			sellerPage = sellerRepo.findByApproval(approval, pageable);
+		} else {
+			sellerPage = sellerRepo.findAll(pageable);
+		}
+
+		model.addAttribute("sellerPage", sellerPage);
+		model.addAttribute("currentPage", page);
+		model.addAttribute("totalPages", sellerPage.getTotalPages());
+		model.addAttribute("approval", approval);
+
+		return "admin/sellers";
 	}
 
 	@GetMapping("/admin/users")
-	public String viewUsers() {
-		return "admin/users";
+	public String viewUsers(Model model, @RequestParam(defaultValue = "0") int page, // Default to first page
+			@RequestParam(defaultValue = "6") int size // Default page size of 6
+	) {
+		Pageable pageable = PageRequest.of(page, size);
+		Page<User> userPage = userRepo.findAll(pageable);
 
+		List<Map<String, Object>> userDetails = userPage.getContent().stream().map(user -> {
+			Map<String, Object> userMap = new HashMap<>();
+			userMap.put("userID", user.getUserID());
+			userMap.put("username", user.getUsername());
+			userMap.put("email", user.getEmail());
+			userMap.put("phone", user.getPhone());
+			userMap.put("dob", user.getDob());
+			userMap.put("gender", user.getGender());
+			userMap.put("bio", user.getBio());
+			userMap.put("createdAt", user.getCreatedAt());
+
+			// Determine Role: "BUYER", "SELLER", or "BOTH"
+			if (user.getSeller() != null) {
+				userMap.put("role", user.getSeller().getBusinessType().equalsIgnoreCase("C2C") ? "BOTH" : "SELLER");
+			} else {
+				userMap.put("role", "BUYER");
+			}
+
+			return userMap;
+		}).toList();
+
+		model.addAttribute("users", userDetails);
+		model.addAttribute("currentPage", page);
+		model.addAttribute("totalPages", userPage.getTotalPages());
+
+		return "admin/users";
 	}
 
 }

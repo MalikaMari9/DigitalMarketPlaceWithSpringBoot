@@ -32,10 +32,10 @@
                     <tr>
                       <th>User ID</th>
                       <th>Username</th>
-                      <th>Password</th>
+                  
                       <th>Email</th>
                       <th>Phone</th>
-                      <th>Profile</th>
+                    
                       <th>DOB</th>
                       <th>Gender</th>
                       <th>Bio</th>
@@ -43,10 +43,35 @@
                       <th>Created At</th>
                     </tr>
                   </thead>
-                  <tbody id="usersTableBody">
-                    <!-- Table content will be populated by JavaScript -->
-                  </tbody>
+                 <tbody>
+    <tr th:each="user : ${users}">
+        <td th:text="${user.userID}"></td>
+        <td><a th:href="@{/viewSeller/{sellerID}(sellerID=${user.userID})}" th:text="${user.username}"></a></td>
+        
+        <td th:text="${user.email}"></td>
+        <td th:text="${user.phone}"></td>
+        <td th:text="${user.dob}"></td>
+        <td th:text="${user.gender}"></td>
+        <td th:text="${user.bio}"></td>
+        <td th:text="${user.role}"></td>
+        <td th:text="${#temporals.format(user.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+    </tr>
+</tbody>
+
                 </table>
+                <div class="pagination">
+    <!-- Previous Button (Disabled if on first page) -->
+    <a th:if="${currentPage > 0}" 
+       th:href="@{/admin/users(page=${currentPage - 1}, size=6)}">Previous</a>
+
+    <!-- Page Numbers -->
+    <span th:text="'Page ' + (${currentPage + 1}) + ' of ' + ${totalPages}"></span>
+
+    <!-- Next Button (Disabled if on last page) -->
+    <a th:if="${currentPage + 1 < totalPages}" 
+       th:href="@{/admin/users(page=${currentPage + 1}, size=6)}">Next</a>
+</div>
+                
               </div>
             </div>
           </div>
