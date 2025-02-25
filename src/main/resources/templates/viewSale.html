@@ -81,29 +81,30 @@
     </div>
 </div>
 
-        <div id="normal-sale"
-        th:if="${item.sellType != null and item.sellType.name() != 'AUCTION'}">
-        <h3 th:text="'USD'+ ${item.price}"></h3>
-        <div class="quantity-control">
-            <label>Quantity: </label>
-            <button class="decrease">-</button>
-            			<input type="number" value="1" name="quan" class="quantity-input" min="1" 
-			       th:attr="data-max-stock=${item.quality}">
-            <button class="increase">+</button>
-        </div>
-        
-        
+<div id="normal-sale"
+     th:if="${item.sellType != null and item.sellType.name() != 'AUCTION'}">
+    <h3 th:text="'USD ' + ${item.price}"></h3>
+    <div class="quantity-control">
+        <label>Quantity: </label>
+        <button class="decrease">-</button>
+        <input type="number" value="1" name="quan" class="quantity-input" min="1" 
+               th:attr="data-max-stock=${item.quality}">
+        <button class="increase">+</button>
+    </div>
 
-<button class="addToCartBtn" 
-        th:data-item-id="${item.itemID}"
-        th:data-user-id="${session.user != null ? session.user.userID : ''}">
-    Add to Cart
-</button>
+    <button class="addToCartBtn"
+            th:data-item-id="${item.itemID}"
+            th:data-user-id="${session.user != null ? session.user.userID : ''}"
+            th:disabled="${session.user != null and session.user.userID == item.seller.userID}">
+        Add to Cart
+    </button>
 
-        <div id="popupNotification" class="hidden">
-            <p>Item has been added to the cart!</p>
-        </div>
-        </div>
+    <div id="popupNotification" class="hidden">
+        <p>Item has been added to the cart!</p>
+    </div>
+</div>
+
+
        <div id="auction-sale"
         th:if="${item.sellType != null and item.sellType.name() == 'AUCTION'}">
         <div id="bid-details">
@@ -136,32 +137,37 @@
         </div>
         
         
-        <div id="bid-btn">
-        <button class="bid-btn" id="realTimeBidBtn" 
-				                th:data-auction-id="${auction.auctionID}"
-				                th:data-user-id="${session.user != null ? session.user.userID : ''}"
-				                data-bid-type="real-time"
-				                th:disabled="${auction.endTime != null and auction.endTime.isBefore(T(java.time.LocalDateTime).now())}">
-				            <img th:src="@{/Image/icon/bid.png}" width="25px" height="25px"> Real Time Bid
-				        </button>
+<div id="bid-btn">
+    <button class="bid-btn" id="realTimeBidBtn" 
+            th:data-auction-id="${auction.auctionID}"
+            th:data-user-id="${session.user != null ? session.user.userID : ''}"
+            data-bid-type="real-time"
+            th:disabled="${auction.endTime != null and auction.endTime.isBefore(T(java.time.LocalDateTime).now()) 
+                          or (session.user != null and session.user.userID == item.seller.userID)}">
+        <img th:src="@{/Image/icon/bid.png}" width="25px" height="25px"> Real Time Bid
+    </button>
 
-				        <button class="bid-btn" id="sniperBidBtn" 
-				                th:data-auction-id="${auction.auctionID}"
-				                th:data-user-id="${session.user != null ? session.user.userID : ''}"
-				                data-bid-type="sniper"
-				                th:disabled="${auction.endTime != null and auction.endTime.isBefore(T(java.time.LocalDateTime).now())}">
-				            <img th:src="@{/Image/icon/target.png}" width="25px" height="25px"> Place Sniper Bid
-				        </button>
-				        <div class="tooltip-container">
-            <img th:src="@{/Image/icon/circle-help.png}" width="25px" height="25px" alt="Help Icon">
-            <span class="tooltip-text">If you choose the sniper bid option, your bid will be placed within the last 10 minutes of the auction.<br>
-                After placing a sniper bid, please be aware that there are several cases where you bid will not be made:<br>
-                1. Another bidder has placed a bid above your maximum bid<br>
-                2. The seller ends the auction early before our sniper bid is placed<br>
-                3. The seller does not wish to sell to proxy services and cancels our bid</span>
-        </div>
-        
-        </div>
+    <button class="bid-btn" id="sniperBidBtn" 
+            th:data-auction-id="${auction.auctionID}"
+            th:data-user-id="${session.user != null ? session.user.userID : ''}"
+            data-bid-type="sniper"
+            th:disabled="${auction.endTime != null and auction.endTime.isBefore(T(java.time.LocalDateTime).now()) 
+                          or (session.user != null and session.user.userID == item.seller.userID)}">
+        <img th:src="@{/Image/icon/target.png}" width="25px" height="25px"> Place Sniper Bid
+    </button>
+    
+    <div class="tooltip-container">
+        <img th:src="@{/Image/icon/circle-help.png}" width="25px" height="25px" alt="Help Icon">
+        <span class="tooltip-text">
+            If you choose the sniper bid option, your bid will be placed within the last 10 minutes of the auction.<br>
+            After placing a sniper bid, please be aware that there are several cases where your bid will not be made:<br>
+            1. Another bidder has placed a bid above your maximum bid.<br>
+            2. The seller ends the auction early before our sniper bid is placed.<br>
+            3. The seller does not wish to sell to proxy services and cancels our bid.
+        </span>
+    </div>
+</div>
+
         </div>
         <hr color="darkgrey">    
             <h4>Product Description</h4>

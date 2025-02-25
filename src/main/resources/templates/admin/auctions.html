@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -31,19 +31,45 @@
                   <thead>
                     <tr>
                       <th>Auction ID</th>
-                      <th>Increment Amount</th>
-                      <th>Created At</th>
-                      <th>Status</th>
-                      <th>Item ID</th>
+                      <th>Item Name</th>
                       <th>Start Price</th>
+                      <th>Increment Amount</th>
+                      <th>Highest Bid</th>
+                      
+                      <th>Created At</th>
+                                       
+                     
                       <th>End Time</th>
-                      <th>Auction Table Col</th>
+                      <th>Remaining Time</th>
                       <th>Actions</th>
                     </tr>
                   </thead>
-                  <tbody id="auctionsTableBody">
-                    <!-- Table content will be populated by JavaScript -->
-                  </tbody>
+                   <tbody>
+            <tr th:each="auction : ${auctions}">
+                <td th:text="${auction.auctionID}"></td>
+                <td th:text="${auction.item.itemName}"></td>
+                <td th:text="${auction.startPrice}"></td>
+                <td th:text="${auction.incrementAmount}"></td>
+                <td>
+                    <span th:if="${auction.highestBid != null}" th:text="${auction.highestBid}"></span>
+                    <span th:if="${auction.highestBid == null}">No Bids</span>
+                </td>
+                <td th:text="${#temporals.format(auction.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+                <td th:text="${#temporals.format(auction.endTime, 'yyyy-MM-dd HH:mm')}"></td>
+                <td th:text="${auction.remainingTime}"></td>
+<td>
+    <button class="track-btn" 
+            th:data-auction-id="${auction.auctionID}">
+        Track
+    </button>
+    <a th:href="@{/admin/auction/delete/{id}(id=${auction.auctionID})}" 
+       onclick="return confirm('Are you sure?')">
+        Delete
+    </a>
+</td>
+
+            </tr>
+        </tbody>
                 </table>
               </div>
             </div>
@@ -51,6 +77,26 @@
         </div>
       </div>
     </div>
+    <!-- Tracking Modal -->
+<div id="trackingModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <h3>Auction Tracking Details</h3>
+        <table class="track-table">
+            <thead>
+                <tr>
+                    <th>Bidder</th>
+                    <th>Bid Amount</th>
+                    <th>Time</th>
+                </tr>
+            </thead>
+            <tbody id="trackingData">
+                <!-- Bidding data will be loaded here via AJAX -->
+            </tbody>
+        </table>
+    </div>
+</div>
+    
 
     <!-- Modal for viewing auction image -->
     <div id="auctionImageModal" class="modal">

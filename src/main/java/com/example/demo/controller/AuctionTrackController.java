@@ -7,9 +7,11 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.entity.Cart;
@@ -47,13 +49,12 @@ public class AuctionTrackController {
 	@Transactional
 	public ResponseEntity<?> placeBid(@RequestBody Map<String, Object> payload) {
 		try {
-			// Extract auctionID and userID from the request payload
 			Long auctionID = Long.valueOf(payload.get("auctionID").toString());
 			Long userID = Long.valueOf(payload.get("userID").toString());
 			Double bidAmount = Double.valueOf(payload.get("bidAmount").toString());
 
-			System.out.println(
-					"📥 Received bid request: AuctionID=" + auctionID + ", UserID=" + userID + ", Price=" + bidAmount);
+			System.out
+					.println("📥 Received bid: AuctionID=" + auctionID + ", UserID=" + userID + ", Price=" + bidAmount);
 
 			Optional<Auction> auctionOpt = auctionRepository.findById(auctionID);
 			Optional<User> userOpt = userRepository.findById(userID);
@@ -66,26 +67,24 @@ public class AuctionTrackController {
 			Auction auction = auctionOpt.get();
 			User user = userOpt.get();
 
-			// ✅ Fetch the latest bid of the user in this auction
-			List<AuctionTrack> existingBids = auctionTrackRepository.findLatestBidByAuctionAndUser(auctionID, userID);
+			// ✅ Fetch the current highest bid
+			Optional<AuctionTrack> highestBidOpt = auctionTrackRepository.findTopByAuctionOrderByPriceDesc(auction);
+			double highestBid = highestBidOpt.map(AuctionTrack::getPrice).orElse(auction.getStartPrice());
 
-			if (!existingBids.isEmpty()) {
-				// ✅ Update the latest bid
-				AuctionTrack latestBid = existingBids.get(0); // Always take the most recent one
-				latestBid.setPrice(bidAmount); // Update bid amount
-				latestBid.setCreatedAt(LocalDateTime.now()); // Update timestamp
-				auctionTrackRepository.save(latestBid);
-				System.out.println("🔄 Updated existing bid: " + latestBid.getPrice());
-			} else {
-				// ✅ Insert a new bid if no previous bid exists
-				AuctionTrack newBid = new AuctionTrack();
-				newBid.setAuction(auction);
-				newBid.setUser(user);
-				newBid.setPrice(bidAmount);
-				newBid.setCreatedAt(LocalDateTime.now());
-				auctionTrackRepository.save(newBid);
-				System.out.println("✅ Inserted new bid: " + newBid.getPrice());
+			if (bidAmount <= highestBid) {
+				return ResponseEntity.badRequest().body(
+						Map.of("success", false, "message", "Your bid must be higher than the current highest bid."));
 			}
+
+			// ✅ Insert a new bid (ALWAYS)
+			AuctionTrack newBid = new AuctionTrack();
+			newBid.setAuction(auction);
+			newBid.setUser(user);
+			newBid.setPrice(bidAmount);
+			newBid.setCreatedAt(LocalDateTime.now());
+
+			auctionTrackRepository.save(newBid);
+			System.out.println("✅ New bid inserted: " + newBid.getPrice());
 
 			return ResponseEntity.ok(Map.of("success", true, "message", "Bid placed successfully!"));
 		} catch (Exception e) {
@@ -137,4 +136,26 @@ public class AuctionTrackController {
 		}
 		return "Processed expired auctions successfully.";
 	}
+
+	@GetMapping("/getHighestBid")
+	public ResponseEntity<?> getHighestBid(@RequestParam Long auctionID) {
+		Optional<Auction> auctionOpt = auctionRepository.findById(auctionID);
+
+		if (auctionOpt.isEmpty()) {
+			return ResponseEntity.badRequest().body(Map.of("success", false, "message", "Invalid auction ID."));
+		}
+
+		Auction auction = auctionOpt.get();
+
+		Optional<AuctionTrack> highestBid = auctionTrackRepository.findTopByAuctionOrderByPriceDesc(auction);
+
+		if (highestBid.isPresent()) {
+			return ResponseEntity.ok(Map.of("success", true, "highestBid", highestBid.get().getPrice()));
+		} else {
+			return ResponseEntity.ok(Map.of("success", true, "highestBid", auction.getStartPrice())); // If no bids,
+																										// return start
+																										// price
+		}
+	}
+
 }

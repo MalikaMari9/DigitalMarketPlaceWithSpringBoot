@@ -143,6 +143,15 @@ hr {
     background-color: var(--hover-color);
 }
 
+/* Disabled Add to Cart Button */
+button:disabled {
+    background-color: #ccc; /* Gray background */
+    color: #666; /* Darker text */
+    cursor: not-allowed; /* Show disabled cursor */
+    opacity: 0.6; /* Slightly faded look */
+}
+
+
 #desc #last-updated {
     color: var(--primary-color); /* Apply primary color to the text */
     font-size: 14px;
@@ -172,6 +181,12 @@ hr {
     padding: 5px;
     font-size: 14px;
     box-sizing: border-box; /* Ensures padding doesn't affect width/height */
+}
+
+
+.bid-btn:disabled {
+    cursor: default; /* Normal cursor instead of pointer */
+    opacity: 0.6; /* Make it look faded */
 }
 
 #desc .quantity-control button {

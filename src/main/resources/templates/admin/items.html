@@ -34,20 +34,75 @@
                       <th>Item Name</th>
                       <th>Description</th>
                       <th>Price</th>
-                      <th>Quality</th>
+                      <th>Quantity</th>
                       <th>Sell Type</th>
                       <th>Created At</th>
                       <th>Status</th>
                       <th>Condition</th>
-                      <th>Seller ID</th>
-                      <th>Category ID</th>
+                      <th>Seller Name</th>
+                      <th>Category </th>
                       <th>Actions</th>
                     </tr>
                   </thead>
-                  <tbody id="itemsTableBody">
-                    <!-- Table content will be populated by JavaScript -->
-                  </tbody>
+                 <tbody>
+    <tr th:each="item : ${items}">
+        <td th:text="${item.itemID}"></td>
+        <td th:text="${item.itemName}"></td>
+       <td>
+    <span th:text="${#strings.length(item.descrip) > 100 ? #strings.substring(item.descrip, 0, 100) + '...' : item.descrip}" 
+          class="short-description"></span>
+    <span th:text="${item.descrip}" class="full-description" style="display: none;"></span>
+    
+    <!-- ✅ Show "See More" only if description is longer than 100 characters -->
+    <a href="javascript:void(0);" class="see-more"
+       th:if="${#strings.length(item.descrip) > 100}" 
+       onclick="toggleDescription(this)">See More</a>
+</td>
+
+
+        <td th:text="'$' + ${item.price}"></td>
+        <td th:text="${item.quality}"></td>
+        <td th:text="${item.sellType}"></td>
+        <td th:text="${#temporals.format(item.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+        
+        <!-- ✅ Status: Available or Sold Out -->
+        <td>
+            <span th:classappend="${item.stat.name() == 'AVAILABLE' ? 'status-available' : 'status-sold'}"
+                  th:text="${item.stat.name() == 'AVAILABLE' ? 'Available' : 'Sold Out'}">
+            </span>
+        </td>
+        
+        <td th:text="${item.cond}"></td>
+        <td th:text="${item.seller.username}"></td>
+        <td th:text="${item.category.name}"></td>
+
+        <!-- Actions: Delete Button -->
+        <td>
+            <button class="delete-btn" th:data-item-id="${item.itemID}" onclick="deleteItem(this)">
+                <i data-lucide="trash-2"></i>
+            </button>
+        </td>
+    </tr>
+</tbody>
+
                 </table>
+                <div class="pagination">
+    <!-- Previous Button -->
+    <a th:if="${currentPage > 0}" 
+       th:href="@{/admin/items(page=${currentPage - 1}, size=6)}">
+        Previous
+    </a>
+
+    <!-- Page Numbers -->
+    <span th:text="'Page ' + (${currentPage + 1}) + ' of ' + ${totalPages}"></span>
+
+    <!-- Next Button -->
+    <a th:if="${currentPage + 1 < totalPages}" 
+       th:href="@{/admin/items(page=${currentPage + 1}, size=6)}">
+        Next
+    </a>
+</div>
+                
               </div>
             </div>
           </div>
@@ -65,6 +120,52 @@
 
     <script>
       lucide.createIcons();
+      
+      async function deleteItem(button) {
+    	    const itemId = button.getAttribute("data-item-id");
+
+    	    if (!itemId) {
+    	        alert("⚠️ Error: Item ID is missing.");
+    	        return;
+    	    }
+
+    	    const confirmDelete = confirm("Are you sure you want to delete this item?");
+    	    if (!confirmDelete) return;
+
+    	    try {
+    	        const response = await fetch(`/admin/delete-item/${itemId}`, { method: "DELETE" });
+    	        const data = await response.json();
+
+    	        if (data.success) {
+    	            alert("✅ Item deleted successfully!");
+    	            location.reload(); // Refresh page after deletion
+    	        } else {
+    	            alert("⚠️ Error: " + data.message);
+    	        }
+    	    } catch (error) {
+    	        console.error("❌ Deletion failed:", error);
+    	        alert("❌ Failed to delete item.");
+    	    }
+    	}
+      
+      function toggleDescription(link) {
+    	    const row = link.closest("td");
+    	    const shortDesc = row.querySelector(".short-description");
+    	    const fullDesc = row.querySelector(".full-description");
+
+    	    if (shortDesc.style.display === "none") {
+    	        shortDesc.style.display = "inline";
+    	        fullDesc.style.display = "none";
+    	        link.textContent = "See More";
+    	    } else {
+    	        shortDesc.style.display = "none";
+    	        fullDesc.style.display = "inline";
+    	        link.textContent = "See Less";
+    	    }
+    	}
+
+
+
     </script>
   </body>
 </html>

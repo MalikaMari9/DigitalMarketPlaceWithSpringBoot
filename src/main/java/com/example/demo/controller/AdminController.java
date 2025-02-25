@@ -1,9 +1,16 @@
 package com.example.demo.controller;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -11,7 +18,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,9 +30,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.example.demo.entity.Item;
 import com.example.demo.entity.Item.ApprovalStatus;
 import com.example.demo.entity.ItemApproval;
+import com.example.demo.entity.ItemImage;
 import com.example.demo.entity.Notification;
 import com.example.demo.entity.Seller;
 import com.example.demo.entity.User;
+import com.example.demo.entity.Auction.Auction;
+import com.example.demo.entity.Auction.AuctionTrack;
+import com.example.demo.repository.CartRepository;
 import com.example.demo.repository.CategoryRepository;
 import com.example.demo.repository.ItemApprovalRepository;
 import com.example.demo.repository.ItemImageRepository;
@@ -32,6 +45,7 @@ import com.example.demo.repository.NotificationRepository;
 import com.example.demo.repository.SellerRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.repository.ViewRepository;
+import com.example.demo.repository.WishlistRepository;
 import com.example.demo.repository.Auction.AuctionRepository;
 import com.example.demo.repository.Auction.AuctionTrackRepository;
 import com.example.demo.repository.tag.ItemTagRepository;
@@ -45,6 +59,12 @@ public class AdminController {
 
 	@Autowired
 	CategoryRepository categoryRepo;
+
+	@Autowired
+	CartRepository cartRepo;
+
+	@Autowired
+	WishlistRepository wishlistRepo;
 
 	@Autowired
 	UserRepository userRepo;
@@ -67,6 +87,8 @@ public class AdminController {
 	SellerRepository sellerRepo;
 	@Autowired
 	NotificationRepository notificationRepo;
+
+	private final String BASE_DIR = "src/main/resources/static/Image/Item/";
 
 	@GetMapping("/admin/viewDashboard")
 	public String viewDashboard() {
@@ -211,9 +233,34 @@ public class AdminController {
 	}
 
 	@GetMapping("/admin/auctions")
-	public String viewAuctions() {
+	public String viewAuctions(Model model) {
+		List<Auction> auctions = auctionRepo.findAll();
+		model.addAttribute("auctions", auctions);
 		return "admin/auctions";
+	}
 
+	@GetMapping("/admin/auction/getTrackings")
+	public ResponseEntity<List<Map<String, Object>>> getAuctionTrackings(@RequestParam Long auctionID) {
+		Optional<Auction> auctionOpt = auctionRepo.findById(auctionID);
+
+		if (auctionOpt.isEmpty()) {
+			return ResponseEntity.badRequest().build();
+		}
+
+		Auction auction = auctionOpt.get();
+		List<AuctionTrack> tracks = auctionTrackRepo.findByAuctionOrderByCreatedAtDesc(auction);
+
+		List<Map<String, Object>> trackList = new ArrayList<>();
+		for (AuctionTrack track : tracks) {
+			Map<String, Object> trackInfo = new HashMap<>();
+			trackInfo.put("bidderName", track.getUser().getUsername());
+			trackInfo.put("bidAmount", track.getPrice());
+			trackInfo.put("time", track.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+
+			trackList.add(trackInfo);
+		}
+
+		return ResponseEntity.ok(trackList);
 	}
 
 	@GetMapping("/admin/delivery")
@@ -223,9 +270,74 @@ public class AdminController {
 	}
 
 	@GetMapping("/admin/items")
-	public String viewItems() {
-		return "admin/items";
+	public String viewItems(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "6") int size,
+			Model model) {
+		Pageable pageable = PageRequest.of(page, size);
+		Page<Item> itemPage = itemRepo.findAll(pageable);
 
+		model.addAttribute("items", itemPage.getContent()); // ✅ Ensure Thymeleaf gets the correct list
+		model.addAttribute("currentPage", page);
+		model.addAttribute("totalPages", itemPage.getTotalPages());
+
+		return "admin/items";
+	}
+
+	@DeleteMapping("/admin/delete-item/{itemId}")
+	@Transactional
+	public ResponseEntity<Map<String, Object>> deleteItem(@PathVariable Long itemId) {
+		Map<String, Object> response = new HashMap<>();
+		Optional<Item> itemOptional = itemRepo.findById(itemId);
+
+		if (itemOptional.isPresent()) {
+			try {
+				Item item = itemOptional.get();
+				System.out.println("🔹 Deleting item with ID: " + itemId);
+
+				// ✅ Remove related cart entries
+				cartRepo.deleteAll(cartRepo.findByItem(item));
+
+				// ✅ Remove related orders
+
+				// ✅ Remove related wishlist entries
+				wishlistRepo.deleteAll(wishlistRepo.findByItem(item));
+
+				// ✅ Remove related item tags
+				itemTagRepo.deleteAll(itemTagRepo.findByItem(item));
+
+				// ✅ Remove related views
+				viewRepo.deleteAll(viewRepo.findByItem(item));
+
+				// ✅ Remove related approval records
+				itemApprovalRepo.deleteByItem(item);
+
+				// ✅ Remove related notifications
+				notificationRepo.deleteAllByItem(item);
+
+				// ✅ Remove related auction & auction track records
+				Auction auction = auctionRepo.findByItem_ItemID(itemId);
+				if (auction != null) {
+					auctionTrackRepo.deleteAll(auctionTrackRepo.findByAuction(auction));
+					auctionRepo.delete(auction);
+				}
+
+				// ✅ Remove item images from the filesystem
+				deleteItemImages(item);
+
+				// ✅ Delete the item itself
+				itemRepo.delete(item);
+
+				response.put("success", true);
+				response.put("message", "✅ Item deleted successfully.");
+			} catch (Exception e) {
+				response.put("success", false);
+				response.put("message", "❌ Error deleting item: " + e.getMessage());
+			}
+		} else {
+			response.put("success", false);
+			response.put("message", "❌ Item not found.");
+		}
+
+		return ResponseEntity.ok(response);
 	}
 
 	@GetMapping("/admin/orders")
@@ -290,4 +402,21 @@ public class AdminController {
 		return "admin/users";
 	}
 
+	private void deleteItemImages(Item item) {
+		List<ItemImage> images = itemImageRepo.findByItem(item);
+
+		if (!images.isEmpty()) {
+			for (ItemImage image : images) {
+				Path imagePath = Paths.get(BASE_DIR + item.getItemID(), image.getImagePath());
+
+				try {
+					Files.deleteIfExists(imagePath); // ✅ Delete from filesystem
+				} catch (IOException e) {
+					System.err.println("❌ Failed to delete image file: " + imagePath);
+					e.printStackTrace();
+				}
+			}
+			itemImageRepo.deleteAll(images); // ✅ Delete from database
+		}
+	}
 }

@@ -30,6 +30,26 @@ public class Payment {
 	@JoinColumn(name = "userID", nullable = false)
 	private User user; // ✅ Buyer who made the payment
 
+	@ManyToOne
+	@JoinColumn(name = "cardID", nullable = true) // ✅ Nullable for cash payments
+	private CreditCard creditCard;
+
+	public CreditCard getCreditCard() {
+		return creditCard;
+	}
+
+	public void setCreditCard(CreditCard creditCard) {
+		this.creditCard = creditCard;
+	}
+
+	public void setCreatedAt(LocalDateTime createdAt) {
+		this.createdAt = createdAt;
+	}
+
+	public void setUpdatedAt(LocalDateTime updatedAt) {
+		this.updatedAt = updatedAt;
+	}
+
 	@Column(nullable = false, precision = 10, scale = 2)
 	private BigDecimal amount; // ✅ Total amount paid
 

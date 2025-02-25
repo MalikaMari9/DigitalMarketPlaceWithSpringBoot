@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.example.demo.entity.User;
 import com.example.demo.entity.Auction.Auction;
 import com.example.demo.entity.Auction.AuctionTrack;
 
@@ -26,5 +27,10 @@ public interface AuctionTrackRepository extends JpaRepository<AuctionTrack, Long
 
 	@Query("SELECT a FROM AuctionTrack a WHERE a.auction = :auction ORDER BY a.price DESC LIMIT 1")
 	Optional<AuctionTrack> findTopByAuctionOrderByPriceDesc(@Param("auction") Auction auction);
+
+	// ✅ Find the latest bid of a user in a specific auction
+	Optional<AuctionTrack> findTopByAuctionAndUserOrderByCreatedAtDesc(Auction auction, User user);
+
+	List<AuctionTrack> findByAuctionOrderByCreatedAtDesc(Auction auction);
 
 }

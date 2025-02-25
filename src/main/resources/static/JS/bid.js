@@ -26,6 +26,20 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             try {
+                // ✅ Fetch the current highest bid
+                const highestBidResponse = await fetch(`/auction/getHighestBid?auctionID=${auctionID}`);
+                const highestBidData = await highestBidResponse.json();
+
+                if (highestBidResponse.ok && highestBidData.success) {
+                    const highestBid = parseFloat(highestBidData.highestBid);
+                    
+                    if (!isNaN(highestBid) && bidAmount <= highestBid) {
+                        alert(`⚠️ Your bid must be higher than the current highest bid of $${highestBid}`);
+                        return;
+                    }
+                }
+
+                // ✅ Proceed with bid placement
                 const response = await fetch("/auction/placeBid", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },

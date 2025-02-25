@@ -1,11 +1,26 @@
 package com.example.demo.entity.Auction;
 
-import jakarta.persistence.*;
-
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.example.demo.entity.Item;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "auction_tbl")
@@ -31,6 +46,9 @@ public class Auction {
 	private Double startPrice;
 
 	private LocalDateTime endTime;
+
+	@OneToMany(mappedBy = "auction", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<AuctionTrack> auctionTracks = new ArrayList<>();
 
 	// Enum for auction status
 	public enum AuctionStatus {
@@ -116,6 +134,11 @@ public class Auction {
 	@PrePersist
 	protected void onCreate() {
 		this.createdAt = LocalDateTime.now();
+	}
+
+	@Transient
+	public Double getHighestBid() {
+		return auctionTracks.stream().map(AuctionTrack::getPrice).max(Double::compareTo).orElse(null);
 	}
 
 }
