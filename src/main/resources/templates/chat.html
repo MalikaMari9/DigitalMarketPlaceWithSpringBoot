@@ -3,21 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat</title>
-    <link rel="stylesheet" th:href="@{/CSS/chat.css}">
+    <title>Chat Application</title>
+    <link rel="stylesheet" th:href="@{/css/chat.css}">
 </head>
 <body>
     <div class="container">
-        <h2 id="chatHeader">Chat</h2>
-        <div id="chatMessages" class="chat-box"></div>
+        <!-- User List Section -->
+        <div class="user-list">
+            <h2>Users</h2>
+            <ul id="userList"></ul>
+        </div>
 
-        <!-- Chat Input -->
-        <div class="chat-input">
-            <input type="text" id="messageInput" placeholder="Type a message...">
-            <button onclick="sendMessage()">Send</button>
+        <!-- Chat Area -->
+        <div class="chat-area">
+            <div class="chat-header" id="chatHeader">Select a user to chat</div>
+            <div class="chat-messages" id="chatMessages"></div>
+            
+            <!-- Chat Input Section -->
+            <div class="chat-input">
+    <input type="text" id="messageInput" placeholder="Type your message...">
+
+    <!-- Image Upload Button (Styled as Circular Icon) -->
+    <div class="image-upload-container">
+    <label for="imageInput" class="image-button">📷</label>
+    <input type="file" id="imageInput" accept="image/*" style="display: none;">
+</div>
+
+    <button onclick="sendMessage()">Send</button>
+</div>
+
         </div>
     </div>
 
-    <script th:src="@{/JS/chat.js}"></script>
+    <!-- Hidden field for username -->
+    <input type="hidden" id="username" value="">
+
+    <script th:src="@{/js/chat.js}"></script>
 </body>
 </html>

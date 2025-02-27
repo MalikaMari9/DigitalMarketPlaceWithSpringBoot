@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,6 +38,7 @@ import com.example.demo.repository.ItemApprovalRepository;
 import com.example.demo.repository.ItemRepository;
 import com.example.demo.repository.SellerRepository;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.repository.WishlistRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -56,6 +58,8 @@ public class SellerController {
 	private SellerRepository sellerRepo;
 	@Autowired
 	ItemApprovalRepository itemApprovalRepo;
+	@Autowired
+	WishlistRepository wishlistRepo;
 
 	@ModelAttribute("categories")
 	public List<Category> loadCategories() {
@@ -150,28 +154,35 @@ public class SellerController {
 			HttpSession session, Model model) {
 		User seller;
 
-		// If sellerID is provided in the URL, fetch that seller's profile
+		// ✅ Fetch the seller's profile
 		if (sellerID != null) {
 			Optional<User> sellerOptional = userRepo.findById(sellerID);
 			if (sellerOptional.isEmpty()) {
 				return "redirect:/?error=SellerNotFound";
 			}
 			seller = sellerOptional.get();
-		}
-		// If no sellerID is provided, assume the logged-in user
-		else {
+		} else {
 			seller = (User) session.getAttribute("user");
 			if (seller == null) {
-				return "redirect:/loginPage?error=notLoggedIn"; // Redirect to login if user is not logged in
+				return "redirect:/loginPage?error=notLoggedIn";
 			}
 		}
 
-		// Fetch items sold by the seller
+		// ✅ Fetch items sold by the seller
 		List<Item> itemList = itemRepo.findBySeller_UserID(seller.getUserID());
 
-		// Pass data to Thymeleaf
+		// ✅ Fetch wishlist items for the logged-in user
+		User user = (User) session.getAttribute("user");
+		List<Long> wishlistedItemIds = new ArrayList<>();
+
+		if (user != null) {
+			wishlistedItemIds = wishlistRepo.findWishlistedItemIdsByUser(user);
+		}
+
+		// ✅ Add attributes to the model
 		model.addAttribute("itemList", itemList);
 		model.addAttribute("seller", seller);
+		model.addAttribute("wishlistedItemIds", wishlistedItemIds);
 		model.addAttribute("isOwnProfile", sellerID == null || (session.getAttribute("user") != null
 				&& ((User) session.getAttribute("user")).getUserID().equals(seller.getUserID())));
 

@@ -4,55 +4,43 @@ import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "message_tbl") // Renamed to maintain consistency with your database naming
+@Table(name = "message_tbl")
 public class Message {
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "messageid")
 	private Long messageID;
 
-	@ManyToOne
-	@JoinColumn(name = "senderID", nullable = false, referencedColumnName = "userID", foreignKey = @ForeignKey(name = "fk_message_sender"))
-	private User sender;
+	@Column(nullable = false)
+	private int senderID;
 
-	@ManyToOne
-	@JoinColumn(name = "receiverID", nullable = false, referencedColumnName = "userID", foreignKey = @ForeignKey(name = "fk_message_receiver"))
-	private User receiver;
+	@Column(nullable = false)
+	private int receiverID;
 
 	@Column(nullable = true) // Allow null for messages that contain only an image
 	private String message;
 
 	@Column(nullable = true) // Store image filename instead of full path
-	private String imageUrl;
+	private String image_url;
 
-	@Column(nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-	private LocalDateTime createdAt;
-
-	@PrePersist
-	protected void onCreate() {
-		this.createdAt = LocalDateTime.now();
-	}
+	@Column(nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+	private LocalDateTime createdAt = LocalDateTime.now();
 
 	// Constructors
 	public Message() {
 	}
 
-	public Message(User sender, User receiver, String message, String imageUrl) {
-		this.sender = sender;
-		this.receiver = receiver;
+	public Message(int senderID, int receiverID, String message, String image_url) {
+		this.senderID = senderID;
+		this.receiverID = receiverID;
 		this.message = message;
-		this.imageUrl = imageUrl;
+		this.image_url = image_url;
 		this.createdAt = LocalDateTime.now();
 	}
 
@@ -65,20 +53,20 @@ public class Message {
 		this.messageID = messageID;
 	}
 
-	public User getSender() {
-		return sender;
+	public int getSenderID() {
+		return senderID;
 	}
 
-	public void setSender(User sender) {
-		this.sender = sender;
+	public void setSenderID(int senderID) {
+		this.senderID = senderID;
 	}
 
-	public User getReceiver() {
-		return receiver;
+	public int getReceiverID() {
+		return receiverID;
 	}
 
-	public void setReceiver(User receiver) {
-		this.receiver = receiver;
+	public void setReceiverID(int receiverID) {
+		this.receiverID = receiverID;
 	}
 
 	public String getMessage() {
@@ -90,14 +78,18 @@ public class Message {
 	}
 
 	public String getImageUrl() {
-		return imageUrl;
+		return image_url;
 	}
 
 	public void setImageUrl(String imageUrl) {
-		this.imageUrl = imageUrl;
+		this.image_url = imageUrl; // Store only filename, not full path
 	}
 
 	public LocalDateTime getCreatedAt() {
 		return createdAt;
+	}
+
+	public void setCreatedAt(LocalDateTime createdAt) {
+		this.createdAt = createdAt;
 	}
 }

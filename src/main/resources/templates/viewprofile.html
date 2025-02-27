@@ -13,6 +13,8 @@
     <link th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css}" rel="stylesheet">
  	<script th:src="@{/JS/sidebar.js}"></script>
  	 <script th:src="@{/JS/CategorySelect.js}"></script>
+ 	   <script th:src="@{/JS/previewWishlistToggle.js}"></script>
+
 
      <!-- Cart -->
      	<script th:src="@{/JS/cart/cartIcon.js}"></script>
@@ -33,7 +35,7 @@
             <a th:href="@{/edit-profile}" class="edit-profile-btn">Edit Profile</a>
         </th:block>
 <th:block th:if="${!isOwnProfile}">
-    <a th:href="@{'/chat?receiverID=' + ${seller.userID}}" class="chat-button">Chat</a>
+     <a th:href="@{'/chat?receiverID=' + ${seller.userID}}" class="chat-button">Chat</a>
 </th:block>
 
 
@@ -67,7 +69,12 @@
             th:if="${item.sellType != null and item.sellType.name() != 'AUCTION'}">
               <div class="pg-product-image">
                 <img th:src="@{${item.getThumbnail()}}" alt="Thumbnail" />
-                <button class="pg-wishlist-btn">♡</button>
+                <button class="pg-wishlist-btn"
+        th:classappend="${wishlistedItemIds.contains(item.itemID) ? 'wishlisted' : ''}"
+        th:data-item-id="${item.itemID}">
+    <span th:text="${wishlistedItemIds.contains(item.itemID) ? '♥' : '♡'}"></span>
+</button>
+
               </div>
               <div class="pg-product-info">
                 <h3 class="pg-product-title" th:text="${item.itemName}"></h3>

@@ -347,12 +347,16 @@ public class ItemController {
 
 	@GetMapping("/search")
 	public String searchItems(@RequestParam(value = "query", required = false) String query,
-			@RequestParam(value = "categoryID", required = false) Long categoryID, Model model) {
+			@RequestParam(value = "categoryID", required = false) Long categoryID, HttpSession session, // ✅ Add session
+																										// to check
+																										// logged-in
+																										// user
+			Model model) {
 
 		List<Item> searchResults;
 
 		if (categoryID != null && query != null) {
-			searchResults = itemRepo.searchItemsByCategory(query, categoryID); // ✅ Use the correct method
+			searchResults = itemRepo.searchItemsByCategory(query, categoryID);
 		} else if (categoryID != null) {
 			searchResults = itemRepo.findItemsByCategory(categoryID);
 		} else if (query != null) {
@@ -366,21 +370,29 @@ public class ItemController {
 		// ✅ Fetch category name if category is selected
 		Category selectedCategory = categoryID != null ? categoryRepo.findById(categoryID).orElse(null) : null;
 
-		// Fetch highest bids for auction items
+		// ✅ Fetch highest bids for auction items
 		Map<Long, Double> auctionMaxBids = new HashMap<>();
 		for (Auction auction : auctionResults) {
 			Double maxBid = auctionTrackRepo.findMaxPriceByAuctionID(auction.getAuctionID());
 			auctionMaxBids.put(auction.getAuctionID(), maxBid != null ? maxBid : auction.getStartPrice());
 		}
 
-		// Add to model
-		model.addAttribute("auctionMaxBids", auctionMaxBids);
+		// ✅ Fetch wishlisted item IDs for the logged-in user
+		User user = (User) session.getAttribute("user");
+		List<Long> wishlistedItemIds = new ArrayList<>(); // Default empty list for guests
 
+		if (user != null) {
+			wishlistedItemIds = wishlistRepo.findWishlistedItemIdsByUser(user);
+		}
+
+		// ✅ Add data to the model
 		model.addAttribute("searchResults", searchResults);
 		model.addAttribute("auctionResults", auctionResults);
+		model.addAttribute("auctionMaxBids", auctionMaxBids);
 		model.addAttribute("query", query);
 		model.addAttribute("categoryID", categoryID);
 		model.addAttribute("selectedCategory", selectedCategory);
+		model.addAttribute("wishlistedItemIds", wishlistedItemIds); // ✅ Pass wishlist data to Thymeleaf
 
 		return "searchResults";
 	}
