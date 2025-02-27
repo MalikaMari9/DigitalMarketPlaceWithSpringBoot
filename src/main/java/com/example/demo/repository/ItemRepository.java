@@ -138,4 +138,6 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 	Page<Item> findWarehouseItems(@Param("sellerID") Long sellerID, @Param("searchText") String searchText,
 			@Param("sortBy") String sortBy, Pageable pageable);
 
+	int countByApprove(ApprovalStatus pending);
+
 }

@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -50,6 +51,8 @@ import com.example.demo.repository.Auction.AuctionRepository;
 import com.example.demo.repository.Auction.AuctionTrackRepository;
 import com.example.demo.repository.tag.ItemTagRepository;
 import com.example.demo.repository.tag.TagRepository;
+
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class AdminController {
@@ -98,7 +101,10 @@ public class AdminController {
 
 	// Approval
 	@GetMapping("/admin/approvals")
-	public String viewApprovals(Model model) {
+	public String viewApprovals(Model model, HttpSession session) {
+		if (session.getAttribute("admin") == null) { // ✅ Check if admin session exists
+			return "redirect:/loginPage?error=Session Expired"; // ✅ Redirect to login if session expired
+		}
 
 		List<Item> pendingItems = itemRepo.findByApprove(ApprovalStatus.PENDING);
 		model.addAttribute("pendingItems", pendingItems);
@@ -106,6 +112,13 @@ public class AdminController {
 		model.addAttribute("pendingSellers", pendingSellers);
 		return "admin/approvals"; // ✅ Thymeleaf template for approvals
 
+	}
+
+	@ModelAttribute("approvalCount")
+	public int getApprovalCount() {
+		int pendingSellers = sellerRepo.countByApproval("pending"); // ✅ Count pending sellers
+		int pendingItems = itemRepo.countByApprove(ApprovalStatus.PENDING); // ✅ Count pending items
+		return pendingSellers + pendingItems; // ✅ Total approvals needed
 	}
 
 	// ✅ Approve Item
@@ -233,7 +246,10 @@ public class AdminController {
 	}
 
 	@GetMapping("/admin/auctions")
-	public String viewAuctions(Model model) {
+	public String viewAuctions(Model model, HttpSession session) {
+		if (session.getAttribute("admin") == null) { // ✅ Check if admin session exists
+			return "redirect:/loginPage?error=Session Expired"; // ✅ Redirect to login if session expired
+		}
 		List<Auction> auctions = auctionRepo.findAll();
 		model.addAttribute("auctions", auctions);
 		return "admin/auctions";
@@ -264,14 +280,20 @@ public class AdminController {
 	}
 
 	@GetMapping("/admin/delivery")
-	public String viewDelivery() {
+	public String viewDelivery(HttpSession session) {
+		if (session.getAttribute("admin") == null) { // ✅ Check if admin session exists
+			return "redirect:/loginPage?error=Session Expired"; // ✅ Redirect to login if session expired
+		}
 		return "admin/delivery";
 
 	}
 
 	@GetMapping("/admin/items")
 	public String viewItems(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "6") int size,
-			Model model) {
+			Model model, HttpSession session) {
+		if (session.getAttribute("admin") == null) { // ✅ Check if admin session exists
+			return "redirect:/loginPage?error=Session Expired"; // ✅ Redirect to login if session expired
+		}
 		Pageable pageable = PageRequest.of(page, size);
 		Page<Item> itemPage = itemRepo.findAll(pageable);
 
@@ -341,14 +363,20 @@ public class AdminController {
 	}
 
 	@GetMapping("/admin/orders")
-	public String viewOrders() {
+	public String viewOrders(HttpSession session) {
+		if (session.getAttribute("admin") == null) { // ✅ Check if admin session exists
+			return "redirect:/loginPage?error=Session Expired"; // ✅ Redirect to login if session expired
+		}
 		return "admin/orders";
 
 	}
 
 	@GetMapping("/admin/sellers")
 	public String viewSellers(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "6") int size,
-			@RequestParam(required = false) String approval, Model model) {
+			@RequestParam(required = false) String approval, Model model, HttpSession session) {
+		if (session.getAttribute("admin") == null) { // ✅ Check if admin session exists
+			return "redirect:/loginPage?error=Session Expired"; // ✅ Redirect to login if session expired
+		}
 		Pageable pageable = PageRequest.of(page, size);
 
 		Page<Seller> sellerPage;
@@ -370,7 +398,10 @@ public class AdminController {
 	@GetMapping("/admin/users")
 	public String viewUsers(Model model, @RequestParam(defaultValue = "0") int page, // Default to first page
 			@RequestParam(defaultValue = "6") int size // Default page size of 6
-	) {
+			, HttpSession session) {
+		if (session.getAttribute("admin") == null) { // ✅ Check if admin session exists
+			return "redirect:/loginPage?error=Session Expired"; // ✅ Redirect to login if session expired
+		}
 		Pageable pageable = PageRequest.of(page, size);
 		Page<User> userPage = userRepo.findAll(pageable);
 

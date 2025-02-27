@@ -18,6 +18,17 @@ body {
 .bg-dark {
     background-color: none;
 }
+.notification-badge {
+    background-color: red;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: bold;
+    border-radius: 50%;
+    padding: 3px 6px;
+    margin-left: 5px;
+    position: relative;
+    top: -5px;
+}
 
 
 /* Grid layouts */

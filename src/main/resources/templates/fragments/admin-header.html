@@ -22,11 +22,13 @@
                         <i data-lucide="message-circle"></i>
                         Messages
                     </button>
-                    
+                  
+                      <a th:href="@{/admin/notifications}" class="logoadmin">
                     <button class="nav-buttonadmin">
                         <i data-lucide="bell"></i>
                         Notifications
                     </button>
+                    </a>
 
                     <button class="menu-buttonadmin" id="menuBtnadmin">
                         <i data-lucide="menu"></i>
@@ -58,11 +60,13 @@
                             <i data-lucide="layout-dashboard"></i>Dashboard
                         </button>
                         </a>
-                         <a th:href="@{/admin/approvals}">
-                        <button class="sidebar-buttonadmin" onclick="window.location.href='approvals.html'">
-                            <i data-lucide="check-circle"></i>Approvals
-                        </button>
-                        </a>
+                        <a th:href="@{/admin/approvals}">
+    <button class="sidebar-buttonadmin">
+        <i data-lucide="check-circle"></i> Approvals 
+        <sup th:if="${approvalCount > 0}" th:text="${approvalCount}" class="notification-badge"></sup>
+    </button>
+</a>
+
                          <a th:href="@{/admin/users}">
                         <button class="sidebar-buttonadmin" onclick="window.location.href='users.html'">
                             <i data-lucide="users"></i>Users

@@ -1,19 +1,34 @@
-async function updateNotificationCount() {
-    try {
-        const response = await fetch("/user/notifications/unread");
-        if (!response.ok) throw new Error("Failed to fetch notifications");
+document.addEventListener("DOMContentLoaded", function () {
+    const readAllBtn = document.getElementById("readAllBtn");
+    const clearAllBtn = document.getElementById("clearAllBtn");
 
-        const data = await response.json();
-        const notifCountElement = document.getElementById("notifCount");
+    // ✅ Mark all notifications as read
+    readAllBtn.addEventListener("click", async () => {
+        try {
+            const response = await fetch("/notifications/markAllRead", { method: "POST" });
 
-        if (notifCountElement) {
-            notifCountElement.textContent = data.length;
-            notifCountElement.style.display = data.length > 0 ? "inline" : "none";
+            if (response.ok) {
+                document.querySelectorAll(".notification-item").forEach((item) => {
+                    item.classList.remove("unread");
+                });
+            }
+        } catch (error) {
+            console.error("❌ Error marking notifications as read:", error);
         }
-    } catch (error) {
-        console.error("❌ Error fetching notifications:", error);
-    }
-}
+    });
 
-// ✅ Fetch unread notifications on page load
-document.addEventListener("DOMContentLoaded", updateNotificationCount);
+    // ✅ Clear all notifications
+    clearAllBtn.addEventListener("click", async () => {
+        if (!confirm("Are you sure you want to clear all notifications?")) return;
+
+        try {
+            const response = await fetch("/notifications/clearAll", { method: "DELETE" });
+
+            if (response.ok) {
+                document.getElementById("notifications-list").innerHTML = "<p>No new notifications.</p>";
+            }
+        } catch (error) {
+            console.error("❌ Error clearing notifications:", error);
+        }
+    });
+});

@@ -21,4 +21,6 @@ public interface SellerRepository extends JpaRepository<Seller, Long> {
 	Page<Seller> findByApproval(String approval, Pageable pageable);
 
 	List<Seller> findByApproval(String string);
+
+	int countByApproval(String string);
 }

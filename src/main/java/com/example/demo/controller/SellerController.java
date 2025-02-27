@@ -28,11 +28,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.demo.entity.AdminNotification;
 import com.example.demo.entity.Category;
 import com.example.demo.entity.Item;
 import com.example.demo.entity.ItemApproval;
 import com.example.demo.entity.Seller;
 import com.example.demo.entity.User;
+import com.example.demo.repository.AdminNotificationRepository;
 import com.example.demo.repository.CategoryRepository;
 import com.example.demo.repository.ItemApprovalRepository;
 import com.example.demo.repository.ItemRepository;
@@ -60,6 +62,8 @@ public class SellerController {
 	ItemApprovalRepository itemApprovalRepo;
 	@Autowired
 	WishlistRepository wishlistRepo;
+	@Autowired
+	AdminNotificationRepository adminNotificationRepo;
 
 	@ModelAttribute("categories")
 	public List<Category> loadCategories() {
@@ -320,6 +324,12 @@ public class SellerController {
 
 		// Save seller in seller_tbl
 		sellerRepo.save(seller);
+
+		AdminNotification notification = new AdminNotification();
+		notification.setType(AdminNotification.NotificationType.SELLER_APPROVAL);
+		notification.setMessage("New seller '" + businessName + "' awaiting approval.");
+		notification.setStatus(AdminNotification.NotificationStatus.UNREAD);
+		adminNotificationRepo.save(notification); // Save notification
 
 		// Store session
 		HttpSession session = request.getSession();

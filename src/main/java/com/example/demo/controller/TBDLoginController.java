@@ -43,6 +43,7 @@ public class TBDLoginController {
 	@PostMapping("/loginPage")
 	public String login(@RequestParam String username, HttpSession session) {
 		if (username.equals("ADMIN")) {
+			session.setAttribute("admin", true);
 			return "redirect:/admin/viewDashboard";
 		}
 

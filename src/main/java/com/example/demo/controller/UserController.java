@@ -2,24 +2,17 @@ package com.example.demo.controller;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.example.demo.entity.Notification;
 import com.example.demo.entity.User;
-import com.example.demo.repository.NotificationRepository;
 import com.example.demo.repository.UserRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -87,62 +80,6 @@ public class UserController {
 	}
 
 	// Notification
-
-	@Autowired
-	private NotificationRepository notificationRepo;
-
-	// ✅ Get all notifications for logged-in user
-	@GetMapping("/notifications")
-	public String viewNotifications(HttpSession session, Model model) {
-		User user = (User) session.getAttribute("user");
-
-		if (user == null) {
-			return "redirect:/loginPage"; // ✅ Redirect if user is not logged in
-		}
-
-		// ✅ Fetch all notifications for the user
-		List<Notification> notifications = notificationRepo.findByUserOrderByCreatedAtDesc(user);
-		model.addAttribute("notifications", notifications);
-
-		// ✅ Mark all notifications as seen
-		notifications.forEach(noti -> noti.setSeen(true));
-		notificationRepo.saveAll(notifications);
-
-		return "notification"; // ✅ Thymeleaf file
-	}
-
-	@GetMapping("/notifications/unread-count")
-	public ResponseEntity<Map<String, Integer>> getUnreadNotificationCount(HttpSession session) {
-		User user = (User) session.getAttribute("user");
-
-		int unreadCount = (user != null) ? notificationRepo.findByUserAndSeenFalseOrderByCreatedAtDesc(user).size() : 0; // Default
-																															// to
-																															// 0
-																															// if
-																															// user
-																															// is
-																															// not
-																															// logged
-																															// in
-
-		Map<String, Integer> response = new HashMap<>();
-		response.put("unreadCount", unreadCount);
-		return ResponseEntity.ok(response);
-	}
-
-	// ✅ Get only unread notifications for logged-in user
-	@GetMapping("/notifications/unread")
-	@ResponseBody
-	public ResponseEntity<List<Notification>> getUnreadNotifications(HttpSession session) {
-		User user = (User) session.getAttribute("user");
-
-		if (user == null) {
-			return ResponseEntity.badRequest().build();
-		}
-
-		List<Notification> unreadNotifications = notificationRepo.findByUserAndSeenFalseOrderByCreatedAtDesc(user);
-		return ResponseEntity.ok(unreadNotifications);
-	}
 
 	// Method to hash password using SHA-256
 	private String hashPassword(String password) throws NoSuchAlgorithmException {

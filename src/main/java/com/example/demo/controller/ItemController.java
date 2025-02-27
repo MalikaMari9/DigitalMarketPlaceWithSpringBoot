@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.demo.entity.AdminNotification;
 import com.example.demo.entity.Category;
 import com.example.demo.entity.Item;
 import com.example.demo.entity.Item.ApprovalStatus;
@@ -39,6 +40,7 @@ import com.example.demo.entity.View;
 import com.example.demo.entity.Auction.Auction;
 import com.example.demo.entity.tag.ItemTag;
 import com.example.demo.entity.tag.Tag;
+import com.example.demo.repository.AdminNotificationRepository;
 import com.example.demo.repository.CategoryRepository;
 import com.example.demo.repository.ItemApprovalRepository;
 import com.example.demo.repository.ItemImageRepository;
@@ -83,6 +85,8 @@ public class ItemController {
 	NotificationRepository notificationRepo;
 	@Autowired
 	WishlistRepository wishlistRepo;
+	@Autowired
+	AdminNotificationRepository adminNotificationRepo;
 
 	@GetMapping("/sell-item")
 	public String showSellItemForm(Model model, HttpSession session) {
@@ -221,6 +225,12 @@ public class ItemController {
 		if (tags != null && !tags.isEmpty()) {
 			saveItemTags(item, tags);
 		}
+
+		AdminNotification notification = new AdminNotification();
+		notification.setType(AdminNotification.NotificationType.ITEM_APPROVAL);
+		notification.setMessage("New item '" + name + "' awaiting approval.");
+		notification.setStatus(AdminNotification.NotificationStatus.UNREAD);
+		adminNotificationRepo.save(notification);
 
 		return "redirect:/pending-sale?searchfield=&sortby=itemID";
 
