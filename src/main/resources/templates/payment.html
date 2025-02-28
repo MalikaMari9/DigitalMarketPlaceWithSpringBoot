@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment</title>
+
+    <link th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css}" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css}" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/CSS/payment.css}">
+    
+    <script th:src="@{/JS/cart/trash.js}"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+    <style>
+        a {
+            text-decoration: none;
+            color: black;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="left">
+            <h2 class="title">Checkout Review</h2><br>
+
+            <!-- Payment Method -->
+            <div class="form-group payment-method">
+                <label>Payment Method</label>
+                <div class="radio-box">
+                    <label class="radio-option">
+                        <input type="radio" name="paymentMethod" value="cod" checked>
+                        <span class="custom-radio"></span>
+                        Cash on Delivery
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="paymentMethod" value="online">
+                        <span class="custom-radio"></span>
+                        Card
+                    </label>
+                </div>
+            </div>
+
+            <!-- Delivery Option -->
+            <div class="form-group">
+                <label for="deliveryOption">Delivery Option</label>
+                <select id="deliveryOption">
+                    <option value="standard">Standard Delivery ($5.00)</option>
+                    <option value="express">Express Delivery ($10.00)</option>
+                </select>
+            </div>
+
+            <!-- Address Book -->
+            <div class="form-group">
+                <label for="addressBook">Select Address</label>
+                <select id="addressBook">
+                    <option value="home">Home Address</option>
+                    <option value="office">Office Address</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="right">
+            <h2>Order Summary</h2>
+            <div class="order-items">
+                <div th:if="${cartItems != null and not #lists.isEmpty(cartItems)}">
+                    <div th:each="cartItem : ${cartItems}" class="order-item">
+                        <div class="order-details">
+                            <img th:src="@{${cartItem.item.getThumbnail()}}" alt="Product Image" class="order-image">
+                            <div class="order-info">
+                                <h4 class="order-title">
+                                    <a th:href="@{/itemList/{itemID}(itemID=${cartItem.item.itemID})}" th:text="${cartItem.item.itemName}"></a>
+                                </h4>
+                                <p>
+                                    <strong>Price:</strong> 
+                                    <span th:text="${cartItem.quantity}"></span> x $ 
+                                    <span th:text="${cartItem.item.price}"></span> = $ 
+                                    <span th:text="${cartItem.quantity * cartItem.item.price}"></span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="order-summary">
+                    <div class="price-summary">
+                        <p>Subtotal · <span th:text="${cartItems.size()}"></span> items</p>
+                        <p><strong id="subtotalText" th:text="'$' + ${subtotal}"></strong></p>
+                    </div>
+
+                    <div class="price-summary">
+                        <p>Delivery Fee</p>
+                        <p id="deliveryFeeText">$5.00</p> <!-- ✅ Ensure delivery fee is updated dynamically -->
+                    </div>
+
+                    <!-- Total Price -->
+                    <div class="total-section">
+                        <p class="total-label">Total</p>
+                        <p class="total-price" id="totalPriceText" th:text="'$' + (${subtotal} + 5.00)"></p>
+                    </div>
+
+                    <div class="place-order-btn">
+                        <button class="btn-place-order" th:attr="data-seller-id=${seller.userID}">Place Order</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ✅ JavaScript to Update Delivery Fee and Total Price -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const deliveryOption = document.getElementById("deliveryOption");
+            const deliveryFeeText = document.getElementById("deliveryFeeText");
+            const totalPriceText = document.getElementById("totalPriceText");
+            const subtotalText = document.getElementById("subtotalText");
+
+            function updateDeliveryFee() {
+                let subtotal = parseFloat(subtotalText.innerText.replace('$', '')) || 0;
+                let selectedDeliveryFee = deliveryOption.value === "express" ? 10.00 : 5.00;
+                
+                // ✅ Update the delivery fee dynamically
+                deliveryFeeText.innerText = `$${selectedDeliveryFee.toFixed(2)}`;
+
+                // ✅ Update the total price dynamically
+                let totalPrice = subtotal + selectedDeliveryFee;
+                totalPriceText.innerText = `$${totalPrice.toFixed(2)}`;
+            }
+
+            // ✅ Trigger event when delivery option changes
+            deliveryOption.addEventListener("change", updateDeliveryFee);
+
+            // ✅ Call once to initialize correct values
+            updateDeliveryFee();
+        });
+    </script>
+
+    <!-- ✅ JavaScript for Handling Place Order -->
+    <script>
+		document.addEventListener("DOMContentLoaded", () => {
+		    document.querySelectorAll(".btn-place-order").forEach((btn) => {
+		        btn.addEventListener("click", async (event) => {
+		            event.preventDefault();
+		            console.log("✅ Place Order button clicked!");
+
+		            const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+		            const deliveryOption = document.getElementById("deliveryOption").value;
+		            const addressID = document.getElementById("addressBook").value;
+		            const sellerID = btn.getAttribute("data-seller-id");
+
+		            if (!sellerID) {
+		                alert("❌ Missing seller ID!");
+		                return;
+		            }
+
+		            // ✅ Ensure we fetch the subtotal dynamically
+		            const subtotalText = document.querySelector(".total-price").innerText.replace('$', '').trim();
+		            let subtotal = parseFloat(subtotalText) || 0;
+
+		            let deliveryFee = deliveryOption === "express" ? 10.00 : 5.00;
+		            let totalAmount = (subtotal + deliveryFee).toFixed(2); // Ensure it's a valid decimal number
+
+		            console.log(`🛒 Subtotal: $${subtotal}, 🚚 Delivery Fee: $${deliveryFee}, 💰 Total: $${totalAmount}`);
+
+		            if (!paymentMethod || !deliveryOption || !addressID) {
+		                alert("❌ Missing required fields!");
+		                return;
+		            }
+
+		            // ✅ Redirect correctly if payment method is online
+		            if (paymentMethod === "online") {
+		                window.location.href = `/credit-card-payment?amount=${subtotal}&sellerID=${sellerID}`;
+		                return;
+		            }
+
+		            // ✅ Otherwise, proceed with order placement (COD)
+		            try {
+		                const response = await fetch("/place-order", {
+		                    method: "POST",
+		                    headers: { "Content-Type": "application/json" },
+		                    body: JSON.stringify({
+		                        paymentMethod: paymentMethod,
+		                        deliveryOption: deliveryOption,
+		                        addressID: addressID,
+		                        deliveryFee: deliveryFee,
+		                        sellerID: parseInt(sellerID)
+		                    })
+		                });
+
+		                const data = await response.json();
+		                console.log("🔍 Response:", data);
+
+		                if (response.ok && data.success) {
+		                    alert("✅ Order placed successfully!");
+		                    location.reload(); // ✅ Refresh the page
+		                } else {
+		                    alert("❌ Failed to place order: " + (data.message || "Unknown error"));
+		                }
+		            } catch (error) {
+		                console.error("❌ Fetch error:", error);
+		                alert("❌ An error occurred while placing the order.");
+		            }
+		        });
+		    });
+		});
+
+    </script>
+</body>
+</html>

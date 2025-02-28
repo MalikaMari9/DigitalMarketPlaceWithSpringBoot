@@ -7,28 +7,20 @@
                 <div class="header-leftadmin">
                     <a th:href="@{/home}" class="logoadmin">TRADESPHERE</a>
                     <span class="dashboard-titleadmin">Admin Dashboard</span>
-                    
-                    <div class="search-containeradmin">
-                        <input type="text" placeholder="Search dashboard..." class="search-inputadmin">
-                        <button class="search-buttonadmin">
-                            <i data-lucide="search"></i>
-                        </button>
-                    </div>
+
                 </div>
 
                 <!-- Right Navigation -->
                 <div class="header-rightadmin">
-                    <button class="nav-buttonadmin">
-                        <i data-lucide="message-circle"></i>
-                        Messages
-                    </button>
+
                   
-                      <a th:href="@{/admin/notifications}" class="logoadmin">
-                    <button class="nav-buttonadmin">
-                        <i data-lucide="bell"></i>
-                        Notifications
-                    </button>
-                    </a>
+                     <a th:href="@{/admin/notifications}" class="logoadmin">
+    <button class="nav-buttonadmin">
+        <i data-lucide="bell"></i>
+        <span class="admin-notif-count" id="adminNotifCount" style="display: none;"></span>
+    </button>
+</a>
+
 
                     <button class="menu-buttonadmin" id="menuBtnadmin">
                         <i data-lucide="menu"></i>

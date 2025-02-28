@@ -296,6 +296,42 @@ body {
     background: var(--muted-color);
 }
 
+/* ✅ Admin Notification Button (Similar to User Notification) */
+.nav-buttonadmin {
+    position: relative;
+    padding: 0.5rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ✅ Admin Notification Count Badge */
+.admin-notif-count {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    height: 1.2rem;
+    width: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: red;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: bold;
+    border-radius: 50%;
+    display: none; /* ✅ Initially hidden */
+}
+
+/* ✅ Ensure the bell icon is properly sized */
+.nav-buttonadmin i {
+    font-size: 22px;
+}
+
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .sidebaradmin {

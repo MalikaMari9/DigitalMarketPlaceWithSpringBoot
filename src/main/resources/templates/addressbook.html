@@ -4,75 +4,95 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Address Book</title>
-   <link rel="stylesheet" th:href="@{/CSS/STRMstyle.css}">
-<link rel="stylesheet" th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css}">
-<link rel="stylesheet" th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css}">
 
-	<link th:href="@{/CSS/headerFooter.css}" rel="stylesheet">
- 	<script src="https://unpkg.com/lucide@latest"></script>
+    <!-- ✅ Fix CSS Paths -->
+    <link rel="stylesheet" th:href="@{/CSS/STRMstyle.css}">
+    <link rel="stylesheet" th:href="@{/CSS/headerFooter.css}">
+    <link rel="stylesheet" th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css}">
+  
+    <!-- ✅ Fix JavaScript Paths -->
+    <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-    <link th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css}" rel="stylesheet">
- 	<script th:src="@{/JS/sidebar.js}"></script>
- 	 <script th:src="@{/JS/CategorySelect.js}"></script>
- 
-   <style>
-   body{
-   background-color:#f2f2f2;
-   }
-   </style>
-   
+    <script th:src="@{/JS/sidebar.js}"></script>
+    <script th:src="@{/JS/CategorySelect.js}"></script>
+
+    <style>
+        body { background-color: #f2f2f2; }
+    </style>
 </head>
-<body >
+<body>
 <header th:insert="fragments/header :: header"></header>
+
 <div class="add-body">
     <div class="page-wrapper">
-    
+        <div class="address-book-container">
+            <h1 class="address-title">Addresses</h1>
+<!-- ✅ Debugging Info -->
 
-            <div class="address-book-container">
-                <h1 class="address-title">Addresses</h1>
-                <div class="address-list">
-                    <!-- Address Item -->
-                    <div class="address-item">
-                        <div class="address-icon"><i class="fas fa-map-marker-alt"></i></div>
-                        <div class="address-details">
-                            <p class="address-name">Home</p>
-                            <p class="address-info">Note to rider: none</p>
-                        </div>
-                        <div class="address-actions">
-                            <button class="edit-button">
-                            <a href="editaddress.html"><i class="fas fa-edit"></i></a>
-                            <i class="fas fa-trash-alt"></i>
-                            </button>
-                            
-                        </div>
+            <div class="address-list">
+                <!-- ✅ Iterate over addresses dynamically -->
+                <div th:each="address : ${addresses}" class="address-item" th:object="${address}">
+                    <div class="address-icon">
+                        <i class="fas fa-map-marker-alt"></i>
                     </div>
+                   <div class="address-details">
+    <table>
+        <tr>
+            <td><strong>Name:</strong></td>
+            <td><span th:text="${address.custName}"></span></td>
+        </tr>
+        <tr>
+            <td><strong>Building:</strong></td>
+            <td><span th:text="${address.building}"></span></td>
+        </tr>
+        <tr>
+            <td><strong>Address:</strong></td>
+            <td><span th:text="${address.addres}"></span></td> <!-- ✅ FIXED -->
+        </tr>
+        <tr>
+            <td><strong>City:</strong></td>
+            <td><span th:text="${address.city}"></span></td>
+        </tr>
+        <tr>
+            <td><strong>Postal Code:</strong></td>
+            <td><span th:text="${address.postalCode}"></span></td>
+        </tr>
+        <tr>
+            <td><strong>Phone:</strong></td>
+            <td><span th:text="${address.phone}"></span></td>
+        </tr>
+        <tr>
+            <td><strong>Township:</strong></td>
+            <td><span th:text="${address.township}"></span></td>
+        </tr>
+        <tr>
+            <td><strong>Delivery Note:</strong></td>
+            <td><span th:text="${address.delinote}"></span></td> <!-- ✅ FIXED -->
+        </tr>
+    </table>
+</div>
 
-                    <div class="address-item">
-                        <div class="address-icon"><i class="fas fa-map-marker-alt"></i></div>
-                        <div class="address-details">
-                            <p class="address-name">Work</p>
-                            <p class="address-info">Note to rider: none</p>
-                        </div>
-                        <div class="address-actions">
-                            <button class="edit-button">
-                            <a href="editaddress.html"><i class="fas fa-edit"></i></a>
+                    <div class="address-actions">
+                        <a th:href="@{/edit-address/{id}(id=${address.addressID})}" class="edit-button">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a th:href="@{/delete-address/{id}(id=${address.addressID})}" class="delete-button">
                             <i class="fas fa-trash-alt"></i>
-                            </button>
-                        </div>
+                        </a>
                     </div>
                 </div>
-
-                <!-- Add Address Button -->
-                <br><br>
-                <a href="editaddress.html" class="profile-button">+ Add Address</a>
             </div>
-        </div>
-  </div>
-<footer th:insert="fragments/footer :: footer"></footer>
- <script>
-        lucide.createIcons();
-      </script>
 
-  
+            <!-- ✅ Fix Add Address Button (Check session user before passing ID) -->
+            <br><br>
+            <a th:href="${session.user != null ? '/address-form/' + session.user.userID : '/login'}" 
+               class="profile-button">+ Add Address</a>
+        </div>
+    </div>
+</div>
+
+<footer th:insert="fragments/footer :: footer"></footer>
+<script> lucide.createIcons(); </script>
+
 </body>
 </html>

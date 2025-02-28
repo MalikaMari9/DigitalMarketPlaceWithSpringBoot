@@ -7,7 +7,7 @@
     <link rel="stylesheet" th:href="@{/CSS/proceedCheckout.css}">
     <link th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css}" rel="stylesheet">
 	<script th:src="@{/JS/cart/trash.js}"></script>
-	      <link th:href="@{/CSS/headerFooter.css}" rel="stylesheet">
+	<link th:href="@{/CSS/headerFooter.css}" rel="stylesheet">
  	<script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <link th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css}" rel="stylesheet">
@@ -60,13 +60,9 @@
                 <div class="order-card-header">
                     <img th:src="@{${cartItem.item.getThumbnail()}}" alt="Product Image" class="order-image">
                     <div class="order-info">
-                   <h4 class="order-title">   <a th:if="${cartItem.item != null}" th:href="@{/itemList/{itemID}(itemID=${cartItem.item.itemID})}"  th:text="${cartItem.item.itemName}"> </a></h4>
- 
-
-
-
+                   <h4 class="order-title"><a th:if="${cartItem.item != null}" th:href="@{/itemList/{itemID}(itemID=${cartItem.item.itemID})}"  th:text="${cartItem.item.itemName}"> </a></h4>
                         <p class="order-date"><i class="fas fa-calendar-alt"></i> <span th:text="${cartItem.formattedCreatedAt}"></span>
-</p>
+						</p>
                     </div>
                     
                     <!-- Wishlist & Remove Buttons -->
@@ -112,7 +108,7 @@
             </div>
 
             <div class="order-footer">
-                <button class="proceed-button">Proceed to Order</button>
+              <a th:href="@{/checkout(sellerID=${entry.key.userID})}"> <button class="proceed-button">Proceed to Order</button></a>
             </div>
         </div>
     </div>

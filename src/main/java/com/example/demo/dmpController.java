@@ -114,12 +114,6 @@ public class dmpController {
 	}
 	// Site that has header footers
 
-	@GetMapping("/addressBook")
-	public String addressBook() {
-		return "addressbook";
-
-	}
-
 	@GetMapping("/viewBuyer")
 	public String viewBuyer() {
 		return "buyer";

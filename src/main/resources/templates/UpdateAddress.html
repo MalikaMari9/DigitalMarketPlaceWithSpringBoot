@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Address</title>
+    <link rel="stylesheet" href="CSS/STRMstyle.css">
+    <style>
+        body {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="add-body">
+        <div class="page-wrapper">
+            <div class="add-address-form">
+                <h2>Edit Address</h2>
+                <form th:action="@{/update-address/{id}(id=${address.addressID})}" method="POST"  th:object="${address}" >
+                   
+
+                    <label for="name">Name</label>
+                    <input type="text" id="name" name="custName" th:value="${address.custName}" required>
+
+                    <label for="postalCode">Postal-Code</label>
+                    <input type="text" id="postalCode" name="postalCode" th:value="${address.postalCode}">
+
+                    <label for="phoneNumber">Phone Number</label>
+                    <input type="text" id="phoneNumber" name="phone" maxlength="12" th:value="${address.phone}" required>
+
+                    <label for="township">Township</label>
+<select id="township" name="township">
+    <option th:each="t : ${townships}" th:value="${t}" th:text="${t}" th:selected="${t == address.township}"></option>
+</select>
+                    <label for="building">Building / House No / Floor / Street</label>
+                    <input type="text" id="building" name="building" th:value="${address.building}">
+
+                    <label for="city">City</label>
+<select id="city" name="city">
+    <option th:each="c : ${cities}" th:value="${c}" th:text="${c}" th:selected="${c == address.city}"></option>
+</select>
+
+                    <label for="addressDetail">Address Detail</label>
+                    <textarea id="addressDetail" name="address" th:text="${address.addres}"></textarea>
+
+                    <label for="deliveryNote">Delivery Note</label>
+                    <textarea id="deliveryNote" name="deliveryNote" th:text="${address.delinote}"></textarea>
+
+                    <button type="submit">Update</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="assets/javascript/script.js"></script>
+</html>
