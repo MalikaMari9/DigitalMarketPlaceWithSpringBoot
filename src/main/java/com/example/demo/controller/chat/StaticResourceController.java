@@ -13,6 +13,6 @@ public class StaticResourceController {
 
 	@GetMapping("/{filename:.+}")
 	public Resource getImage(@PathVariable String filename) {
-		return new ClassPathResource("static/Image/profile" + filename);
+		return new ClassPathResource("static/images/" + filename);
 	}
 }

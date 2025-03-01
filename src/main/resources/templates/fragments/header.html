@@ -230,6 +230,11 @@
             <!-- Other Section -->
             <div class="sidebar-sectionyoon">
               <h3 class="section-titleyoon">Other</h3>
+                 <button class="sidebar-buttonyoon">
+                           <a th:href="@{/chat}">              
+              
+                <i data-lucide="message-square"></i>Chat</a>
+              </button>
               <div class="sidebar-buttonsyoon">
               <a th:href="@{/convert-to-seller}">
                 <button class="sidebar-buttonyoon">
@@ -369,8 +374,10 @@
           <div class="sidebar-sectionyoon">
             <h3 class="section-titleyoon">Other</h3>
             <div class="sidebar-buttonsyoon">
-              <button class="sidebar-buttonyoon">
-                <i data-lucide="message-square"></i>Chat
+               <button class="sidebar-buttonyoon">
+                           <a th:href="@{/chat}">              
+              
+                <i data-lucide="message-square"></i>Chat</a>
               </button>
               <th:block th:if="${session.user.seller.businessType=='C2C'}">
              <button class="sidebar-buttonyoon">

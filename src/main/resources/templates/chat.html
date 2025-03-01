@@ -1,43 +1,98 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Application</title>
-    <link rel="stylesheet" th:href="@{/css/chat.css}">
-</head>
-<body>
-    <div class="container">
-        <!-- User List Section -->
-        <div class="user-list">
-            <h2>Users</h2>
-            <ul id="userList"></ul>
-        </div>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Chat | Store</title>
+		<link
+			rel="stylesheet"
+			th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css}"
+		/>
+		<link
+			rel="stylesheet"
+			th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css}"
+		/>
+		<link rel="stylesheet" th:href="@{/css/chat.css}" />
+	</head>
+	<body>
+		<div class="container">
+			<!-- User List Section -->
+			<div class="user-list">
+				<div class="chat-header">
+					<h2>Chats</h2>
+					<div class="create_new_conversation_btn_parent">
+						<button
+							class="create_new_conversation_btn"
+							id="create_new_conversation_btn"
+						>
+							<i class="fa-solid fa-plus"></i>
+						</button>
+					</div>
+				</div>
+				<dialog
+					class="create_new_conversation_dialog"
+					id="create_new_conversation_dialog"
+				>
+					<input
+						type="text"
+						class="search_user_input"
+						id="search_user_input"
+						placeholder="Enter Username"
+					/>
 
-        <!-- Chat Area -->
-        <div class="chat-area">
-            <div class="chat-header" id="chatHeader">Select a user to chat</div>
-            <div class="chat-messages" id="chatMessages"></div>
-            
-            <!-- Chat Input Section -->
-            <div class="chat-input">
-    <input type="text" id="messageInput" placeholder="Type your message...">
+					<ul id="search_user_list">
+						<li>Searched Users will appear here!</li>
+					</ul>
+				</dialog>
+				<ul id="userList"></ul>
+			</div>
 
-    <!-- Image Upload Button (Styled as Circular Icon) -->
-    <div class="image-upload-container">
-    <label for="imageInput" class="image-button">📷</label>
-    <input type="file" id="imageInput" accept="image/*" style="display: none;">
-</div>
+			<!-- Chat Area -->
+			<div class="chat-area">
+				<div class="chat-header-without-selected-user" id="chatHeader">
+					<div class="select-a-user">Select a chat to start messaging</div>
+				</div>
+				<div class="chat-messages" id="chatMessages"></div>
 
-    <button onclick="sendMessage()">Send</button>
-</div>
+				<!-- Chat Input Section -->
+				<div class="chat-input" id="chat-input">
+					<input
+						type="text"
+						id="messageInput"
+						onkeypress="if(event.key === 'Enter') {event.preventDefault();sendMessage()}"
+						placeholder="Type your message..."
+					/>
+					<input
+						type="text"
+						name="senderId"
+						id="senderId"
+						th:value="${session.user_id}"
+						hidden
+					/>
 
-        </div>
-    </div>
+					<!-- Image Upload Button (Styled as Circular Icon) -->
+					<div class="image-upload-container">
+						<label for="imageInput" class="image-button">
+							<i class="fa-solid fa-image"></i>
+						</label>
+						<input
+							type="file"
+							id="imageInput"
+							accept="image/*"
+							style="display: none"
+						/>
+					</div>
 
-    <!-- Hidden field for username -->
-    <input type="hidden" id="username" value="">
+					<button onclick="sendMessage()">
+						<i class="fas fa-paper-plane"></i>
+					</button>
+				</div>
+			</div>
+		</div>
 
-    <script th:src="@{/js/chat.js}"></script>
-</body>
+		<!-- Hidden field for username -->
+		<input type="hidden" id="username" value="" />
+
+		<script th:src="@{/js/chat.js}"></script>
+	</body>
 </html>

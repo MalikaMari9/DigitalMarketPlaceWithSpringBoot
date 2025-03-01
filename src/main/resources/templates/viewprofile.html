@@ -34,8 +34,10 @@
         <th:block th:if="${isOwnProfile}">
             <a th:href="@{/edit-profile}" class="edit-profile-btn">Edit Profile</a>
         </th:block>
-<th:block th:if="${!isOwnProfile}">
-     <a th:href="@{'/chat?receiverID=' + ${seller.userID}}" class="chat-button">Chat</a>
+<th:block th:if="${session.user != null and !isOwnProfile}">
+   <a th:href="@{'/chat?receiverID=' + ${seller.userID} + '&receiverName=' + ${seller.username}}"
+   class="chat-button">Chat</a>
+
 </th:block>
 
 
@@ -70,7 +72,8 @@
               <div class="pg-product-image">
                 <img th:src="@{${item.getThumbnail()}}" alt="Thumbnail" />
                
-               <th:block th:if="${ session.user.userID != item.seller.userID}">
+              <th:block th:if="${session.user != null and session.user.userID != item.seller.userID}">
+
                 <button class="pg-wishlist-btn"
         th:classappend="${wishlistedItemIds.contains(item.itemID) ? 'wishlisted' : ''}"
         th:data-item-id="${item.itemID}">
