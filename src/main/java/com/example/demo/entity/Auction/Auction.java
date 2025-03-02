@@ -18,7 +18,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
@@ -32,7 +31,7 @@ public class Auction {
 
 	private Double incrementAmount;
 
-	@Column(nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+	@Column(nullable = false, updatable = false)
 	private LocalDateTime createdAt;
 
 	@Enumerated(EnumType.STRING)
@@ -129,11 +128,6 @@ public class Auction {
 		long remainingSeconds = seconds % 60;
 
 		return String.format("%d days %02d:%02d:%02d", days, hours, minutes, remainingSeconds);
-	}
-
-	@PrePersist
-	protected void onCreate() {
-		this.createdAt = LocalDateTime.now();
 	}
 
 	@Transient

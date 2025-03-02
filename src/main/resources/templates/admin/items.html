@@ -47,7 +47,8 @@
                  <tbody>
     <tr th:each="item : ${items}">
         <td th:text="${item.itemID}"></td>
-        <td th:text="${item.itemName}"></td>
+        <td ><a class="table-link" th:href="@{/itemList/{itemID}(itemID=${item.itemID})}" th:text="${item.itemName}"></a></td>
+           
        <td>
     <span th:text="${#strings.length(item.descrip) > 100 ? #strings.substring(item.descrip, 0, 100) + '...' : item.descrip}" 
           class="short-description"></span>

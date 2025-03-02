@@ -7,9 +7,12 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -17,6 +20,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,17 +34,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.entity.AdminNotification;
+import com.example.demo.entity.Cart;
 import com.example.demo.entity.Category;
 import com.example.demo.entity.Item;
 import com.example.demo.entity.Item.ApprovalStatus;
 import com.example.demo.entity.ItemApproval;
 import com.example.demo.entity.ItemImage;
 import com.example.demo.entity.User;
-import com.example.demo.entity.View;
 import com.example.demo.entity.Auction.Auction;
 import com.example.demo.entity.tag.ItemTag;
 import com.example.demo.entity.tag.Tag;
 import com.example.demo.repository.AdminNotificationRepository;
+import com.example.demo.repository.CartRepository;
 import com.example.demo.repository.CategoryRepository;
 import com.example.demo.repository.ItemApprovalRepository;
 import com.example.demo.repository.ItemImageRepository;
@@ -88,6 +93,9 @@ public class ItemController {
 	@Autowired
 	AdminNotificationRepository adminNotificationRepo;
 
+	@Autowired
+	CartRepository cartRepo;
+
 	@GetMapping("/sell-item")
 	public String showSellItemForm(Model model, HttpSession session) {
 		User seller = (User) session.getAttribute("user");
@@ -128,37 +136,58 @@ public class ItemController {
 		int AuctionCount = auctionTrackRepo.countByAuction_AuctionID(auctionID);
 		Double maxBid = auctionTrackRepo.findMaxPriceByAuctionID(auctionID);
 
-		// views
-		// ✅ Retrieve user from session
-		User user = (User) session.getAttribute("user");
-
-		// ✅ Log the view (Prevent duplicate logging)
-		if (user != null && !viewRepo.existsByItemAndUser(item, user)) {
-			View view = new View(user, item);
-			viewRepo.save(view);
-		}
-
-		// wishlist
-		int wishlistCount = wishlistRepo.countWishlistByItem(item);
-		boolean isWishlisted = false; // Default: Not wishlisted
-		if (user != null) {
-			isWishlisted = wishlistRepo.findByUserAndItem(user, item).isPresent();
-		}
-		// tags
-
+		// Ensure tagOutput is always a valid String (avoid null pointer issues)
 		List<String> tagNames = itemRepo.findTagNamesByItemId(itemID);
-		String tagOutput = String.join(",", tagNames);
-
-		model.addAttribute("item", item);
-		model.addAttribute("auction", auction);
-
-		model.addAttribute("auctionCount", AuctionCount);
-		model.addAttribute("maxBid", maxBid);
+		String tagOutput = (tagNames != null && !tagNames.isEmpty()) ? String.join(",", tagNames) : "";
 
 		model.addAttribute("tagOutput", tagOutput);
 
-		model.addAttribute("wishlistCount", wishlistCount);
-		model.addAttribute("isWishlisted", isWishlisted);
+		// ✅ Retrieve user from session
+		User user = (User) session.getAttribute("user");
+
+		// ✅ Check if user is an admin or seller
+		Boolean isAdmin = (Boolean) session.getAttribute("admin");
+		boolean isSeller = (user != null && "SELLER".equals(user.getRole()));
+
+		model.addAttribute("isAdmin", isAdmin != null && isAdmin);
+		model.addAttribute("isSeller", isSeller);
+
+		// ✅ Fetch recommendations only for buyers (not for admins or sellers)
+		List<Item> recommendedItems = new ArrayList<>();
+		List<Long> wishlistedItemIds = new ArrayList<>();
+
+		if (user != null && !isSeller && (isAdmin == null || !isAdmin)) {
+			List<Item> byCategory = itemRepo.findRecommendedItemsByCategory(user.getUserID());
+			List<Item> byTag = itemRepo.findRecommendedItemsByTag(user.getUserID());
+
+			List<Item> cartItems = cartRepo.findByUser(user).stream().map(Cart::getItem).collect(Collectors.toList());
+
+			// ✅ Remove items already in cart
+			byCategory.removeAll(cartItems);
+			byTag.removeAll(cartItems);
+
+			// ✅ Add unique recommended items
+			Set<Item> recommendedSet = new LinkedHashSet<>();
+			recommendedSet.addAll(byCategory);
+			recommendedSet.addAll(byTag);
+
+			// ✅ If no recommendations found, show latest items
+			if (recommendedSet.isEmpty()) {
+				recommendedSet.addAll(itemRepo.findLatestItems(PageRequest.of(0, 8)).getContent());
+			}
+
+			recommendedItems.addAll(recommendedSet);
+			wishlistedItemIds = wishlistRepo.findItemIdsByUser(user.getUserID());
+		}
+
+		model.addAttribute("recommendedItems", recommendedItems);
+		model.addAttribute("wishlistedItemIds", wishlistedItemIds);
+
+		model.addAttribute("item", item);
+		model.addAttribute("auction", auction);
+		model.addAttribute("auctionCount", AuctionCount);
+		model.addAttribute("maxBid", maxBid);
+
 		return "viewSale";
 	}
 
@@ -261,62 +290,81 @@ public class ItemController {
 
 	@PostMapping("/auction-item")
 	public String saveAuction(@RequestParam("name") String name, @RequestParam("desc") String desc,
-			@RequestParam("price") double price, // Start price
-			@RequestParam("raising") double raising, // Minimum bid increment
-			@RequestParam("deadline") String deadline, // Auction end date (String for conversion)
-			@RequestParam("categoryID") Long categoryID, @RequestParam("cond") String cond,
-			@RequestParam(value = "tags", required = false) String tags,
+			@RequestParam("price") double price, @RequestParam("raising") double raising,
+			@RequestParam("createdDate") String createdDate, // ✅ New param
+			@RequestParam("deadline") String deadline, @RequestParam("categoryID") Long categoryID,
+			@RequestParam("cond") String cond, @RequestParam(value = "tags", required = false) String tags,
 			@RequestParam(value = "itemImages", required = false) List<MultipartFile> images, HttpSession session)
 			throws IOException {
 
 		System.out.println("➡ Auction Item: " + name);
 		System.out.println("➡ Start Price: " + price);
 		System.out.println("➡ Raising Amount: " + raising);
+		System.out.println("➡ Created Date: " + createdDate);
 		System.out.println("➡ Deadline: " + deadline);
 
-		// ✅ Create & Save Item first
+		// ✅ Get logged-in user
+		User seller = (User) session.getAttribute("user");
+		if (seller == null) {
+			return "redirect:/loginPage";
+		}
+
+		// ✅ Ensure the user is a seller
+		if (!"SELLER".equals(seller.getRole())) {
+			return "redirect:/unauthorized";
+		}
+
+		// ✅ Convert createdDate and deadline
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		LocalDateTime createdDateTime;
+		LocalDateTime auctionEndTime;
+
+		try {
+			createdDateTime = LocalDate.parse(createdDate, formatter).atStartOfDay();
+			auctionEndTime = LocalDate.parse(deadline, formatter).atStartOfDay().plusHours(23).plusMinutes(59);
+		} catch (DateTimeParseException e) {
+			return "redirect:/auction-item?error=InvalidDateFormat";
+		}
+
+		// ✅ Ensure createdDate is at most 3 days from today
+		LocalDateTime maxAllowedDate = LocalDateTime.now().plusDays(5);
+		if (createdDateTime.isAfter(maxAllowedDate)) {
+			return "redirect:/auction-item?error=CreatedDateTooFar";
+		}
+
+		// ✅ Ensure createdDate is before deadline
+		if (createdDateTime.isAfter(auctionEndTime)) {
+			return "redirect:/auction-item?error=InvalidDateRange";
+		}
+
+		// ✅ Create & Save Item
 		Item item = new Item();
 		item.setItemName(name);
 		item.setDescrip(desc);
 		item.setPrice(price);
-		item.setQuality(1); // Auction items are always unique
+		item.setQuality(1);
 		item.setSellType(Item.SellType.AUCTION);
 		item.setCond(Item.Condition.valueOf(cond.toUpperCase()));
-		item.setCreatedAt(LocalDateTime.now());
+		item.setCreatedAt(createdDateTime);
 		item.setUpdatedAt(LocalDateTime.now());
 		item.setStat(Item.Status.AVAILABLE);
 		item.setApprove(ApprovalStatus.PENDING);
-
-		// Save item Approval
-		ItemApproval itemApproval = new ItemApproval();
-		itemApproval.setItem(item);
-		itemApproval.setApprovalDate(null); // ✅ Approval date remains NULL for PENDING status
-		itemApproval.setRejectionReason(null); // ✅ No rejection reason initially
-		itemApprovalRepo.save(itemApproval);
+		item.setSeller(seller);
 
 		// ✅ Set category
 		item.setCategory(categoryRepo.findById(categoryID)
 				.orElseThrow(() -> new RuntimeException("❌ Category ID not found: " + categoryID)));
 
-		// ✅ Assign seller (Currently static, replace with logged-in user later)
-		User seller = (User) session.getAttribute("user");
-
-		if (seller == null) {
-			return "redirect:/loginPage"; // Redirect if not logged in
-		}
-
-		// ✅ Ensure the user is a seller
-		if (!"SELLER".equals(seller.getRole())) {
-			return "redirect:/unauthorized"; // Redirect if not a seller
-		}
-		item.setSeller(seller);
-
 		// ✅ Save Item first
 		item = itemRepo.save(item);
 		System.out.println("✅ Item saved with ID: " + item.getItemID());
 
-		// ✅ Convert deadline to LocalDateTime
-		LocalDateTime auctionEndTime = LocalDate.parse(deadline).atStartOfDay().plusHours(23).plusMinutes(59);
+		// ✅ Save Approval Status
+		ItemApproval itemApproval = new ItemApproval();
+		itemApproval.setItem(item);
+		itemApproval.setApprovalDate(null);
+		itemApproval.setRejectionReason(null);
+		itemApprovalRepo.save(itemApproval);
 
 		// ✅ Create & Save Auction
 		Auction auction = new Auction();
@@ -324,7 +372,7 @@ public class ItemController {
 		auction.setStartPrice(price);
 		auction.setIncrementAmount(raising);
 		auction.setStat(Auction.AuctionStatus.ACTIVE);
-		auction.setCreatedAt(LocalDateTime.now());
+		auction.setCreatedAt(createdDateTime); // ✅ Store createdDate
 		auction.setEndTime(auctionEndTime);
 
 		auction = auctionRepo.save(auction);
@@ -332,10 +380,7 @@ public class ItemController {
 
 		// ✅ Save Images
 		if (images != null && !images.isEmpty()) {
-			System.out.println("➡ Images received: " + images.size());
 			saveItemImages(item, images);
-		} else {
-			System.out.println("⚠️ No images uploaded for this auction.");
 		}
 
 		// ✅ Save Tags (if any)
@@ -343,8 +388,14 @@ public class ItemController {
 			saveItemTags(item, tags);
 		}
 
-		return "redirect:/pending-sale?searchfield=&sortby=itemID";
+		// ✅ Notify Admin
+		AdminNotification notification = new AdminNotification();
+		notification.setType(AdminNotification.NotificationType.ITEM_APPROVAL);
+		notification.setMessage("New auction item '" + name + "' awaiting approval.");
+		notification.setStatus(AdminNotification.NotificationStatus.UNREAD);
+		adminNotificationRepo.save(notification);
 
+		return "redirect:/pending-sale?searchfield=&sortby=itemID";
 	}
 
 	// Search Header
@@ -408,27 +459,34 @@ public class ItemController {
 	}
 
 	@GetMapping("/category-search")
-	public String categorySearch(@RequestParam("categoryID") Long categoryID, Model model) {
+	public String categorySearch(@RequestParam("categoryID") Long categoryID, Model model, HttpSession session) {
 		List<Item> searchResults = itemRepo.findItemsByCategory(categoryID);
 		List<Auction> auctionResults = auctionRepo.findAllByItemIn(searchResults);
 
 		// ✅ Fetch the selected category name
 		Category selectedCategory = categoryRepo.findById(categoryID).orElse(null);
 
-		// Fetch highest bids for auction items
+		// ✅ Fetch highest bids for auction items
 		Map<Long, Double> auctionMaxBids = new HashMap<>();
 		for (Auction auction : auctionResults) {
 			Double maxBid = auctionTrackRepo.findMaxPriceByAuctionID(auction.getAuctionID());
 			auctionMaxBids.put(auction.getAuctionID(), maxBid != null ? maxBid : auction.getStartPrice());
 		}
 
-		// Add to model
-		model.addAttribute("auctionMaxBids", auctionMaxBids);
+		// ✅ Fetch wishlisted items for the logged-in user
+		User user = (User) session.getAttribute("user");
+		List<Long> wishlistedItemIds = new ArrayList<>();
+		if (user != null) {
+			wishlistedItemIds = wishlistRepo.findItemIdsByUser(user.getUserID());
+		}
 
+		// ✅ Add data to the model
+		model.addAttribute("auctionMaxBids", auctionMaxBids);
 		model.addAttribute("searchResults", searchResults);
 		model.addAttribute("auctionResults", auctionResults);
 		model.addAttribute("categoryID", categoryID);
-		model.addAttribute("selectedCategory", selectedCategory); // Pass category name
+		model.addAttribute("selectedCategory", selectedCategory);
+		model.addAttribute("wishlistedItemIds", wishlistedItemIds); // ✅ Pass wishlist items
 
 		return "searchResults";
 	}

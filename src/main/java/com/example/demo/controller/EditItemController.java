@@ -30,6 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.example.demo.entity.Category;
 import com.example.demo.entity.Item;
 import com.example.demo.entity.ItemImage;
+import com.example.demo.entity.User;
 import com.example.demo.entity.tag.ItemTag;
 import com.example.demo.entity.tag.Tag;
 import com.example.demo.repository.CategoryRepository;
@@ -37,6 +38,8 @@ import com.example.demo.repository.ItemImageRepository;
 import com.example.demo.repository.ItemRepository;
 import com.example.demo.repository.tag.ItemTagRepository;
 import com.example.demo.repository.tag.TagRepository;
+
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class EditItemController {
@@ -61,7 +64,13 @@ public class EditItemController {
 	/** ✅ Show Edit Item Page **/
 
 	@GetMapping("/edit-item/{itemId}")
-	public String showEditItemForm(@PathVariable("itemId") Long itemId, Model model) {
+	public String showEditItemForm(@PathVariable("itemId") Long itemId, Model model, HttpSession session) {
+		User user = (User) session.getAttribute("user");
+
+		if (user == null) {
+
+			return "redirect:/loginPage";
+		}
 		Optional<Item> itemOptional = itemRepository.findById(itemId);
 		if (itemOptional.isEmpty()) {
 			return "redirect:/sell-item?error=ItemNotFound";

@@ -5,6 +5,7 @@
 
 <script th:src="@{/JS/previewImage.js}"></script>
     <script th:src="@{/JS/checkdeadline.js}"></script>
+    <script th:src="@{/JS/checkstartDate.js}"></script>
      <script th:src="@{/JS/categorySale.js}"></script> 
     <title>Auction Details</title>
     <script>
@@ -83,6 +84,8 @@ document.addEventListener("DOMContentLoaded", function () {
             <div class="form-group">
                 <label for="item-raising" class="form-label">Raising:</label>
                 <input type="number" id="item-raising" class="form-input" name="raising"  required><br>
+                 <label for="item-created-date" class="form-label">Start Date:</label>
+    <input type="date" id="item-created-date" class="form-input" name="createdDate" required><br>
                 <label for="item-deadline" class="form-label">Deadline:</label>
                 <input type="date" id="item-deadline" class="form-input" name="deadline"  required>
           

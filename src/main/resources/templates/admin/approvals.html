@@ -65,12 +65,15 @@
 </td>
 
             <td>
-                <button class="accept-btn" th:onclick="|handleSellerApproval(${seller.sellerID}, true)|">
-                    ✅ Approve
-                </button>
-                <button class="decline-btn" th:onclick="|handleSellerApproval(${seller.sellerID}, false)|">
-                    ❌ Reject
-                </button>
+            
+                            <button class="accept-btn"  th:onclick="|handleSellerApproval(${seller.sellerID}, true)|">
+    <i data-lucide="circle-check"></i>
+</button>
+
+<button class="decline-btn" th:onclick="|handleSellerApproval(${seller.sellerID}, false)|">
+    <i data-lucide="circle-x"></i>
+</button>
+
             </td>
         </tr>
     </tbody>
@@ -111,7 +114,8 @@
     <tbody>
         <tr th:each="item : ${pendingItems}">
             <td th:text="${item.itemID}"></td>
-            <td th:text="${item.itemName}"></td>
+            <td ><a class="table-link" th:href="@{/itemList/{itemID}(itemID=${item.itemID})}" th:text="${item.itemName}"></a></td>
+           
             <td th:text="'$' + ${item.price}"></td>
             <td th:text="${item.cond}"></td>
             <td th:text="${item.quality}"></td>

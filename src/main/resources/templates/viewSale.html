@@ -7,6 +7,8 @@
     <!-- CSS Links -->
     <link th:href="@{/CSS/viewItem.css}" rel="stylesheet">
     <link th:href="@{/CSS/headerFooter.css}" rel="stylesheet">
+      <script th:src="@{/JS/admin/approvals.js}"></script> 
+        <link rel="stylesheet" th:href="@{/CSS/product-gridRec.css}" />
 
     <!-- External Libraries -->
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -16,6 +18,9 @@
     <!-- JavaScript Links -->
     <script th:src="@{/JS/sidebar.js}"></script>
      <script th:src="@{/JS/CategorySelect.js}"></script>
+     
+      <link th:href="@{/CSS/admin/admin-header.css}" rel="stylesheet">
+         <script th:src="@{/JS/admin/admin-header.js}"></script>
     
     <script th:src="@{/JS/countdown.js}"></script>
      <script th:src="@{/JS/ImageSwap.js}" defer></script>
@@ -25,7 +30,17 @@
 	 <script th:src="@{/JS/deadline.js}" defer></script>
 </head>
 <body th:attr="data-user-id=${session.user != null ? session.user.userID : ''}">
-<header th:insert="~{fragments/header :: header}"></header>
+<!-- Show Admin Header if User is an Admin -->
+<th:block th:if="${isAdmin}">
+    <header th:insert="~{fragments/admin-header :: header}"></header>
+</th:block>
+
+<!-- Show Regular Header if User is NOT an Admin -->
+<th:block th:if="${!isAdmin}">
+    <header th:insert="~{fragments/header :: header}"></header>
+</th:block>
+
+
 <!-- Normal Sale -->
 <div id="saleItem">
  
@@ -50,19 +65,44 @@
     <div id="desc">
         <div class="item-header">
     <!-- Item Name -->
-    <h2 th:text="${item.itemName}"></h2>
+<h2>
+    <span th:text="${item.itemName}"></span>
+    <span th:if="${item.approve.name() == 'PENDING'}" style="font-size: 18px;">
+        [Pending Approval]
+    </span>
+    <span th:if="${item.approve.name() == 'REJECTED'}" style="font-size: 18px;">
+        [Rejected]
+    </span>
+</h2>
+
 
     <div class="item-actions">
         <!-- Show Heart Icon for Everyone EXCEPT the Seller -->
-      <th:block th:if="${session.user == null or session.user.userID != item.seller.userID}">
-    <button class="wishlist-btn" 
-            th:attr="data-item-id=${item.itemID}, data-wishlisted=${isWishlisted}">
-        <img th:src="@{${isWishlisted} ? '/Image/icon/heart-filled.png' : '/Image/icon/heart.png'}"
-             class="wishlist-icon"
-             width="25px" height="25px" alt="Wishlist Icon">
-        <span class="wishlist-count" th:text="${wishlistCount}">0</span>
-    </button>
+<th:block th:if="${session.user == null or session.user.userID != item.seller.userID}">
+    <!-- Show Wishlist Button If Item is NOT Pending, NOT Rejected, OR User is NOT an Admin -->
+    <th:block th:if="${(item.approve.name() != 'PENDING' and item.approve.name() != 'REJECTED') 
+                      or (session.admin == null or session.admin == false)}">
+        <button class="wishlist-btn" 
+                th:attr="data-item-id=${item.itemID}, data-wishlisted=${isWishlisted}">
+            <img th:src="@{${isWishlisted} ? '/Image/icon/heart-filled.png' : '/Image/icon/heart.png'}"
+                 class="wishlist-icon"
+                 width="25px" height="25px" alt="Wishlist Icon">
+            <span class="wishlist-count" th:text="${wishlistCount}">0</span>
+        </button>
+    </th:block>
+
+    <!-- Show Approval Buttons If Item is Pending AND User is an Admin -->
+    <th:block th:if="${item.approve.name() == 'PENDING' and session.admin != null and session.admin == true}">
+        <button class="accept-btn" th:onclick="|handleItemApproval(${item.itemID}, true)|">
+            <i data-lucide="circle-check"></i> Approve
+        </button>
+
+        <button class="decline-btn" th:onclick="|handleItemApproval(${item.itemID}, false)|">
+            <i data-lucide="circle-x"></i> Decline
+        </button>
+    </th:block>
 </th:block>
+
 
 
 
@@ -84,20 +124,31 @@
 <div id="normal-sale"
      th:if="${item.sellType != null and item.sellType.name() != 'AUCTION'}">
     <h3 th:text="'USD ' + ${item.price}"></h3>
-    <div class="quantity-control">
-        <label>Quantity: </label>
-        <button class="decrease">-</button>
-        <input type="number" value="1" name="quan" class="quantity-input" min="1" 
-               th:attr="data-max-stock=${item.quality}">
-        <button class="increase">+</button>
-    </div>
+<div class="quantity-control">
+    <label>Quantity: </label>
+    <button class="decrease"
+            th:disabled="${item.approve.name() == 'PENDING' or item.approve.name() == 'REJECTED'}">-</button>
 
-    <button class="addToCartBtn"
-            th:data-item-id="${item.itemID}"
-            th:data-user-id="${session.user != null ? session.user.userID : ''}"
-            th:disabled="${session.user != null and session.user.userID == item.seller.userID}">
-        Add to Cart
-    </button>
+    <input type="number" value="1" name="quan" class="quantity-input" min="1"
+           th:attr="data-max-stock=${item.quality}"
+           th:disabled="${item.approve.name() == 'PENDING' or item.approve.name() == 'REJECTED'}">
+
+    <button class="increase"
+            th:disabled="${item.approve.name() == 'PENDING' or item.approve.name() == 'REJECTED'}">+</button>
+</div>
+
+
+
+<button class="addToCartBtn"
+        th:data-item-id="${item.itemID}"
+        th:data-user-id="${session.user != null ? session.user.userID : ''}"
+        th:disabled="${session.user != null and session.user.userID == item.seller.userID 
+                     or item.approve.name() == 'PENDING' 
+                     or item.approve.name() == 'REJECTED'}">
+    Add to Cart
+</button>
+
+
 
     <div id="popupNotification" class="hidden">
         <p>Item has been added to the cart!</p>
@@ -138,24 +189,29 @@
         
         
 <div id="bid-btn">
-    <button class="bid-btn" id="realTimeBidBtn" 
-            th:data-auction-id="${auction.auctionID}"
-            th:data-user-id="${session.user != null ? session.user.userID : ''}"
-            data-bid-type="real-time"
-            th:disabled="${auction.endTime != null and auction.endTime.isBefore(T(java.time.LocalDateTime).now()) 
-                          or (session.user != null and session.user.userID == item.seller.userID)}">
-        <img th:src="@{/Image/icon/bid.png}" width="25px" height="25px"> Real Time Bid
-    </button>
+<button class="bid-btn" id="realTimeBidBtn" 
+        th:data-auction-id="${auction.auctionID}"
+        th:data-user-id="${session.user != null ? session.user.userID : ''}"
+        data-bid-type="real-time"
+        th:disabled="${auction.endTime != null and auction.endTime.isBefore(T(java.time.LocalDateTime).now()) 
+                      or (session.user != null and session.user.userID == item.seller.userID)
+                      or item.approve.name() == 'PENDING' 
+                      or item.approve.name() == 'REJECTED'}">
+    <img th:src="@{/Image/icon/bid.png}" width="25px" height="25px"> Real Time Bid
+</button>
 
-    <button class="bid-btn" id="sniperBidBtn" 
-            th:data-auction-id="${auction.auctionID}"
-            th:data-user-id="${session.user != null ? session.user.userID : ''}"
-            data-bid-type="sniper"
-            th:disabled="${auction.endTime != null and auction.endTime.isBefore(T(java.time.LocalDateTime).now()) 
-                          or (session.user != null and session.user.userID == item.seller.userID)}">
-        <img th:src="@{/Image/icon/target.png}" width="25px" height="25px"> Place Sniper Bid
-    </button>
-    
+<button class="bid-btn" id="sniperBidBtn" 
+        th:data-auction-id="${auction.auctionID}"
+        th:data-user-id="${session.user != null ? session.user.userID : ''}"
+        data-bid-type="sniper"
+        th:disabled="${auction.endTime != null and auction.endTime.isBefore(T(java.time.LocalDateTime).now()) 
+                      or (session.user != null and session.user.userID == item.seller.userID)
+                      or item.approve.name() == 'PENDING' 
+                      or item.approve.name() == 'REJECTED'}">
+    <img th:src="@{/Image/icon/target.png}" width="25px" height="25px"> Place Sniper Bid
+</button>
+
+
     <div class="tooltip-container">
         <img th:src="@{/Image/icon/circle-help.png}" width="25px" height="25px" alt="Help Icon">
         <span class="tooltip-text">
@@ -236,6 +292,91 @@
 
 
 </div>
+<!-- ✅ Show recommendations ONLY if the user is NOT admin and NOT a seller -->
+<!-- ✅ Show recommendations ONLY if the user is NOT admin and NOT a seller -->
+<th:block th:if="${not isAdmin and not isSeller and not #lists.isEmpty(recommendedItems)}">
+    <div class="pg-container pg-mt-16">
+        <div class="pg-header">
+            <h2>More Recommendations</h2>
+            <p>Discover more amazing products</p>
+        </div>
+
+        <!-- ✅ Two-row grid -->
+        <div class="pg-products-grid">
+            <!-- ✅ Render first row (First 4 items) -->
+            <div class="pg-product-card" th:each="item, iter : ${recommendedItems}" th:if="${iter.index < 4}">
+                <div class="pg-product-image">
+                    <img th:src="@{${item.getThumbnail()}}" alt="Product Image" />
+                    <button class="pg-wishlist-btn"
+                        th:classappend="${wishlistedItemIds.contains(item.itemID) ? 'wishlisted' : ''}"
+                        th:data-item-id="${item.itemID}">
+                        ♡
+                    </button>
+                </div>
+                <div class="pg-product-info">
+                    <h3 class="pg-product-title" th:text="${item.itemName}"></h3>
+                    <p class="pg-price" th:text="'$' + ${item.price}"></p>
+                    <p class="pg-seller" th:text="${item.seller.username}"></p>
+                    <div class="pg-rating">
+                        <div class="pg-stars">★★★★☆</div>
+                        <span>4.5</span>
+                    </div>
+                    <div class="pg-buttons">
+                        <button class="pg-cart-btn"  
+                            th:data-item-id="${item.itemID}"
+                            th:data-user-id="${session.user != null ? session.user.userID : ''}">
+                            Add to Cart
+                        </button>
+                        <a th:href="@{/itemList/{itemID}(itemID=${item.itemID})}" class="pg-view-btn">👁</a> 
+                    </div>
+                </div>
+            </div>
+
+            <!-- ✅ Render second row (Next 4 items) -->
+            <div class="pg-product-card" th:each="item, iter : ${recommendedItems}" th:if="${iter.index >= 4 and iter.index < 8}">
+                <div class="pg-product-image">
+                    <img th:src="@{${item.getThumbnail()}}" alt="Product Image" />
+                    <button class="pg-wishlist-btn"
+                        th:classappend="${wishlistedItemIds.contains(item.itemID) ? 'wishlisted' : ''}"
+                        th:data-item-id="${item.itemID}">
+                        ♡
+                    </button>
+                </div>
+                <div class="pg-product-info">
+                    <h3 class="pg-product-title" th:text="${item.itemName}"></h3>
+                    <p class="pg-price" th:text="'$' + ${item.price}"></p>
+                    <p class="pg-seller" th:text="${item.seller.username}"></p>
+                    <div class="pg-rating">
+                        <div class="pg-stars">★★★★☆</div>
+                        <span>4.5</span>
+                    </div>
+                    <div class="pg-buttons">
+                        <button class="pg-cart-btn"  
+                            th:data-item-id="${item.itemID}"
+                            th:data-user-id="${session.user != null ? session.user.userID : ''}">
+                            Add to Cart
+                        </button>
+                        <a th:href="@{/itemList/{itemID}(itemID=${item.itemID})}" class="pg-view-btn">👁</a> 
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</th:block>
+
+
+
+<!-- Rejection Modal -->
+<div id="rejectionModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <h3>Reject Item</h3>
+        <p>Please provide a reason for rejecting this item:</p>
+        <textarea id="rejectionReason" placeholder="Enter rejection reason"></textarea>
+        <button onclick="confirmRejection()">Submit</button>
+        <button onclick="closeModal()">Cancel</button>
+    </div>
+</div>
+
 
 
 

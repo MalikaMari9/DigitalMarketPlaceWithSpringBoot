@@ -507,6 +507,43 @@ button:disabled {
     justify-content: center;
 }
 
+/* Modal styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+}
+
+.modal-content {
+    position: relative;
+    background-color: #1A1F2C;
+    margin: 10% auto;
+    padding: 20px;
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    border-radius: 0.5rem;
+    width: 80%;
+    max-width: 600px;
+}
+
+.close-modal {
+    position: absolute;
+    right: 20px;
+    top: 10px;
+    color: #9CA3AF;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.close-modal:hover {
+    color: #E5E7EB;
+}
+
+
 .edit-btn button {
     background-color: var(--primary-color); /* Blue for edit */
 }

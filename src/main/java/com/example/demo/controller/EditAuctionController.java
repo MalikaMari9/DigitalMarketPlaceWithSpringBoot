@@ -28,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.example.demo.entity.Category;
 import com.example.demo.entity.Item;
 import com.example.demo.entity.ItemImage;
+import com.example.demo.entity.User;
 import com.example.demo.entity.Auction.Auction;
 import com.example.demo.entity.tag.ItemTag;
 import com.example.demo.entity.tag.Tag;
@@ -37,6 +38,8 @@ import com.example.demo.repository.ItemRepository;
 import com.example.demo.repository.Auction.AuctionRepository;
 import com.example.demo.repository.tag.ItemTagRepository;
 import com.example.demo.repository.tag.TagRepository;
+
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class EditAuctionController {
@@ -63,7 +66,13 @@ public class EditAuctionController {
 
 	/** ✅ Show Edit Auction Item Page **/
 	@GetMapping("/edit-auction/{itemId}")
-	public String showEditAuctionForm(@PathVariable("itemId") Long itemId, Model model) {
+	public String showEditAuctionForm(@PathVariable("itemId") Long itemId, Model model, HttpSession session) {
+		User user = (User) session.getAttribute("user");
+
+		if (user == null) {
+
+			return "redirect:/loginPage";
+		}
 		Optional<Item> itemOptional = itemRepository.findById(itemId);
 		if (itemOptional.isEmpty()) {
 			return "redirect:/auction-item?error=ItemNotFound";
