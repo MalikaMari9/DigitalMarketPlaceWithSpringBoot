@@ -149,11 +149,6 @@ public class dmpController {
 		return "changepassword";
 	}
 
-	@GetMapping("/orderHistory")
-	public String orderHistory() {
-		return "orderhistory";
-	}
-
 	@GetMapping("/saleHistory")
 	public String saleHistory() {
 		return "saleHistory";

@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.example.demo.entity.Address;
 import com.example.demo.entity.Cart;
 import com.example.demo.entity.Delivery;
+import com.example.demo.entity.Item;
 import com.example.demo.entity.Order;
 import com.example.demo.entity.Payment;
 import com.example.demo.entity.Receipt;
@@ -27,6 +28,7 @@ import com.example.demo.entity.User;
 import com.example.demo.repository.AddressRepository;
 import com.example.demo.repository.CartRepository;
 import com.example.demo.repository.DeliveryRepository;
+import com.example.demo.repository.ItemRepository;
 import com.example.demo.repository.OrderRepository;
 import com.example.demo.repository.PaymentRepository;
 import com.example.demo.repository.ReceiptRepository;
@@ -53,6 +55,9 @@ public class CheckoutController {
 
 	@Autowired
 	private AddressRepository addressRepository;
+
+	@Autowired
+	private ItemRepository itemRepository;
 
 	// ✅ Show Checkout Page with Addresses
 	@GetMapping("/checkout")
@@ -166,6 +171,16 @@ public class CheckoutController {
 			return response;
 		}
 
+		// ✅ Check if any item has insufficient stock before proceeding
+		for (Cart cart : selectedCartItems) {
+			Item item = cart.getItem();
+			if (item.getQuality() < cart.getQuantity()) {
+				response.put("success", false);
+				response.put("message", "Insufficient stock for item: " + item.getItemName());
+				return response;
+			}
+		}
+
 		// ✅ Get & Validate Delivery Fee
 		double deliveryFee;
 		try {
@@ -189,13 +204,17 @@ public class CheckoutController {
 		receipt.setDeliFee(deliveryFee);
 		receipt = receiptRepository.save(receipt);
 
-		// ✅ Create & Save Orders
+		// ✅ Create & Save Orders & Reduce Item Stock
 		for (Cart cart : selectedCartItems) {
+			Item item = cart.getItem();
+			item.setQuality(item.getQuality() - cart.getQuantity()); // ✅ Reduce stock
+			itemRepository.save(item); // ✅ Save updated stock
+
 			Order order = new Order();
 			order.setReceipt(receipt);
 			order.setBuyer(buyer);
 			order.setSeller(cart.getItem().getSeller());
-			order.setItem(cart.getItem());
+			order.setItem(item);
 			order.setQuantity(cart.getQuantity());
 			order.setPrice(cart.getItem().getPrice());
 			orderRepository.save(order);
@@ -205,7 +224,7 @@ public class CheckoutController {
 		Delivery delivery = new Delivery();
 		delivery.setReceipt(receipt);
 		delivery.setStatus(Delivery.DeliveryStatus.PENDING);
-		delivery.setAddress(selectedAddress); // ✅ Using the selected address
+		delivery.setAddress(selectedAddress);
 		deliveryRepository.save(delivery);
 
 		// ✅ Create & Save Payment

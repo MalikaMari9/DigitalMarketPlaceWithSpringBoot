@@ -20,6 +20,7 @@ import com.example.demo.entity.Address;
 import com.example.demo.entity.Cart;
 import com.example.demo.entity.CreditCard;
 import com.example.demo.entity.Delivery;
+import com.example.demo.entity.Item;
 import com.example.demo.entity.Order;
 import com.example.demo.entity.Payment;
 import com.example.demo.entity.Receipt;
@@ -28,6 +29,7 @@ import com.example.demo.repository.AddressRepository;
 import com.example.demo.repository.CartRepository;
 import com.example.demo.repository.CreditCardRepository;
 import com.example.demo.repository.DeliveryRepository;
+import com.example.demo.repository.ItemRepository;
 import com.example.demo.repository.OrderRepository;
 import com.example.demo.repository.PaymentRepository;
 import com.example.demo.repository.ReceiptRepository;
@@ -63,10 +65,13 @@ public class CreditCardController {
 	@Autowired
 	private UserRepository userRepository;
 
+	@Autowired
+	private ItemRepository itemRepository;
+
 	@GetMapping("/credit-card-payment")
 	public String showCreditCardPaymentPage(
 			@RequestParam(value = "amount", required = false, defaultValue = "0.00") double amount,
-			@RequestParam(value = "sellerID", required = false) Long sellerID, // ✅ Include sellerID
+			@RequestParam(value = "sellerID", required = false) Long sellerID, // ❗️Make sellerID optional
 			HttpSession session, Model model) {
 
 		// ✅ Ensure User is Logged In
@@ -75,20 +80,43 @@ public class CreditCardController {
 			return "redirect:/loginPage"; // Redirect to login page if not logged in
 		}
 
-		// ✅ Fetch Seller from Database (if sellerID is provided)
-		User seller = null;
-		if (sellerID != null) {
-			Optional<User> sellerOpt = userRepository.findById(sellerID);
-			if (sellerOpt.isPresent()) {
-				seller = sellerOpt.get();
+		// ✅ If sellerID is missing, show error message and redirect to checkout
+		if (sellerID == null) {
+			model.addAttribute("errorMessage", "❌ Required request parameter 'sellerID' is missing.");
+			model.addAttribute("sellerID", ""); // Ensure it exists for Thymeleaf
+			return "errorPage"; // Redirect to error page with message
+		}
+
+		// ✅ Fetch and filter cart items for the selected seller only
+		List<Cart> cartItems = cartRepository.findByUser(user);
+		List<Cart> selectedCartItems = cartItems.stream()
+				.filter(cart -> cart.getItem().getSeller().getUserID().equals(sellerID)).collect(Collectors.toList());
+
+		if (selectedCartItems.isEmpty()) {
+			// model.addAttribute("errorMessage", "❌ No items found for this seller.");
+			model.addAttribute("sellerID", sellerID);
+			return "errorPage"; // Redirect to error page with message
+		}
+
+		// ✅ Check if any item has insufficient stock BEFORE showing the credit card
+		// page
+		for (Cart cart : selectedCartItems) {
+			Item item = cart.getItem();
+			if (item.getQuality() < cart.getQuantity()) {
+				model.addAttribute("errorMessage", "❌ Insufficient stock for item: " + item.getItemName());
+				model.addAttribute("sellerID", sellerID);
+				return "errorPage"; // Redirect to error page
 			}
 		}
 
+		// ✅ Fetch Seller from Database
+		User seller = userRepository.findById(sellerID).orElse(null);
+
 		// ✅ Pass seller & amount to Thymeleaf
 		model.addAttribute("totalAmount", amount);
-		model.addAttribute("seller", seller); // ✅ Now Thymeleaf has seller!
+		model.addAttribute("seller", seller);
 
-		return "creditcard"; // Ensure this Thymeleaf file exists
+		return "creditcard"; // ✅ Show credit card payment page
 	}
 
 	@PostMapping("/place-order-card")
@@ -203,6 +231,18 @@ public class CreditCardController {
 			order.setQuantity(cart.getQuantity());
 			order.setPrice(cart.getItem().getPrice());
 			orderRepository.save(order);
+
+			Item item = cart.getItem();
+			int newStock = item.getQuality() - cart.getQuantity();
+
+			if (newStock < 0) {
+				response.put("success", false);
+				response.put("message", "Insufficient stock for item: " + item.getItemName());
+				return response; // Exit if stock is insufficient
+			}
+
+			item.setQuality(newStock);
+			itemRepository.save(item); // ✅ Update item
 		}
 
 		// ✅ Create & Save Delivery

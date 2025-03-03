@@ -82,7 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 if (response.ok && data.success) {
                     alert("✅ Order placed successfully!");
-                    window.location.href = "/order-confirmation"; // Redirect to confirmation page
+                    window.location.href = "/orderHistory"; // Redirect to confirmation page
                 } else {
                     alert("❌ Failed to place order: " + (data.message || "Unknown error"));
                 }

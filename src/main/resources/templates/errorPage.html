@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Alert</title>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // ✅ Get error message & seller ID from the Thymeleaf variables
+            let errorMessage = document.getElementById("errorMessage").innerText.trim();
+            let sellerID = document.getElementById("sellerID").innerText.trim();
+
+            // ✅ Show alert box if error message exists
+            if (errorMessage) {
+                alert(errorMessage);
+            }
+
+            // ✅ Redirect back to checkout page with the correct sellerID
+            if (sellerID && sellerID !== "null" && sellerID !== "") {
+                window.location.href = `/checkout?sellerID=${sellerID}`;
+            } else {
+                window.location.href = "/checkout"; // Default redirect if sellerID is missing
+            }
+        });
+    </script>
+</head>
+<body>
+    <!-- ✅ Thymeleaf variables to store error message and seller ID -->
+    <p id="errorMessage" th:text="${errorMessage}" style="display: none;"></p>
+    <p id="sellerID" th:text="${sellerID}" style="display: none;"></p>
+</body>
+</html>
