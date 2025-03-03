@@ -37,18 +37,27 @@
                     </div>
                    <div class="address-details">
     <table>
+    <tr>
+           <td colspan="2" style="text-align: center; vertical-align: middle;">
+    <strong th:text="${address.addressName}"></strong>
+</td>
+
+            
+          
+        </tr>
         <tr>
-            <td><strong>Name:</strong></td>
+            <td><strong>Customer Name:</strong></td>
             <td><span th:text="${address.custName}"></span></td>
         </tr>
         <tr>
             <td><strong>Building:</strong></td>
             <td><span th:text="${address.building}"></span></td>
         </tr>
-        <tr>
-            <td><strong>Address:</strong></td>
-            <td><span th:text="${address.addres}"></span></td> <!-- ✅ FIXED -->
+                <tr>
+            <td><strong>Township:</strong></td>
+            <td><span th:text="${address.township}"></span></td>
         </tr>
+
         <tr>
             <td><strong>City:</strong></td>
             <td><span th:text="${address.city}"></span></td>
@@ -61,10 +70,7 @@
             <td><strong>Phone:</strong></td>
             <td><span th:text="${address.phone}"></span></td>
         </tr>
-        <tr>
-            <td><strong>Township:</strong></td>
-            <td><span th:text="${address.township}"></span></td>
-        </tr>
+
         <tr>
             <td><strong>Delivery Note:</strong></td>
             <td><span th:text="${address.delinote}"></span></td> <!-- ✅ FIXED -->

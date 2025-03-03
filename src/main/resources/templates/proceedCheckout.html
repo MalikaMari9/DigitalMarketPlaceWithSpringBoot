@@ -1,122 +1,222 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Cart</title>
-    <link rel="stylesheet" th:href="@{/CSS/proceedCheckout.css}">
-    <link th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css}" rel="stylesheet">
-	<script th:src="@{/JS/cart/trash.js}"></script>
-	<link th:href="@{/CSS/headerFooter.css}" rel="stylesheet">
- 	<script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <title>Payment</title>
+
     <link th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css}" rel="stylesheet">
- 	<script th:src="@{/JS/sidebar.js}"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css}" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/CSS/proceedCheckout.css}">
+    <link th:href="@{/CSS/headerFooter.css}" rel="stylesheet">
+    <script th:src="@{/JS/cart/trash.js}"></script>
+     <script th:src="@{/JS/proceedCheckout.js}"></script>
+      	<script th:src="@{/JS/sidebar.js}"></script>
  	 <script th:src="@{/JS/CategorySelect.js}"></script>
 	 <script th:src="@{/JS/cartQuantity.js}"></script>
-		<style>
-			a{
-				text-decoration:none;
-				color:black;
-			}
-			
-			.quantity-input {
-			    width: 50px; /* Adjust the width as needed */
-			    text-align: center; /* Center-align the number */
-			    padding: 5px;
-			    border: 1px solid #ddd;
-			    border-radius: 4px;
-			    font-size: 14px;
-			}
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
-			
-			   	
-		</style>
-   
-
+    <style>
+        a {
+            text-decoration: none;
+            color: black;
+        }
+    </style>
 </head>
 <body>
 <header th:insert="fragments/header :: header"></header>
-    <div class="checkout-body">
-        <h1>Your Cart</h1>
+    <div class="container">
+        <div class="left">
+            <h2 class="title">Checkout Review</h2><br>
 
-        <input type="hidden" id="cartCountValue" th:value="${cartCount}" />
+            <!-- Payment Method -->
+            <div class="form-group payment-method">
+                <label>Payment Method</label>
+                <div class="radio-box">
+                    <label class="radio-option">
+                        <input type="radio" name="paymentMethod" value="cod" checked>
+                        <span class="custom-radio"></span>
+                        Cash on Delivery
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="paymentMethod" value="online">
+                        <span class="custom-radio"></span>
+                        Card
+                    </label>
+                </div>
+            </div>
 
-        <!-- If cart is empty, show message -->
-        <div th:if="${emptyCartMessage}" class="empty-cart">
-            <p th:text="${emptyCartMessage}"></p>
+            <!-- Delivery Option -->
+            <div class="form-group">
+                <label for="deliveryOption">Delivery Option</label>
+                <select id="deliveryOption">
+                    <option value="standard">Standard Delivery ($5.00)</option>
+                    <option value="express">Express Delivery ($10.00)</option>
+                </select>
+            </div>
+
+            <!-- Address Book -->
+<select id="deliveryAddress" name="deliveryAddress" required>
+    <option value="">Select an Address</option>
+    <option th:each="addr : ${userAddresses}" 
+            th:value="${addr.addressID}" 
+            th:text="|${addr.addressName} (${addr.city}, ${addr.township})|">
+    </option>
+</select>
+
+
+
         </div>
 
-        <!-- Grouped items by seller -->
-        <div th:each="entry : ${groupedCart}" class="completed-orders-wrapper">
-            <h2> Unprocessed Orders from 
-                <a th:href="@{/viewSeller/{sellerID}(sellerID=${entry.key.userID})}" 
-                   th:text="${entry.key.username}"  
-                   class="seller-link">
-                </a>
-            </h2>
-
-            <div th:each="cartItem : ${entry.value}" class="order-card">
-                <div class="order-card-header">
-                    <img th:src="@{${cartItem.item.getThumbnail()}}" alt="Product Image" class="order-image">
-                    <div class="order-info">
-                   <h4 class="order-title"><a th:if="${cartItem.item != null}" th:href="@{/itemList/{itemID}(itemID=${cartItem.item.itemID})}"  th:text="${cartItem.item.itemName}"> </a></h4>
-                        <p class="order-date"><i class="fas fa-calendar-alt"></i> <span th:text="${cartItem.formattedCreatedAt}"></span>
-						</p>
-                    </div>
-                    
-                    <!-- Wishlist & Remove Buttons -->
-                    <div class="order-actions">
-                        <button class="wishlist-button" title="Add to Wishlist">
-                            <i class="fas fa-heart"></i> 
-                        </button>
-                        <button class="trash-button" title="Remove from Cart" th:data-cart-id="${cartItem.cartID}">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
+        <!-- Order Summary -->
+        <div class="right">
+            <h2>Order Summary</h2>
+            <div class="order-items">
+                <div th:if="${cartItems != null and not #lists.isEmpty(cartItems)}">
+                    <div th:each="cartItem : ${cartItems}" class="order-item">
+                        <div class="order-details">
+                            <img th:src="@{${cartItem.item.getThumbnail()}}" alt="Product Image" class="order-image">
+                            <div class="order-info">
+                                <h4 class="order-title">
+                                    <a th:href="@{/itemList/{itemID}(itemID=${cartItem.item.itemID})}" th:text="${cartItem.item.itemName}"></a>
+                                </h4>
+                                <p>
+                                    <strong>Price:</strong> 
+                                    <span th:text="${cartItem.quantity}"></span> x $ 
+                                    <span th:text="${cartItem.item.price}"></span> = $ 
+                                    <span th:text="${cartItem.quantity * cartItem.item.price}"></span>
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-				<div class="order-details">
-				    <p><strong>Quantity:</strong> 
-				        <th:block th:if="${cartItem.item.sellType != null and cartItem.item.sellType.name() == 'AUCTION'}">
-				            <input type="text" class="quantity-input" th:value="${cartItem.quantity}" readonly>
-				            <span>(Auction Item)</span> <!-- Show indicator -->
-				        </th:block>
+                <div class="order-summary">
+                    <div class="price-summary">
+                        <p>Subtotal · <span th:text="${cartItems.size()}"></span> items</p>
+                        <p><strong id="subtotalText" th:text="'$' + ${subtotal}"></strong></p>
+                    </div>
 
-				        <th:block th:if="${cartItem.item.sellType == null or cartItem.item.sellType.name() != 'AUCTION'}">
-				            <button class="quantity-btn decrease" th:data-cart-id="${cartItem.cartID}">-</button>
-				            <input type="text" class="quantity-input" th:value="${cartItem.quantity}" th:data-cart-id="${cartItem.cartID}" readonly>
-				            <button class="quantity-btn increase" th:data-cart-id="${cartItem.cartID}">+</button>
-				        </th:block>
-				    </p>
+                    <div class="price-summary">
+                        <p>Delivery Fee</p>
+                        <p id="deliveryFeeText">$5.00</p> <!-- ✅ Ensure delivery fee is updated dynamically -->
+                    </div>
 
-				    <p>
-				        <strong>Price: </strong> 
-				        <span th:text="${cartItem.quantity}"></span> x $ 
-				        <span th:text="${cartItem.item.price}"></span> = $
-				        <span th:text="${cartItem.quantity * cartItem.item.price}"></span>
-				    </p>
-				</div>
+                    <!-- Total Price -->
+                    <div class="total-section">
+                        <p class="total-label">Total</p>
+                        <p class="total-price" id="totalPriceText" th:text="'$' + (${subtotal} + 5.00)"></p>
+                    </div>
 
-            </div>
-
-            <!-- Total price for this seller's items -->
-            <div class="order-footer">
-                <p><strong>Total:</strong> USD 
-                    <span th:text="${#aggregates.sum(entry.value.![item.price * quantity])}"></span>
-                </p>
-            </div>
-
-            <div class="order-footer">
-              <a th:href="@{/checkout(sellerID=${entry.key.userID})}"> <button class="proceed-button">Proceed to Order</button></a>
+                    <div class="place-order-btn">
+                        <button class="btn-place-order" th:attr="data-seller-id=${seller.userID}">Place Order</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-	
-	
+
+    <!-- ✅ JavaScript to Update Delivery Fee and Total Price -->
+    <script>
+    lucide.createIcons();
+        document.addEventListener("DOMContentLoaded", () => {
+            const deliveryOption = document.getElementById("deliveryOption");
+            const deliveryFeeText = document.getElementById("deliveryFeeText");
+            const totalPriceText = document.getElementById("totalPriceText");
+            const subtotalText = document.getElementById("subtotalText");
+
+            function updateDeliveryFee() {
+                let subtotal = parseFloat(subtotalText.innerText.replace('$', '')) || 0;
+                let selectedDeliveryFee = deliveryOption.value === "express" ? 10.00 : 5.00;
+                
+                // ✅ Update the delivery fee dynamically
+                deliveryFeeText.innerText = `$${selectedDeliveryFee.toFixed(2)}`;
+
+                // ✅ Update the total price dynamically
+                let totalPrice = subtotal + selectedDeliveryFee;
+                totalPriceText.innerText = `$${totalPrice.toFixed(2)}`;
+            }
+
+            // ✅ Trigger event when delivery option changes
+            deliveryOption.addEventListener("change", updateDeliveryFee);
+
+            // ✅ Call once to initialize correct values
+            updateDeliveryFee();
+        });
+    </script>
+
+    <!-- ✅ JavaScript for Handling Place Order -->
+    <script>
+		document.addEventListener("DOMContentLoaded", () => {
+		    document.querySelectorAll(".btn-place-order").forEach((btn) => {
+		        btn.addEventListener("click", async (event) => {
+		            event.preventDefault();
+		            console.log("✅ Place Order button clicked!");
+
+		            const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+		            const deliveryOption = document.getElementById("deliveryOption").value;
+		            const addressID = document.getElementById("addressBook").value;
+		            const sellerID = btn.getAttribute("data-seller-id");
+
+		            if (!sellerID) {
+		                alert("❌ Missing seller ID!");
+		                return;
+		            }
+
+		            // ✅ Ensure we fetch the subtotal dynamically
+		            const subtotalText = document.querySelector(".total-price").innerText.replace('$', '').trim();
+		            let subtotal = parseFloat(subtotalText) || 0;
+
+		            let deliveryFee = deliveryOption === "express" ? 10.00 : 5.00;
+		            let totalAmount = (subtotal + deliveryFee).toFixed(2); // Ensure it's a valid decimal number
+
+		            console.log(`🛒 Subtotal: $${subtotal}, 🚚 Delivery Fee: $${deliveryFee}, 💰 Total: $${totalAmount}`);
+
+		            if (!paymentMethod || !deliveryOption || !addressID) {
+		                alert("❌ Missing required fields!");
+		                return;
+		            }
+
+		            // ✅ Redirect correctly if payment method is online
+		            if (paymentMethod === "online") {
+		                window.location.href = `/credit-card-payment?amount=${subtotal}&sellerID=${sellerID}`;
+		                return;
+		            }
+
+		            // ✅ Otherwise, proceed with order placement (COD)
+		            try {
+		                const response = await fetch("/place-order", {
+		                    method: "POST",
+		                    headers: { "Content-Type": "application/json" },
+		                    body: JSON.stringify({
+		                        paymentMethod: paymentMethod,
+		                        deliveryOption: deliveryOption,
+		                        addressID: addressID,
+		                        deliveryFee: deliveryFee,
+		                        sellerID: parseInt(sellerID)
+		                    })
+		                });
+
+		                const data = await response.json();
+		                console.log("🔍 Response:", data);
+
+		                if (response.ok && data.success) {
+		                    alert("✅ Order placed successfully!");
+		                    location.reload(); // ✅ Refresh the page
+		                } else {
+		                    alert("❌ Failed to place order: " + (data.message || "Unknown error"));
+		                }
+		            } catch (error) {
+		                console.error("❌ Fetch error:", error);
+		                alert("❌ An error occurred while placing the order.");
+		            }
+		        });
+		    });
+		});
+
+    </script>
     <footer th:insert="fragments/footer :: footer"></footer>
- <script>
-        lucide.createIcons();
-      </script>
 </body>
 </html>

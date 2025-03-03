@@ -34,7 +34,7 @@ import com.example.demo.repository.ReceiptRepository;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
-public class PaymentController {
+public class CheckoutController {
 
 	@Autowired
 	private CartRepository cartRepository;
@@ -54,6 +54,7 @@ public class PaymentController {
 	@Autowired
 	private AddressRepository addressRepository;
 
+	// ✅ Show Checkout Page with Addresses
 	@GetMapping("/checkout")
 	public String checkoutPage(@RequestParam("sellerID") Long sellerID,
 			@RequestParam(value = "deliveryFee", required = false, defaultValue = "5.00") double deliveryFee,
@@ -61,16 +62,19 @@ public class PaymentController {
 		User user = (User) session.getAttribute("user");
 
 		if (user == null) {
-			return "redirect:/loginPage"; // Redirect to login if not logged in
+			return "redirect:/loginPage"; // Redirect if not logged in
 		}
 
-		// Fetch all cart items for the logged-in user
+		// ✅ Fetch user's saved addresses
+		List<Address> userAddresses = addressRepository.findByUser(user);
+
+		// ✅ Fetch all cart items
 		List<Cart> cartItems = cartRepository.findByUser(user);
 
 		if (cartItems == null || cartItems.isEmpty()) {
 			model.addAttribute("emptyCartMessage", "Your cart is empty.");
 			model.addAttribute("cartCount", 0);
-			return "proceedCheckout"; // Redirect to empty cart page
+			return "cart"; // Redirect to cart page
 		}
 
 		// ✅ Filter only items from the selected seller
@@ -81,7 +85,7 @@ public class PaymentController {
 		if (selectedCartItems.isEmpty()) {
 			model.addAttribute("emptyCartMessage", "No items found for this seller.");
 			model.addAttribute("cartCount", 0);
-			return "proceedCheckout";
+			return "cart";
 		}
 
 		// ✅ Get Seller Info from Cart Items
@@ -91,14 +95,14 @@ public class PaymentController {
 		// ✅ Calculate subtotal
 		double subtotal = selectedCartItems.stream().mapToDouble(cart -> cart.getItem().getPrice() * cart.getQuantity())
 				.sum();
-		// double deliveryFee = 5.00;
 
 		model.addAttribute("cartItems", selectedCartItems);
 		model.addAttribute("subtotal", subtotal);
 		model.addAttribute("cartCount", cartItems.size());
 		model.addAttribute("deliveryFee", deliveryFee);
+		model.addAttribute("userAddresses", userAddresses); // ✅ Pass addresses to the view
 
-		return "payment"; // Ensure this Thymeleaf file exists
+		return "proceedCheckout"; // Ensure this Thymeleaf file exists
 	}
 
 	@PostMapping("/place-order")
@@ -114,17 +118,17 @@ public class PaymentController {
 			return response;
 		}
 
-		// ✅ Retrieve sellerID from request
+		// ✅ Retrieve & Validate sellerID
 		Long sellerID;
 		try {
 			sellerID = Long.parseLong(requestData.get("sellerID"));
 		} catch (NumberFormatException e) {
 			response.put("success", false);
-			response.put("message", "Invalid seller ID: " + requestData.get("sellerID"));
+			response.put("message", "Invalid seller ID.");
 			return response;
 		}
 
-		// ✅ Validate Payment Method
+		// ✅ Retrieve & Validate Payment Method
 		String paymentMethod = requestData.get("paymentMethod");
 		if (paymentMethod == null || paymentMethod.isEmpty()) {
 			response.put("success", false);
@@ -132,17 +136,26 @@ public class PaymentController {
 			return response;
 		}
 
-		// ✅ Fetch Address
-		Long addressID = 1L;
-		Optional<Address> addressOptional = addressRepository.findById(addressID);
-		if (!addressOptional.isPresent()) {
+		// ✅ Fetch Address from Request
+		Long addressID;
+		try {
+			addressID = Long.parseLong(requestData.get("addressID"));
+		} catch (NumberFormatException e) {
 			response.put("success", false);
-			response.put("message", "Invalid address: Address ID 1 does not exist.");
+			response.put("message", "Invalid address ID.");
 			return response;
 		}
-		Address defaultAddress = addressOptional.get();
 
-		// ✅ Fetch and filter cart items for the selected seller only
+		// ✅ Validate Address
+		Optional<Address> addressOptional = addressRepository.findById(addressID);
+		if (addressOptional.isEmpty()) {
+			response.put("success", false);
+			response.put("message", "Selected address does not exist.");
+			return response;
+		}
+		Address selectedAddress = addressOptional.get();
+
+		// ✅ Fetch & Filter Cart Items for the Selected Seller
 		List<Cart> cartItems = cartRepository.findByUser(buyer);
 		List<Cart> selectedCartItems = cartItems.stream()
 				.filter(cart -> cart.getItem().getSeller().getUserID().equals(sellerID)).collect(Collectors.toList());
@@ -153,7 +166,7 @@ public class PaymentController {
 			return response;
 		}
 
-		// ✅ Get Delivery Fee
+		// ✅ Get & Validate Delivery Fee
 		double deliveryFee;
 		try {
 			deliveryFee = Double.parseDouble(requestData.getOrDefault("deliveryFee", "5.00"));
@@ -163,7 +176,7 @@ public class PaymentController {
 			return response;
 		}
 
-		// ✅ Calculate total price
+		// ✅ Calculate Total Price
 		double subtotal = selectedCartItems.stream().mapToDouble(cart -> cart.getItem().getPrice() * cart.getQuantity())
 				.sum();
 		double totalPrice = subtotal + deliveryFee;
@@ -171,7 +184,7 @@ public class PaymentController {
 		// ✅ Create & Save Receipt
 		Receipt receipt = new Receipt();
 		receipt.setBuyer(buyer);
-		receipt.setSeller(selectedCartItems.get(0).getItem().getSeller()); // ✅ Get seller from selected items
+		receipt.setSeller(selectedCartItems.get(0).getItem().getSeller());
 		receipt.setTotalPrice(totalPrice);
 		receipt.setDeliFee(deliveryFee);
 		receipt = receiptRepository.save(receipt);
@@ -188,11 +201,11 @@ public class PaymentController {
 			orderRepository.save(order);
 		}
 
-		// ✅ Create & Save Delivery
+		// ✅ Create & Save Delivery with the Selected Address
 		Delivery delivery = new Delivery();
 		delivery.setReceipt(receipt);
 		delivery.setStatus(Delivery.DeliveryStatus.PENDING);
-		delivery.setAddress(defaultAddress);
+		delivery.setAddress(selectedAddress); // ✅ Using the selected address
 		deliveryRepository.save(delivery);
 
 		// ✅ Create & Save Payment
@@ -204,7 +217,7 @@ public class PaymentController {
 		payment.setPaymentStatus("PENDING");
 		paymentRepository.save(payment);
 
-		// ✅ Remove ordered items from cart
+		// ✅ Remove Ordered Items from Cart
 		cartRepository.deleteAll(selectedCartItems);
 
 		response.put("success", true);

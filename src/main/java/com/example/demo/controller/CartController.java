@@ -119,7 +119,7 @@ public class CartController {
 		if (cartItems == null || cartItems.isEmpty()) {
 			model.addAttribute("emptyCartMessage", "Your cart is empty.");
 			model.addAttribute("cartCount", 0); // Ensure cartCount is always available
-			return "proceedCheckout"; // Thymeleaf file
+			return "cart"; // Thymeleaf file
 		}
 
 		// ✅ Group items by seller
@@ -142,7 +142,7 @@ public class CartController {
 		model.addAttribute("groupedCart", sortedGroupedCart);
 		model.addAttribute("cartCount", cartItems.size()); // ✅ Send `cartCount` to Thymeleaf
 
-		return "proceedCheckout"; // Ensure Thymeleaf file name is correct
+		return "cart"; // Ensure Thymeleaf file name is correct
 	}
 
 	@DeleteMapping("/remove/{cartID}")

@@ -2,7 +2,6 @@ package com.example.demo.controller;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,6 +13,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.demo.entity.Address;
 import com.example.demo.entity.User;
@@ -139,19 +139,33 @@ public class UserController {
 		// ✅ Store the user object in session (if registering)
 		session.setAttribute("user", registeredUser);
 
+		List<String> cities = addressRepository.findAllCityNames();
+		model.addAttribute("cities", cities);
 		// ✅ Add empty address object for form binding
 		model.addAttribute("address", new Address());
 
-		return "editaddress"; // ✅ Load address entry page
+		return "addAddress"; // ✅ Load address entry page
 	}
 
-	// ✅ Save Address
+	@GetMapping("/townships")
+	@ResponseBody
+	public List<String> getTownships(@RequestParam("cityName") String cityName) {
+		System.out.println("Fetching townships for city: " + cityName); // ✅ Debugging log
+
+		List<String> townships = addressRepository.findTownshipNamesByCity(cityName);
+		System.out.println("Townships found: " + townships); // ✅ Debugging log
+
+		return townships;
+	}
+
+	// ✅ Save Address addName
 	@PostMapping("/save-address/{userID}")
 	public String saveAddress(@PathVariable("userID") Long userID, @RequestParam("custName") String custName,
-			@RequestParam("postalCode") String postalCode, @RequestParam("phone") String phone,
-			@RequestParam("township") String township, @RequestParam("building") String building,
-			@RequestParam("city") String city, @RequestParam("addres") String addressDetail,
-			@RequestParam("delinote") String deliveryNote, HttpSession session) {
+			@RequestParam("addressName") String addName, @RequestParam("postalCode") String postalCode,
+			@RequestParam("phone") String phone, @RequestParam("township") String township,
+			@RequestParam("building") String building, @RequestParam("city") String city,
+			@RequestParam("addres") String addressDetail, @RequestParam("delinote") String deliveryNote,
+			HttpSession session) {
 
 		// ✅ Retrieve User object from session
 		User user = (User) session.getAttribute("user");
@@ -181,6 +195,7 @@ public class UserController {
 		address.setCity(city);
 		address.setAddres(addressDetail);
 		address.setDelinote(deliveryNote);
+		address.setAddressName(addName);
 		address.setUser(registeredUser); // Assign the user
 
 		addressRepository.save(address);
@@ -215,25 +230,23 @@ public class UserController {
 
 		Address address = addressOptional.get();
 
-		// ✅ Fetch available options for dropdowns (if needed)
-		List<String> townships = Arrays.asList("Yangon", "Mandalay");
-		List<String> cities = Arrays.asList("Yangon", "Mandalay");
+		// ✅ Fetch all city names
+		List<String> cities = addressRepository.findAllCityNames();
 
-		// ✅ Pass data to the model
+		// ✅ Add existing address & city list to the model
 		model.addAttribute("address", address);
-		model.addAttribute("townships", townships);
 		model.addAttribute("cities", cities);
 
-		return "UpdateAddress"; // ✅ Must match 'editaddress.html'
+		return "UpdateAddress"; // ✅ Matches `UpdateAddress.html`
 	}
 
 	// ✅ Update Address
 	@PostMapping("/update-address/{id}")
 	public String updateAddress(@PathVariable("id") Long addressID, @RequestParam("custName") String custName,
-			@RequestParam("postalCode") String postalCode, @RequestParam("phone") String phone,
-			@RequestParam("township") String township, @RequestParam("building") String building,
-			@RequestParam("city") String city, @RequestParam("address") String addressDetail,
-			@RequestParam("deliveryNote") String deliveryNote) {
+			@RequestParam("addressName") String addName, @RequestParam("postalCode") String postalCode,
+			@RequestParam("phone") String phone, @RequestParam("township") String township,
+			@RequestParam("building") String building, @RequestParam("city") String city,
+			@RequestParam("addres") String addressDetail, @RequestParam("delinote") String deliveryNote) {
 
 		// ✅ Find the existing address
 		Optional<Address> addressOptional = addressRepository.findById(addressID);
@@ -252,6 +265,7 @@ public class UserController {
 		existingAddress.setCity(city);
 		existingAddress.setAddres(addressDetail);
 		existingAddress.setDelinote(deliveryNote);
+		existingAddress.setAddressName(addName);
 
 		// ✅ Save updated address
 		addressRepository.save(existingAddress);

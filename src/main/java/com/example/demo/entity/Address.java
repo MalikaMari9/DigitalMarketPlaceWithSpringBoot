@@ -38,6 +38,17 @@ public class Address {
 	@Column(length = 40)
 	private String township;
 
+	@Column(length = 50) // ✅ New column for address name
+	private String addressName;
+
+	public String getAddressName() {
+		return addressName;
+	}
+
+	public void setAddressName(String addressName) {
+		this.addressName = addressName;
+	}
+
 	@Column(columnDefinition = "TEXT")
 	private String delinote; // ✅ Extra delivery note
 

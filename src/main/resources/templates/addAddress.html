@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Address Form</title>
+
+    <!-- ✅ Fixed CSS Path -->
+    <link rel="stylesheet" th:href="@{/CSS/STRMstyle.css}">
+
+    <style>
+        body { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <div class="add-body">
+        <div class="page-wrapper">
+            <div class="add-address-form">
+                <h2>Add Address</h2>
+
+                <!-- ✅ Fixed `th:action` and `th:object` -->
+                <form th:action="@{/save-address/{userID}(userID=${session.user != null ? session.user.userID : ''})}"  th:object="${address}" method="POST">
+                    
+                    <!-- ✅ Hidden Field to Store User ID -->
+                    <input type="hidden" name="userID" th:value="${session.user != null ? session.user.userID : ''}">
+
+					<label for="name">Address Name</label>
+                    <input type="text" id="name" th:field="*{addressName}" required>
+
+                    <label for="name">Customer Name</label>
+                    <input type="text" id="name" th:field="*{custName}" required>
+
+                    <label for="postalCode">Postal-Code</label>
+                    <input type="text" id="postalCode" th:field="*{postalCode}" required>
+
+                    <label for="phoneNumber">Phone Number</label>
+                    <input type="text" id="phoneNumber" th:field="*{phone}" maxlength="12" required>
+
+                 <label for="city">City</label>
+<select id="city" name="city" required onchange="fetchTownships()">
+    <option value="">Select City</option>
+    <option th:each="city : ${cities}" th:value="${city}" th:text="${city}"></option>
+</select>
+
+<label for="township">Township</label>
+<select id="township" name="township" required>
+    <option value="">Select Township</option>
+</select>
+
+
+
+                    <label for="building">Building / House No / Floor / Street</label>
+                    <input type="text" id="building" th:field="*{building}" required>
+
+                    
+
+                    <label for="addressDetail">Address Detail</label>
+                    <textarea id="addressDetail" th:field="*{addres}" required></textarea> <!-- ✅ FIXED -->
+
+                    <label for="deliveryNote">Delivery Note</label>
+                    <textarea id="deliveryNote" th:field="*{delinote}"></textarea> <!-- ✅ FIXED -->
+
+                    <button type="submit">Save</button>
+                </form>
+
+                <!-- ✅ Back Button -->
+                <button onclick="goBack()" class="back-button">Go Back</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ✅ Fixed JS Path -->
+    <script th:src="@{/JS/script.js}"></script>
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+  </script>
+  <script>
+  function fetchTownships() {
+	    let cityName = document.getElementById("city").value; // Get selected city name
+	    let townshipSelect = document.getElementById("township");
+
+	    // Reset township dropdown
+	    townshipSelect.innerHTML = '<option value="">Select Township</option>';
+
+	    if (cityName) {
+	        console.log("Fetching townships for city: " + cityName); // ✅ Debugging log
+
+	        fetch(`/townships?cityName=${encodeURIComponent(cityName)}`)
+	            .then(response => response.json())
+	            .then(data => {
+	                console.log("Townships received:", data); // ✅ Debugging log
+
+	                if (data.length === 0) {
+	                    console.log("No townships found!");
+	                }
+
+	                data.forEach(townshipName => {
+	                    let option = document.createElement("option");
+	                    option.value = townshipName;
+	                    option.textContent = townshipName;
+	                    townshipSelect.appendChild(option);
+	                });
+
+	                console.log("Dropdown updated successfully!"); // ✅ Debugging log
+	            })
+	            .catch(error => console.error("Error fetching townships:", error));
+	    } else {
+	        console.log("No city selected!");
+	    }
+	}
+
+</script>
+   
+</body>
+</html>
