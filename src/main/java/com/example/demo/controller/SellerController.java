@@ -118,6 +118,9 @@ public class SellerController {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("❌ Please log in to resubmit.");
 		}
 
+		List<Item> itemList = itemRepo.findBySeller_UserID(seller.getUserID());
+		int postCount = itemList.size();
+
 		Item item = itemRepo.findById(itemID).orElse(null);
 
 		if (item == null) {
@@ -174,6 +177,7 @@ public class SellerController {
 
 		// ✅ Fetch items sold by the seller
 		List<Item> itemList = itemRepo.findBySeller_UserID(seller.getUserID());
+		int postCount = itemList.size();
 
 		// ✅ Fetch wishlist items for the logged-in user
 		User user = (User) session.getAttribute("user");
@@ -187,6 +191,7 @@ public class SellerController {
 		model.addAttribute("itemList", itemList);
 		model.addAttribute("seller", seller);
 		model.addAttribute("wishlistedItemIds", wishlistedItemIds);
+		model.addAttribute("postCount", postCount);
 		model.addAttribute("isOwnProfile", sellerID == null || (session.getAttribute("user") != null
 				&& ((User) session.getAttribute("user")).getUserID().equals(seller.getUserID())));
 

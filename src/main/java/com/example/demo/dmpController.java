@@ -139,11 +139,6 @@ public class dmpController {
 		return "wish"; // Ensure Thymeleaf file is named `wishlist.html`
 	}
 
-	@GetMapping("/editProfile")
-	public String editProfile() {
-		return "editprofile";
-	}
-
 	@GetMapping("/changePassword")
 	public String changePassword() {
 		return "changepassword";

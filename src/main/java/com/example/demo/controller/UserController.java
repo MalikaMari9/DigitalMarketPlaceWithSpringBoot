@@ -1,5 +1,10 @@
 package com.example.demo.controller;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -13,7 +18,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.entity.Address;
 import com.example.demo.entity.User;
@@ -271,6 +278,109 @@ public class UserController {
 		addressRepository.save(existingAddress);
 
 		return "redirect:/addressbook";
+	}
+
+	// EditProfile
+	@GetMapping("/editProfile")
+	public String showEditProfileForm(HttpSession session, Model model) {
+		// ✅ Retrieve User object correctly from session
+		Object sessionUser = session.getAttribute("user");
+
+		if (!(sessionUser instanceof User)) {
+			return "redirect:/loginPage"; // Redirect if session expired
+		}
+
+		User user = (User) sessionUser; // ✅ Now correctly retrieving User object
+
+		// ✅ Ensure the user exists in the database
+		Optional<User> userOptional = userRepository.findById(user.getUserID());
+		if (userOptional.isEmpty()) {
+			return "redirect:/loginPage?error=UserNotFound";
+		}
+		user = userOptional.get();
+
+		// ✅ Add user to model for Thymeleaf binding
+		model.addAttribute("user", user);
+		return "editprofile"; // ✅ Thymeleaf template name
+	}
+
+	@PostMapping("/editProfile")
+	public String updateProfile(@ModelAttribute User updatedUser,
+			@RequestPart(value = "profilePicture", required = false) MultipartFile profilePicture, HttpSession session,
+			Model model) throws IOException {
+
+		// ✅ Validate session
+		User user = (User) session.getAttribute("user");
+		if (user == null)
+			return "redirect:/loginPage";
+
+		Optional<User> userOptional = userRepository.findById(user.getUserID());
+		if (userOptional.isEmpty())
+			return "redirect:/loginPage?error=UserNotFound";
+
+		user = userOptional.get();
+
+		// ✅ Validate required fields
+		if (updatedUser.getUsername() == null || updatedUser.getUsername().isEmpty()) {
+			model.addAttribute("error", "Username cannot be empty");
+			return "editprofile";
+		}
+		if (updatedUser.getEmail() == null || updatedUser.getEmail().isEmpty()) {
+			model.addAttribute("error", "Email cannot be empty");
+			return "editprofile";
+		}
+
+		// ✅ Update basic fields
+		user.setUsername(updatedUser.getUsername());
+		user.setEmail(updatedUser.getEmail());
+		if (updatedUser.getPhone() != null)
+			user.setPhone(updatedUser.getPhone());
+		if (updatedUser.getDob() != null)
+			user.setDob(updatedUser.getDob());
+		if (updatedUser.getGender() != null)
+			user.setGender(updatedUser.getGender());
+		if (updatedUser.getBio() != null)
+			user.setBio(updatedUser.getBio());
+
+		// ✅ Handle profile picture upload
+		if (profilePicture != null && !profilePicture.isEmpty()) {
+			// ✅ Validate file type
+			if (!List.of("image/jpeg", "image/png", "image/jpg").contains(profilePicture.getContentType())) {
+				model.addAttribute("error", "Invalid file format. Only JPG, PNG allowed.");
+				return "editprofile";
+			}
+
+			// ✅ Validate file size (max 2MB)
+			if (profilePicture.getSize() > 2 * 1024 * 1024) {
+				model.addAttribute("error", "File size exceeds 2MB.");
+				return "editprofile";
+			}
+
+			// ✅ Define upload path
+			String uploadDir = "src/main/resources/static/Image/profile/";
+			File dir = new File(uploadDir);
+			if (!dir.exists())
+				dir.mkdirs();
+
+			// ✅ Generate unique filename
+			String cleanFileName = profilePicture.getOriginalFilename().replaceAll("\\s+", "_");
+			String fileName = user.getUserID() + "_" + System.currentTimeMillis() + "_" + cleanFileName;
+			Path filePath = Path.of(uploadDir + fileName);
+
+			// ✅ Save the file
+			Files.copy(profilePicture.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+			// ✅ Store only the filename in the database
+			user.setProfilePath(fileName);
+		}
+
+		// ✅ Save updated user
+		userRepository.save(user);
+
+		// ✅ **Update session with new user data**
+		session.setAttribute("user", user); // **Fixes delayed profile update issue**
+
+		return "redirect:/home";
 	}
 
 	// Notification

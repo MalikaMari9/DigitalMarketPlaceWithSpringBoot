@@ -24,15 +24,19 @@
     <div class="profile-body">
     <div class="profile-wrapper">
        <div class="profile-header">
-    <div class="profile-picture">
-        <img src="Image/profile/default.png" alt="User Profile">
-    </div>
+         
+<div class="profile-picture">
+<img th:src="@{/Image/profile/{image}(image=${seller.profilePath != null ? seller.profilePath : 'default.png'})}"
+     alt="User Profile">
+
+</div>
+
     <div class="profile-info">
         <h2 th:text="${seller.username}"></h2>
 
         <!-- Show 'Edit Profile' button only if the logged-in user is viewing their own profile -->
         <th:block th:if="${isOwnProfile}">
-            <a th:href="@{/edit-profile}" class="edit-profile-btn">Edit Profile</a>
+            <a th:href="@{/editProfile}" class="edit-profile-btn">Edit Profile</a>
         </th:block>
 <th:block th:if="${session.user != null and !isOwnProfile}">
    <a th:href="@{'/chat?receiverID=' + ${seller.userID} + '&receiverName=' + ${seller.username}}"
@@ -41,14 +45,16 @@
 </th:block>
 
 
-        <div class="stats">
-            <span><strong>100</strong> Posts</span>
-        </div>
+      <div class="stats">
+    <span><strong th:text="${postCount}"></strong> Posts</span>
+</div>
 
-        <div class="bio">
-            <p id="bioText" th:text="${seller.bio}"></p>
-            <button id="toggleBioButton" onclick="toggleBio()">See More</button>
-        </div>
+
+<div class="bio">
+    <p id="bioText" th:text="${seller.bio}"></p>
+    <button id="toggleBioButton" onclick="toggleBio()" style="display: none;">See More</button>
+</div>
+
     </div>
 </div>
 

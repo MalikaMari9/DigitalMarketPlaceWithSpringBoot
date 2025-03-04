@@ -1,10 +1,15 @@
 :root {
     --primary-color: #333; /* Dark Gray */
     --secondary-color: #555; /* Medium Gray */
-    --background-color: #f9f9f9; /* Light Gray */
+    --background-color: #f2f2f2; /* Light Gray */
     --text-color: #000; /* Black */
-    --highlight-color: #0073e6; /* Blue */
+    --error-color: #ff0000; /* Red */
+    --accent-color: #9b87f5; /* Purple */
+    --muted-color: #8E9196; /* Muted Gray */
+    --dark-bg-color: #1A1F2C; /* Dark Background */
+    --border-color: #e2e8f0; /* Border Color */
 }
+
 
 
 body{
@@ -38,8 +43,10 @@ body{
 .profile-header {
     display: flex;
     align-items: center;
+    justify-content: space-between; /* Ensures spacing between profile info and button */
     padding: 20px;
     border-bottom: 1px solid var(--secondary-color);
+    position: relative;
 }
 
 .profile-picture img {
@@ -265,6 +272,32 @@ body{
 #list-item-link:hover {
     background-color: var(--hover-color); /* Darker hover color */
     transform: scale(1.05); /* Slightly enlarge on hover */
+}
+
+.edit-profile-btn {
+    display: inline-block;
+    background-color: var(--primary-color); /* Muted Gray */
+    color: white;
+    text-decoration: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s ease, filter 0.3s ease;
+    filter: grayscale(100%);
+    position: absolute;
+    right: 20px; /* Moves it to the right */
+    top: 20px; /* Aligns it with the top padding */
+}
+
+.edit-profile-btn:hover {
+    background-color: var(--secondary-color); /* Medium Gray */
+    filter: grayscale(0%);
+}
+
+
+.edit-profile-btn:hover {
+    background-color: var(--secondary-color); /* Medium Gray */
+    filter: grayscale(0%); /* Remove grayscale on hover */
 }
 
 

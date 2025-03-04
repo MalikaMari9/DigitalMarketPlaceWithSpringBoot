@@ -4,68 +4,104 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Profile</title>
-    <link rel="stylesheet" th:href="@{/CSS/STRMstyle.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/CSS/STRMstyle.css}">
 </head>
-<body >
+<body>
     <div class="add-body">
-    <div class="page-wrapper">
-       
-                <main class="edit-profile-container">
-             
-                    <h1>Edit Profile</h1>
-                    <form class="horizontal-form">
-                        <div class="form-row">
-                            <div class="form-group profile-picture">
-                                <label for="profilePicture">Profile Picture:</label>
-                                <input type="file" id="profilePicture">
-                                <img src="https://i.pinimg.com/236x/4b/12/fb/4b12fbe8012b0f175bc1e9cad35880a3.jpg" alt="Profile Image">
-                            </div>
-                        </div>
+        <div class="page-wrapper">
+            <main class="edit-profile-container">
+                <h1>Edit Profile</h1>
+                <form th:action="@{/editProfile}" th:object="${user}" method="post" enctype="multipart/form-data" class="horizontal-form">
+                    <input type="hidden" name="userID" th:value="${user.userID}">
 
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="username">Username:</label>
-                                <input type="text" id="username" value="tess">
-                            </div>
-                            <div class="form-group">
-                                <label for="email">Email:</label>
-                                <input type="email" id="email" value="tess@gmail.com">
-                            </div>
-                        </div>
+                    <!-- Profile Picture -->
+                    <div class="form-row">
+                        <div class="form-group profile-picture">
+                            <label for="profilePicture">Profile Picture:</label>
+                            <input type="file" id="profilePicture" name="profilePicture" accept="image/png, image/jpeg, image/jpg">
 
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="phone">Phone:</label>
-                                <input type="tel" id="phone" value="09987654321" maxlength="12">
-                            </div>
-                            <div class="form-group">
-                                <label for="dob">Date of Birth:</label>
-                                <input type="date" id="dob" value="2000-03-06">
-                            </div>
+                            <!-- Profile Image Preview -->
+                            <img id="profileImagePreview" 
+                                 th:src="@{/Image/profile/{image}(image=${user.profilePath != null ? user.profilePath : 'default.png'})}"
+                                 alt="Profile Image">
                         </div>
+                    </div>
 
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="gender">Gender:</label>
-                                <select id="gender">
-                                    <option value="male" selected>Male</option>
-                                    <option value="female">Female</option>
-                                    <option value="other">Other</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="bio">Bio:</label>
-                                <textarea id="bio" rows="4">Free</textarea>
-                            </div>
+                    <!-- Username and Email -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="username">Username:</label>
+                            <input type="text" id="username" th:field="*{username}" required>
                         </div>
+                        <div class="form-group">
+                            <label for="email">Email:</label>
+                            <input type="email" id="email" th:field="*{email}" required>
+                        </div>
+                    </div>
 
-                        <div class="form-row">
-                            <button type="submit" class="profile-button">Save Changes</button>
+                    <!-- Phone and Date of Birth -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="phone">Phone:</label>
+                            <input type="tel" id="phone" th:field="*{phone}" maxlength="20">
                         </div>
-                    </form>
-                 
-                </main>
-            </div>
+                       <!-- Date of Birth (DOB) Field -->
+<!-- Date of Birth (DOB) Field -->
+<div class="form-group">
+    <label for="dob">Date of Birth:</label>
+    <input type="date" id="dob" name="dob" th:value="${user.dob}" required>
+</div>
+
+
+
+                    </div>
+
+                    <!-- Gender and Bio -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="gender">Gender:</label>
+                            <select id="gender" th:field="*{gender}">
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="bio">Bio:</label>
+                            <textarea id="bio" rows="4" th:field="*{bio}"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Save Changes Button -->
+                    <div class="form-row">
+                        <button type="submit" class="profile-button">Save Changes</button>
+                    </div>
+                </form>
+            </main>
+        </div>
     </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const profilePictureInput = document.getElementById("profilePicture");
+            const profileImagePreview = document.getElementById("profileImagePreview");
+
+            profilePictureInput.addEventListener("change", function () {
+                const file = this.files[0];
+
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        profileImagePreview.src = e.target.result; // Update image preview
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    // Reset preview to the current profile image or default.png
+                    profileImagePreview.src = profileImagePreview.getAttribute("th:src");
+                }
+            });
+        });
+    </script>
+
 </body>
 </html>

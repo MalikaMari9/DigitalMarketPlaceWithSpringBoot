@@ -144,7 +144,11 @@
         <div class="sidebar-headeryoon">
           <div class="user-infoyoon">
             <div class="avataryoon">
-              <img src="Image/profile/default.png" alt="User" id="userAvataryoon" />
+            <img th:src="@{${session.user.profilePath != null and session.user.profilePath != 'default.png'} 
+        ? '/Image/profile/' + ${session.user.profilePath} 
+        : '/Image/profile/default.png'}"
+     alt="User" id="userAvataryoon" />
+
             </div>
             <h3 th:text="${session.user.username}"></h3>
           </div>
@@ -260,8 +264,14 @@
       <div class="sidebar-headeryoon">
         <div class="user-infoyoon">
           <div class="avataryoon">
-            <img src="Image/profile/default.png"  alt="User" id="userAvataryoon" />
+          
+<img th:src="@{/Image/profile/{image}(image=${session.user.profilePath != null and session.user.profilePath != 'default.png' 
+        ? session.user.profilePath : 'default.png'})}" 
+     alt="User" id="userAvataryoon" />
+
+
           </div>
+        
           <h3 th:text="${session.user.username}"></h3>
           <span th:text="'<' + ${session.user.seller.businessType} + '>'"></span>
         </div>

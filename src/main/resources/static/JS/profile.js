@@ -1,28 +1,33 @@
+// Function to switch between profile sections
 function showSection(sectionId) {
     // Hide all tab contents
-    const contents = document.querySelectorAll('.tab-content');
-    contents.forEach(content => content.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
 
     // Remove active class from all tabs
-    const tabs = document.querySelectorAll('.tab');
-    tabs.forEach(tab => tab.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
 
     // Show selected tab content
     document.getElementById(sectionId).classList.add('active');
 
     // Highlight the active tab
-    const activeTab = [...tabs].find(tab =>
-        tab.textContent.toLowerCase() === sectionId.replace('-', ' ')
-    );
-    if (activeTab) activeTab.classList.add('active');
+    document.querySelectorAll('.tab').forEach(tab => {
+        if (tab.textContent.toLowerCase() === sectionId.replace('-', ' ')) {
+            tab.classList.add('active');
+        }
+    });
 }
 
 // Toggle between truncated and full bio
 function toggleBio() {
     const bioTextElement = document.getElementById('bioText');
     const toggleButton = document.getElementById('toggleBioButton');
+
+    if (!bioTextElement.dataset.fullText) {
+        bioTextElement.dataset.fullText = bioTextElement.textContent.trim(); // Store full text
+    }
+
     const fullText = bioTextElement.dataset.fullText;
-    const truncatedText = truncateText(fullText, 20); // Adjust the word limit as needed
+    const truncatedText = truncateText(fullText, 20); // Adjust word limit as needed
 
     if (toggleButton.textContent === 'See More') {
         bioTextElement.textContent = fullText; // Show full text
@@ -36,19 +41,28 @@ function toggleBio() {
 // Helper function to truncate text
 function truncateText(text, wordLimit) {
     const words = text.split(' ');
-    if (words.length > wordLimit) {
-        return words.slice(0, wordLimit).join(' ') + '...';
-    }
-    return text;
+    return words.length > wordLimit ? words.slice(0, wordLimit).join(' ') + '...' : text;
 }
 
 // Initialize the truncated bio on page load
 document.addEventListener('DOMContentLoaded', () => {
     const bioTextElement = document.getElementById('bioText');
-    const fullText = bioTextElement.dataset.fullText;
-    bioTextElement.textContent = truncateText(fullText, 20); // Adjust word limit
+    const toggleButton = document.getElementById('toggleBioButton');
+
+    if (bioTextElement && toggleButton) {
+        const fullText = bioTextElement.textContent.trim();
+        const truncatedText = truncateText(fullText, 20); // Adjust word limit
+
+        if (fullText !== truncatedText) {
+            bioTextElement.textContent = truncatedText;
+            toggleButton.style.display = 'inline-block'; // Show the button if truncation is needed
+        } else {
+            toggleButton.style.display = 'none'; // Hide button if bio is short
+        }
+    }
 });
 
+// "See More" button for other expandable elements
 document.querySelectorAll('.see-more').forEach(button => {
     button.addEventListener('click', () => {
         const expanded = button.classList.toggle('expanded');
