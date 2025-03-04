@@ -22,4 +22,11 @@ public interface ReceiptRepository extends JpaRepository<Receipt, Long> {
 			+ "OR EXISTS (SELECT o FROM Order o WHERE o.receipt = r AND LOWER(o.item.itemName) LIKE LOWER(CONCAT('%', :search, '%'))))")
 	Page<Receipt> findBySellerAndSearch(@Param("seller") User seller, @Param("search") String search,
 			Pageable pageable);
+
+	Page<Receipt> findByBuyerUsernameContainingIgnoreCaseOrSellerUsernameContainingIgnoreCase(String buyer,
+			String seller, Pageable pageable);
+
+	Page<Receipt> findBySeller(User seller, Pageable pageable);
+
+	Page<Receipt> findByBuyer(User buyer, Pageable pageable);
 }

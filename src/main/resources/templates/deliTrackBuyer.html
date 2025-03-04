@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery Tracking</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/CSS/ckstyle1.css}">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <link th:href="@{/CSS/headerFooter.css}" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <link th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css}" rel="stylesheet">
+    <script th:src="@{/JS/sidebar.js}"></script>
+    <script th:src="@{/JS/CategorySelect.js}"></script>
+    <style>
+        .receive-order-btn {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .receive-order-btn:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+<header th:insert="~{fragments/header :: header}"></header>
+
+<div class="container">
+    <h1 style="text-align: center;">Delivery Tracking</h1>
+
+    <!-- Error Handling -->
+    <div th:if="${error}" class="error-message">
+        <p th:text="${error}" style="color: red; font-weight: bold;"></p>
+    </div>
+
+    <!-- Order Details -->
+    <table style="width:100%">
+        <tr>
+            <td class="label" style="border:none">Seller Name:</td>
+            <td style="border:none" th:text="${receipt.seller.username}"></td>
+        </tr>
+        <tr>
+            <td class="label" style="border:none">Receipt No:</td>
+            <td style="border:none" th:text="${receipt.receiptID}"></td>
+            <td style="border:none; text-align: right;">
+                <!-- "Receive Order" Button (Only if status is DELIVERED and not RECEIVED) -->
+                <form th:if="${deliveryStatus == 'DELIVERED'}" th:action="@{/receiveOrder}" method="post">
+                    <input type="hidden" name="receiptID" th:value="${receipt.receiptID}">
+                    <button type="submit" class="receive-order-btn">Receive Order</button>
+                </form>
+            </td>
+        </tr>
+    </table>
+
+    <!-- Delivery Status Section -->
+    <div class="status">
+        <!-- Order Sent -->
+        <div th:classappend="${deliveryStatus == 'PENDING' ? 'active' : ''}">
+            <img th:src="@{/Image/icon/box.png}" alt="Order Sent" width="300" height="200">
+            <span th:style="${deliveryStatus == 'PENDING' ? 'color: green;' : ''}">
+                Your order has been sent
+            </span>
+        </div>
+
+        <span class="arrow">&#10132;</span>
+
+        <!-- Being Delivered -->
+        <div th:classappend="${deliveryStatus == 'SHIPPED' or (deliveryStatus == 'DELIVERED' and daysDifference < 3) ? 'active' : ''}">
+            <img th:src="@{/Image/icon/deli.png}" alt="Being Delivered" width="300" height="200">
+            <span th:style="${(deliveryStatus == 'SHIPPED' or (deliveryStatus == 'DELIVERED' and daysDifference < 3)) ? 'color: green;' : ''}">
+                Your order is being delivered
+            </span>
+        </div>
+
+        <span class="arrow">&#10132;</span>
+
+        <!-- Order Delivered -->
+        <div th:classappend="${deliveryStatus == 'DELIVERED' and daysDifference >= 3 ? 'active' : ''}">
+            <img th:src="@{/Image/icon/deli1.png}" alt="Delivered" width="300" height="200">
+            <span th:style="${deliveryStatus == 'DELIVERED' and daysDifference >= 3 ? 'color: green;' : ''}">
+                Your order has been delivered
+            </span>
+        </div>
+
+        <span class="arrow">&#10132;</span>
+
+        <!-- Customer Has Received -->
+        <div th:classappend="${deliveryStatus == 'RECEIVED' ? 'active' : ''}">
+            <img th:src="@{/Image/icon/order-received-icon-vector.jpg}" alt="Customer Received" width="300" height="200">
+            <span th:style="${deliveryStatus == 'RECEIVED' ? 'color: green;' : ''}">
+                Customer has received the order
+            </span>
+        </div>
+    </div>
+
+    <!-- History Information -->
+    <h2 style="text-align: left;">History Information</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>State Occurrence Date</th>
+                <th>Record</th>
+                <th>Details</th>
+                <th>City</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td th:text="${#temporals.format(delivery.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+                <td th:text="${delivery.status}"></td>
+                <td>Package is at the warehouse</td>
+                <td th:text="${address.city}"></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Office Contact Information -->
+    <div class="section">
+        <h2 style="text-align: left;">Office Contact Information</h2>
+        <table>
+            <tr>
+                <th>Case Class</th>
+                <th>City</th>
+                <th>Phone Number</th>
+            </tr>
+            <tr>
+                <td>Acceptance</td>
+                <td th:text="${address.city}"></td>
+                <td th:text="${address.phone}"></td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<footer th:insert="~{fragments/footer :: footer}"></footer>
+
+<script>
+    lucide.createIcons();
+</script>
+
+</body>
+</html>

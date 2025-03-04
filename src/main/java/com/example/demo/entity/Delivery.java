@@ -32,20 +32,27 @@ public class Delivery {
 	@Column(nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
 	private LocalDateTime createdAt;
 
-	@Column(columnDefinition = "TIMESTAMP DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP")
+	@Column(columnDefinition = "TIMESTAMP DEFAULT NULL")
 	private LocalDateTime updatedAt;
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private DeliveryStatus status; // ✅ Enum for Delivery Status
 
+	// ✅ Added "RECEIVED" status
 	public enum DeliveryStatus {
-		PENDING, SHIPPED, DELIVERED, CANCELED
+		PENDING, SHIPPED, DELIVERED, RECEIVED, CANCELED
 	}
 
 	public Delivery() {
 		this.createdAt = LocalDateTime.now();
 		this.status = DeliveryStatus.PENDING; // Default status
+	}
+
+	// ✅ Automatically update `updatedAt` when the status changes
+	public void setStatus(DeliveryStatus status) {
+		this.status = status;
+		this.updatedAt = LocalDateTime.now(); // ✅ Update timestamp on status change
 	}
 
 	// ✅ Getters and Setters
@@ -87,9 +94,5 @@ public class Delivery {
 
 	public DeliveryStatus getStatus() {
 		return status;
-	}
-
-	public void setStatus(DeliveryStatus status) {
-		this.status = status;
 	}
 }

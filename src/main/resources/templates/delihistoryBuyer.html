@@ -1,0 +1,75 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Deli History</title>
+    <link rel="stylesheet" th:href="@{CSS/saleHistory.css}">
+    <link th:href="@{/CSS/headerFooter.css}" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <link th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css}" rel="stylesheet">
+    <script th:src="@{/JS/sidebar.js}"></script>
+    <script th:src="@{/JS/CategorySelect.js}"></script>
+</head>
+<body>
+
+<header th:insert="~{fragments/header :: header}"></header>
+
+<div id="container">
+    <h2 id="page-title">Deli Track</h2>
+
+    <table id="sales-table">
+        <tr>
+            <th>Deli No</th>
+            <th>Receipt No</th>
+            <th>Seller</th>
+            <th>Sale Date</th>
+            <th>Delivery Status</th>
+        </tr>
+
+        <tr th:each="receipt : ${salesReceipts}">
+            <!-- Delivery ID -->
+            <td th:text="'#' + ${receipt.delivery.deliID}"></td>
+
+            <!-- Receipt Number -->
+            <td th:text="'#' + ${receipt.receiptID}"></td>
+
+            <!-- Seller Username (Only for the logged-in buyer) -->
+            <td>
+                <a class="table-link" th:href="@{/viewSeller/{sellerID}(sellerID=${receipt.seller.userID})}" 
+                   th:text="${receipt.seller.username}"></a>
+            </td>
+
+            <!-- Sale Date -->
+            <td th:text="${#temporals.format(receipt.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+
+            <!-- Delivery Status -->
+            <td>
+                <a th:href="@{/deli-track-buyer(receiptID=${receipt.receiptID})}">Track Delivery</a>
+            </td>
+        </tr>
+    </table>
+
+    <div class="pagination">
+        <a th:if="${salesPage.hasPrevious()}" 
+           th:href="@{/deliHistory(page=${salesPage.number - 1}, search=${searchQuery}, sortBy=${selectedSortBy})}" 
+           class="pagination-button">
+            Previous
+        </a>
+
+        <span>Page <span th:text="${salesPage.number + 1}"></span> of <span th:text="${salesPage.totalPages}"></span></span>
+
+        <a th:if="${salesPage.hasNext()}" 
+           th:href="@{/deliHistory(page=${salesPage.number + 1}, search=${searchQuery}, sortBy=${selectedSortBy})}" 
+           class="pagination-button">
+            Next
+        </a>
+    </div>
+</div>
+
+<footer th:insert="~{fragments/footer :: footer}"></footer>
+
+<script>
+    lucide.createIcons();
+</script>
+
+</body>
+</html>
