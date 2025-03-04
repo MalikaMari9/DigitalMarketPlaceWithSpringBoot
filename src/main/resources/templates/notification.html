@@ -40,7 +40,7 @@
                     <div class="notification-actions-group">
                         <span class="notification-time" th:text="${#temporals.format(noti.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
 
-                        <!-- View Button -->
+                        <!-- ✅ View Item -->
                         <a th:if="${noti.item != null}" th:href="@{/itemList/{itemID}(itemID=${noti.item.itemID})}" class="view-button">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"></path>
@@ -49,13 +49,28 @@
                             View
                         </a>
 
-                        <a th:if="${noti.sender != null}" th:href="@{/chat/{userID}(userID=${noti.sender.userID})}" class="view-button">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"></path>
-                                <circle cx="12" cy="12" r="3"></circle>
-                            </svg>
-                            View
-                        </a>
+<!-- ✅ View Orders to be Delivered (for Sellers) -->
+<a th:if="${noti.notiType == 'NEW_ORDER' and noti.receipt != null}" 
+   th:href="@{/confirmDelivery} + ${noti.receipt != null ? '#receipt-' + noti.receipt.receiptID : ''}" 
+   class="view-button">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"></path>
+        <circle cx="12" cy="12" r="3"></circle>
+    </svg>
+    View Order
+</a>
+
+<!-- ✅ View Order History (for Buyers) -->
+<a th:if="${noti.notiType == 'ORDER_DELIVERED' or noti.notiType == 'ORDER_CANCELED'} and ${noti.receipt != null}"
+   th:href="@{/orderHistory(receiptID=${noti.receipt.receiptID})}" class="view-button">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"></path>
+        <circle cx="12" cy="12" r="3"></circle>
+    </svg>
+    View
+</a>
+
+
                     </div>
                 </div>
             </div>
@@ -64,7 +79,7 @@
 
     <script>
         function goBack() {
-            window.history.back(); // ✅ Sends user to previous page
+            window.history.back();
         }
     </script>
 

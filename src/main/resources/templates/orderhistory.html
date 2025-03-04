@@ -12,12 +12,17 @@
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script th:src="@{/JS/sidebar.js}"></script>
     <script th:src="@{/JS/CategorySelect.js}"></script>
+        <script th:src="@{/JS/buyAgain.js}"></script>
 </head>
 <body>
 <header th:insert="fragments/header :: header"></header>
 
     <div class="checkout-body">
-        <div class="completed-orders-wrapper" th:each="receipt : ${receipts}">
+     <div class="completed-orders-wrapper" 
+     th:if="${receipt.receiptID != null}" 
+     th:id="'receipt-' + ${receipt.receiptID}" 
+     th:each="receipt : ${receipts}">
+
             
             <!-- Order Header -->
             <div class="order-history-header">
@@ -39,10 +44,12 @@
                     </div>
 
                     <div class="order-actions">
-                        <button class="buy-again" th:attr="data-item-id=${order.item.itemID}">
+                        <button class="buy-again"   th:data-item-id="${order.item.itemID}">
                            Buy Again
                         </button>
                     </div>
+
+                    
                 </div>
 
                 <div class="order-details">
@@ -64,35 +71,44 @@
 <footer th:insert="fragments/footer :: footer"></footer>
 <script>
     lucide.createIcons();
-</script>
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-    document.querySelectorAll(".buy-again").forEach((btn) => {
-        btn.addEventListener("click", () => {
-            const itemID = btn.getAttribute("data-item-id");
-
-            fetch(`/add-to-cart?itemID=${itemID}`, { method: "POST" })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert("✅ Item added to cart!");
-                    } else {
-                        alert("❌ " + data.message);
-                    }
-                })
-                .catch(error => console.error("❌ Error:", error));
-        });
-    });
-
-    // ✅ Invoice Download
     document.querySelectorAll(".download-button").forEach((btn) => {
         btn.addEventListener("click", () => {
             const receiptID = btn.getAttribute("data-receipt-id");
             window.location.href = `/download-invoice/${receiptID}`;
         });
     });
-});
+
 </script>
+<script>
+    window.onload = function () {
+        console.log("JavaScript Loaded"); // ✅ Ensure script is executing
+
+        const highlightReceiptID = "[[${highlightReceiptID}]]"; 
+        console.log("Highlight Receipt ID:", highlightReceiptID); // ✅ Log receipt ID
+
+        if (highlightReceiptID && highlightReceiptID !== "null") {
+            setTimeout(() => {
+                const targetReceipt = document.getElementById("receipt-" + highlightReceiptID);
+                console.log("Target Element:", targetReceipt); // ✅ Log the target element
+
+                if (targetReceipt) {
+                    targetReceipt.scrollIntoView({ behavior: "smooth", block: "start" });
+                    targetReceipt.style.border = "3px solid red"; // Highlight effect
+                    setTimeout(() => { targetReceipt.style.border = ""; }, 2000);
+                } else {
+                    console.error("Element not found: receipt-" + highlightReceiptID);
+                }
+            }, 500);
+        } else {
+            console.warn("No receipt ID provided.");
+        }
+    };
+</script>
+
+
+
+
+
 
 </body>
 </html>

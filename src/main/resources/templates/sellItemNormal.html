@@ -3,8 +3,27 @@
 <head>
     <link rel="stylesheet" th:href="@{/CSS/sellItem.css}" />
     <script th:src="@{/JS/previewImage.js}"></script>
-   <script th:src="@{/JS/clothing.js}"></script> 
+
    <script th:src="@{/JS/categorySale.js}"></script> 
+       <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+   <style>
+   .back-button {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 15px;
+}
+
+.back-button i {
+    margin-right: 5px;
+    font-size: 18px;
+}
+   
+   </style>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("item-form"); // Your form ID
@@ -59,35 +78,48 @@ document.addEventListener("DOMContentLoaded", function () {
 </script>
 
 </head>
-<body>
+<body th:attr="data-business-type=${session.user.seller.businessType}">
+
+
     <form id="item-form" th:action="@{/sell-item}" method="POST" enctype="multipart/form-data">
+<a href="javascript:history.back()" class="back-button">
+    <i data-lucide="arrow-left"></i> Back
+</a>
+
         <h2 class="form-title">Item Details</h2>
         <div class="form-grid">
             <div class="form-group">
                 <label for="item-name" class="form-label">Item Name:</label>
-                <input type="text" id="item-name" class="form-input" name="name" placeholder="Enter the item's name" required>
+                <input type="text" id="item-name" class="form-input" name="name" placeholder="Enter the item's name" required maxlength="100">
             </div>
 
-            <div class="form-group">
-                <label for="item-price" class="form-label">Item Price:</label>
-                <input type="number" id="item-price" class="form-input" name="price" required>
-                <small class="form-note">The price listing is in USD</small>
-            </div>
+<div class="form-group">
+    <label for="item-price" class="form-label">Item Price:</label>
+    <input type="number" id="item-price" class="form-input" name="price" required min="0.01" step="0.01">
+    <small class="form-note">(The price listing is in USD)</small>
+</div>
+
 
             <div class="form-group">
                 <label for="item-desc" class="form-label">Item Description:</label>
                 <textarea id="item-desc" class="form-textarea" name="desc" placeholder="Enter the item's description" required></textarea>
             </div>
 
-            <div class="form-group">
-                <label for="item-stock" class="form-label">Stock:</label>
-                <input type="number" id="item-stock" class="form-input" name="stock" min="1" max="100" required>
+<div class="form-group">
+    <label for="item-stock" class="form-label">Stock:</label>
+    <input type="number" id="item-stock" class="form-input" name="stock" 
+           th:min="${session.user.seller.businessType == 'C2C' ? 1 : 1}" 
+           th:max="${session.user.seller.businessType == 'C2C' ? 1 : 100}" 
+           th:value="${session.user.seller.businessType == 'C2C' ? 1 : ''}" 
+           th:readonly="${session.user.seller.businessType == 'C2C'}" required>
 
-                <!-- Trigger Modal Button -->
-<div id="additional-details-container" style="display: none;">
-    <button type="button" id="open-modal" class="form-button">Add More Clothing Details</button>
+    <!-- Show this message only for C2C sellers -->
+    <small th:if="${session.user.seller.businessType == 'C2C'}" class="form-note" >
+       ( C2C sellers can only sell 1 item per listing. )
+    </small>
 </div>
-            </div>
+
+
 
 
 
@@ -134,37 +166,6 @@ document.addEventListener("DOMContentLoaded", function () {
 </div>
 
 
-<!-- Clothing Details Modal -->
-<!-- Modal -->
-<div id="clothing-modal" class="modal" style="display: none;">
-    <div class="modal-content">
-        <span class="close-button">&times;</span>
-        <h2>Add Clothing Details</h2>
-        <div id="modal-form">
-            <!-- Colors Section -->
-            <div id="colors-container" class="form-group">
-                <label for="colors" class="form-label">Colors:</label>
-                <div id="color-fields">
-                    <input type="text" class="modal-input" name="colors[]" placeholder="Enter color" >
-                    <input type="file" class="modal-input" name="colorImages[]" accept="image/*" >
-                </div>
-                <button type="button" id="add-color" class="modal-button">Add More Colors</button>
-            </div>
-
-            <!-- Sizes Section -->
-            <div id="sizes-container" class="form-group">
-                <label for="sizes" class="form-label">Sizes:</label>
-                <div id="size-fields">
-                    <input type="text" class="modal-input" name="sizes[]" placeholder="Enter size (e.g., S, M, L)" >
-                </div>
-                <button type="button" id="add-size" class="modal-button">Add More Sizes</button>
-            </div>
-
-            <button type="button" id="save-details" class="modal-button">Save Details</button>
-        </div>
-    </div>
-</div>
-
 
 
 
@@ -184,12 +185,31 @@ document.addEventListener("DOMContentLoaded", function () {
 
             <div class="form-group">
                 <label for="item-images" class="form-label">Upload Images (Max 5):</label>
-                <input type="file" id="item-images" class="form-input" name="itemImages" accept="image/*" multiple required>
+                <!-- Store the max file size in a data attribute -->
+<input type="file" id="item-images" class="form-input" name="itemImages" accept="image/*" multiple 
+       th:attr="data-max-size=${5 * 1024 * 1024}" required> <!-- Convert MB to bytes -->
+
                 <button type="button" id="add-more-images" class="form-button" style="display:none;">Add More Images</button>
             </div>
         </div>
         <div id="image-preview-container" class="form-image-preview"></div>
         <input type="submit" id="submit-button" class="form-submit-button" value="Submit" name="submit">
     </form>
+    <script>
+    lucide.createIcons();
+    document.addEventListener("DOMContentLoaded", function () {
+        const stockInput = document.getElementById("item-stock");
+        const businessType = document.body.getAttribute("data-business-type"); // Store business type
+        const warningMessage = document.getElementById("c2c-warning");
+
+        if (businessType === "C2C") {
+            stockInput.addEventListener("input", function () {
+                stockInput.value = 1; // Reset to 1 if they try to change it
+                warningMessage.style.display = "block"; // Show warning message
+            });
+        }
+    });
+
+    </script>
 </body>
 </html>

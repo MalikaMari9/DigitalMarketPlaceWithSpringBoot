@@ -32,6 +32,22 @@ public class Notification {
 	@JoinColumn(name = "itemID", nullable = true)
 	private Item item; // Only needed for item-related notifications
 
+	@ManyToOne
+	@JoinColumn(name = "receiptID", nullable = true) // ✅ Add this field
+	private Receipt receipt;
+
+	public Receipt getReceipt() {
+		return receipt;
+	}
+
+	public void setReceipt(Receipt receipt) {
+		this.receipt = receipt;
+	}
+
+	public void setCreatedAt(LocalDateTime createdAt) {
+		this.createdAt = createdAt;
+	}
+
 	/*
 	 * @ManyToOne
 	 * 

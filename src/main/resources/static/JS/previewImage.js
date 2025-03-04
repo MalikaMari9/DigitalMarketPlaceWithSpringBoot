@@ -5,11 +5,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const maxFiles = 5; // Maximum number of files
     const maxWidth = 1920; // Max image width
     const maxHeight = 1080; // Max image height
-    const maxSize = 5 * 1024 * 1024; // 5MB max file size
+    const maxSize = parseInt(imageInput.getAttribute("data-max-size"), 10) || (5 * 1024 * 1024); // Get from HTML
 
     imageInput.addEventListener('change', function (event) {
         Array.from(event.target.files).forEach(file => {
-            // Check if file already exists
             let isDuplicate = false;
             for (let i = 0; i < dt.items.length; i++) {
                 if (dt.items[i].getAsFile().name === file.name && dt.items[i].getAsFile().size === file.size) {
@@ -18,19 +17,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             }
 
-            // Prevent adding more than maxFiles
             if (dt.items.length >= maxFiles) {
                 alert(`You can only upload a maximum of ${maxFiles} images.`);
                 return;
             }
 
-            // Check file size
-            if (file.size > maxSize) {
-                alert(`Image ${file.name} is too large. Max size is 5MB.`);
+            if (file.size > maxSize) { // ✅ Now dynamically checks the app property limit
+                alert(`Image ${file.name} is too large. Max size is ${maxSize / (1024 * 1024)}MB.`);
                 return;
             }
 
-            // Check image resolution
             const img = new Image();
             img.src = URL.createObjectURL(file);
             img.onload = function () {
@@ -40,23 +36,19 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
 
                 if (!isDuplicate) {
-                    // Add file to DataTransfer
                     dt.items.add(file);
 
-                    // Create preview div
                     const previewDiv = document.createElement('div');
                     previewDiv.style.display = 'inline-block';
                     previewDiv.style.margin = '10px';
                     previewDiv.style.position = 'relative';
 
-                    // Create image preview
                     const imgElement = document.createElement('img');
                     imgElement.src = img.src;
                     imgElement.style.maxWidth = '150px';
                     imgElement.style.border = '1px solid #ccc';
                     imgElement.style.borderRadius = '5px';
 
-                    // Create remove button
                     const removeBtn = document.createElement('button');
                     removeBtn.textContent = 'X';
                     removeBtn.style.position = 'absolute';
@@ -72,8 +64,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     removeBtn.addEventListener('click', function (e) {
                         e.preventDefault();
-
-                        // Remove file from DataTransfer
                         for (let i = 0; i < dt.items.length; i++) {
                             if (dt.items[i].getAsFile() === file) {
                                 dt.items.remove(i);
@@ -81,24 +71,17 @@ document.addEventListener('DOMContentLoaded', function () {
                             }
                         }
 
-                        // Update FileList
                         imageInput.files = dt.files;
-
-                        // Remove preview
                         previewDiv.remove();
                     });
 
-                    // Append image & remove button to preview div
                     previewDiv.appendChild(imgElement);
                     previewDiv.appendChild(removeBtn);
                     previewContainer.appendChild(previewDiv);
                 }
-                
-                // Update file input FileList
+
                 imageInput.files = dt.files;
             };
         });
     });
 });
-
-

@@ -88,9 +88,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
             <!-- Item Price -->
             <div class="form-group">
-                <label for="item-price" class="form-label">Price (USD):</label>
-                <input type="number" id="item-price" class="form-input" name="price" required th:value="${item.price}">
-            </div>
+    <label for="item-price" class="form-label">Price (USD):</label>
+    <input type="number" id="item-price" class="form-input" name="price" required 
+           min="0.01" step="0.01" th:value="${item.price}">
+    <small class="form-note">(The price listing is in USD)</small>
+</div>
+
 
             <!-- Item Description -->
             <div class="form-group">
@@ -98,11 +101,19 @@ document.addEventListener("DOMContentLoaded", function () {
                 <textarea id="item-desc" class="form-textarea" name="desc" required th:text="${item.descrip}"></textarea>
             </div>
 
-            <!-- Quality -->
-            <div class="form-group">
-                <label for="item-quality" class="form-label">Quality:</label>
-                <input type="number" id="item-quality" class="form-input" name="quality" min="1" max="100" required th:value="${item.quality}">
-            </div>
+<div class="form-group">
+    <label for="item-quality" class="form-label">Stock:</label>
+    <input type="number" id="item-quality" class="form-input" name="quality"
+           th:min="${session.user.seller.businessType == 'C2C' ? 1 : 1}"
+           th:max="${session.user.seller.businessType == 'C2C' ? 1 : 100}"
+           th:value="${session.user.seller.businessType == 'C2C' ? 1 : item.quality}"
+           th:readonly="${session.user.seller.businessType == 'C2C'}" required>
+
+    <!-- Show Warning for C2C Sellers -->
+    <small th:if="${session.user.seller.businessType == 'C2C'}" class="form-note" >
+        (C2C sellers can only sell 1 item per listing.)
+    </small>
+</div>
 
  <div class="form-group">
     <label for="item-category" class="form-label">Category:</label>

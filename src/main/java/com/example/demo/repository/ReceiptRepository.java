@@ -10,4 +10,6 @@ import com.example.demo.entity.User;
 public interface ReceiptRepository extends JpaRepository<Receipt, Long> {
 
 	List<Receipt> findByBuyer(User user);
+
+	List<Receipt> findBySeller(User seller);
 }

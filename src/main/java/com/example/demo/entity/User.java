@@ -190,4 +190,13 @@ public class User {
 			this.role = "BUYER";
 		}
 	}
+
+	public List<Address> getAddresses() {
+		return addresses;
+	}
+
+	public void setAddresses(List<Address> addresses) {
+		this.addresses = addresses;
+	}
+
 }

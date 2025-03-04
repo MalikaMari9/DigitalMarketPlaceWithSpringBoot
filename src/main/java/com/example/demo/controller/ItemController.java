@@ -51,6 +51,7 @@ import com.example.demo.repository.ItemApprovalRepository;
 import com.example.demo.repository.ItemImageRepository;
 import com.example.demo.repository.ItemRepository;
 import com.example.demo.repository.NotificationRepository;
+import com.example.demo.repository.SellerRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.repository.ViewRepository;
 import com.example.demo.repository.WishlistRepository;
@@ -92,6 +93,8 @@ public class ItemController {
 	WishlistRepository wishlistRepo;
 	@Autowired
 	AdminNotificationRepository adminNotificationRepo;
+	@Autowired
+	SellerRepository sellerRepo;
 
 	@Autowired
 	CartRepository cartRepo;
@@ -203,7 +206,20 @@ public class ItemController {
 		System.out.println("➡ Item Name: " + name);
 		System.out.println("➡ Stock: " + stock);
 		System.out.println("Seller:" + session.getId());
-		// ✅ Create new Item
+
+		// ✅ Get logged-in user
+		User seller = (User) session.getAttribute("user");
+
+		if (seller == null) {
+			return "redirect:/loginPage"; // Redirect if not logged in
+		}
+
+		// ✅ Ensure the user is a seller
+		if (!"SELLER".equals(seller.getRole())) {
+			return "redirect:/unauthorized"; // Redirect if not a seller
+		}
+
+		// ✅ Set up Item
 		Item item = new Item();
 		item.setItemName(name);
 		item.setDescrip(desc);
@@ -215,36 +231,31 @@ public class ItemController {
 		item.setUpdatedAt(LocalDateTime.now());
 		item.setStat(Item.Status.AVAILABLE);
 		item.setApprove(ApprovalStatus.PENDING);
+		item.setSeller(seller);
 
 		// ✅ Set category
 		item.setCategory(categoryRepo.findById(categoryID)
 				.orElseThrow(() -> new RuntimeException("❌ Category ID not found: " + categoryID)));
 
-		// ✅ Assign a static seller for now (Replace with logged-in user later)
-		User seller = (User) session.getAttribute("user");
-
-		if (seller == null) {
-			return "redirect:/loginPage"; // Redirect if not logged in
-		}
-
-		// ✅ Ensure the user is a seller
-		if (!"SELLER".equals(seller.getRole())) {
-			return "redirect:/unauthorized"; // Redirect if not a seller
-		}
-		item.setSeller(seller);
-
 		// ✅ Save Item first
 		item = itemRepo.save(item);
 
-		// Save item Approval
+		// ✅ Save item Approval
 		ItemApproval itemApproval = new ItemApproval();
 		itemApproval.setItem(item);
-		itemApproval.setApprovalDate(null); // ✅ Approval date remains NULL for PENDING status
-		itemApproval.setRejectionReason(null); // ✅ No rejection reason initially
+		itemApproval.setApprovalDate(null);
+		itemApproval.setRejectionReason(null);
 		itemApprovalRepo.save(itemApproval);
 
-		// ✅ Save Images
+		// ✅ Validate Image Size Before Saving
 		if (images != null && !images.isEmpty()) {
+			final long MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+			for (MultipartFile image : images) {
+				if (image.getSize() > MAX_FILE_SIZE) {
+					throw new RuntimeException(
+							"❌ Image " + image.getOriginalFilename() + " exceeds the 5MB size limit.");
+				}
+			}
 			saveItemImages(item, images);
 		} else {
 			System.out.print("Images is empty");
@@ -255,6 +266,7 @@ public class ItemController {
 			saveItemTags(item, tags);
 		}
 
+		// ✅ Notify Admin
 		AdminNotification notification = new AdminNotification();
 		notification.setType(AdminNotification.NotificationType.ITEM_APPROVAL);
 		notification.setMessage("New item '" + name + "' awaiting approval.");
@@ -262,7 +274,6 @@ public class ItemController {
 		adminNotificationRepo.save(notification);
 
 		return "redirect:/pending-sale?searchfield=&sortby=itemID";
-
 	}
 
 	// Auctions

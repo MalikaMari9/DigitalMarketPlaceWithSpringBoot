@@ -5,102 +5,140 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Confirm Delivery</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" th:href="@{CSS/proceedCheckout.css}">
-    <script src="@{JS/toggleOrders.js}"></script>
+    <link rel="stylesheet" th:href="@{/CSS/cart.css}">
+    <script th:src="@{/JS/toggleOrders.js}"></script>
     
-     
     <link th:href="@{/CSS/headerFooter.css}" rel="stylesheet">
-     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-    <link th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css}" rel="stylesheet">
-     <script th:src="@{/JS/sidebar.js}"></script>
-     <script th:src="@{/JS/CategorySelect.js}"></script>
-
+    <script th:src="@{/JS/sidebar.js}"></script>
+    <script th:src="@{/JS/CategorySelect.js}"></script>
 </head>
 <body>
 <header th:insert="~{fragments/header :: header}"></header>
-    <div class="checkout-body">
 
-        <!-- Order 1 Wrapper -->
-        <div class="completed-orders-wrapper">
-            <div class="order-header">
-                <h2>Undelivered orders to <a href="viewprofile.html" class="shop-name">Buyer</a> </h2> 
-                <h3>Receipt ID : #12342354</h3>
-                <i class="fas fa-chevron-down toggle-icon"></i> <!-- Toggle Icon -->
-            </div>
-            <hr>
-            <div class="order-content">
-            <div class="order-card">
-                <div class="order-card-header">
-                    <img src="Image/wig1.png" alt=" BOBO Short Lolita Wig" class="order-image">
-                    <div class="order-info">
-                        <h4 class="order-title"> BOBO Short Lolita Wig</h4>
-                        
-                        <p class="order-date"><i class="fas fa-calendar-alt"></i> 2024-12-27 12:11</p>
-                    </div>
-                    
-                   
-                </div>
-                                
-                <div class="order-details">
-                    <p><strong>Order No:</strong> 18965808N</p>
-                    <p><strong>Price × Quantity:</strong> <span class="order-price">MMK 50,000 × 1</span></p>
-                   
-                </div> 
-            </div>
-            <div class="order-card">
-                <div class="order-card-header">
-                    <img src="Image/wig2.png" alt="Burning~Wine-red Long Curly" class="order-image">
-                    <div class="order-info">
-                        <h4 class="order-title">Burning~Wine-red Long Curly</h4>
-                        
-                        <p class="order-date"><i class="fas fa-calendar-alt"></i> 2024-12-27 12:11</p>
-                    </div>
-                    
-                   
-                </div>
-                                
-                <div class="order-details">
-                    <p><strong>Order No:</strong> 18965808N</p>
-                    <p><strong>Price × Quantity:</strong> <span class="order-price">MMK 50,000 × 1</span></p>
-                   
-                </div> 
-            </div>
-            <div class="order-card">
-                <div class="order-card-header">
-                    <img src="Image/wig3.png" alt="Double Ponytail Wig" class="order-image">
-                    <div class="order-info">
-                        <h4 class="order-title">Double Ponytail Wig</h4>
-                        
-                        <p class="order-date"><i class="fas fa-calendar-alt"></i> 2024-12-27 12:11</p>
-                    </div>
-                    
-                   
-                </div>
-                                
-                <div class="order-details">
-                    <p><strong>Order No:</strong> 18965808N</p>
-                    <p><strong>Price × Quantity:</strong> <span class="order-price">MMK 150,000 × 1</span></p>
-                   
-                </div> 
-            </div>
-            <div class="order-footer">
-            <p><strong>Total:</strong> <span class="order-price">MMK 50,000 </span></p>
-            </div>
-             		<div class="order-footer">
-       				 <button class="proceed-button">Confirm Delivery</button>
-    				</div>
-                </div>		
-    				
+<div class="checkout-body">
+    <h2>Undelivered Orders</h2>
+
+    <!-- Loop through all pending receipts -->
+    <th:block th:each="receipt : ${pendingReceipts}">
+    <div class="completed-orders-wrapper" th:id="'receipt-' + ${receipt.receiptID}">
+        <div class="order-header">
+            <h3>Receipt ID: <span th:text="'#' + ${receipt.receiptID}"></span></h3>
+            <h3>Buyer: <a th:href="@{/viewSeller/{buyerID}(buyerID=${receipt.buyer.userID})}" 
+                         class="shop-name" th:text="${receipt.buyer.username}"></a></h3>
         </div>
+        <hr>
 
+        <div class="order-content">
+            <th:block th:each="order : ${receipt.orders}">
+                <div class="order-card">
+                    <div class="order-card-header">
+                        <img th:src="@{/Image/Item/{itemID}/{fileName}(itemID=${order.item.itemID}, fileName=${order.item.images[0]?.imagePath})}" 
+                             alt="Product Image" class="order-image">
+                        <div class="order-info">
+                            <h4 class="order-title" th:text="${order.item.itemName}"></h4>
+                            <p class="order-date"><i class="fas fa-calendar-alt"></i> 
+                                <span th:text="${#temporals.format(order.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
+                            </p>
+                        </div>
+                    </div>
+                                        
+                    <div class="order-details">
+                        <p><strong>Order No:</strong> <span th:text="${order.orderID}"></span></p>
+                        <p><strong>Price × Quantity:</strong> 
+                            <span class="order-price" th:text="'$' + ${order.price} + ' × ' + ${order.quantity}"></span>
+                        </p>
+                    </div> 
+                </div>
+            </th:block>
 
-       
+            <div class="order-footer">
+                <p><strong>Total:</strong> <span class="order-price" th:text="'$' + ${receipt.totalPrice}"></span></p>
+            </div>
 
+            <div class="order-footer">
+                <button class="proceed-button confirm-delivery-btn" 
+                        th:data-receipt-id="${receipt.receiptID}">
+                    Confirm Delivery
+                </button>
+                <button class="proceed-button cancel-delivery-btn"
+                        th:data-receipt-id="${receipt.receiptID}">
+                    Cancel Delivery
+                </button>
+            </div>
+        </div>      
     </div>
-        <footer th:insert="~{fragments/footer :: footer}"></footer>
- <script>
-        lucide.createIcons();
-        </script>
+</th:block>
+
+
+    <!-- If no pending receipts -->
+    <p th:if="${#lists.isEmpty(pendingReceipts)}" class="empty-message">No pending deliveries at the moment.</p>
+
+</div>
+
+<footer th:insert="~{fragments/footer :: footer}"></footer>
+
+<script>
+    lucide.createIcons();
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const confirmButtons = document.querySelectorAll(".confirm-delivery-btn");
+        const cancelButtons = document.querySelectorAll(".cancel-delivery-btn");
+
+        confirmButtons.forEach(button => {
+            button.addEventListener("click", function () {
+                handleDeliveryAction(this.getAttribute("data-receipt-id"), "confirm");
+            });
+        });
+
+        cancelButtons.forEach(button => {
+            button.addEventListener("click", function () {
+                handleDeliveryAction(this.getAttribute("data-receipt-id"), "cancel");
+            });
+        });
+
+        function handleDeliveryAction(receiptID, action) {
+            const actionText = action === "confirm" ? "confirm delivery" : "cancel this delivery";
+            if (!confirm(`Are you sure you want to ${actionText} for Receipt #${receiptID}?`)) {
+                return;
+            }
+
+            fetch(`/${action}Delivery`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ receiptID: receiptID })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    window.location.reload();
+                } else {
+                    alert("Error: " + data.message);
+                }
+            })
+            .catch(error => alert("Failed to process request."));
+        }
+    });
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Check if the URL has a fragment (e.g., #receipt-12345)
+        const receiptHash = window.location.hash;
+        if (receiptHash.startsWith("#receipt-")) {
+            const targetElement = document.querySelector(receiptHash);
+            if (targetElement) {
+                setTimeout(() => {
+                    targetElement.scrollIntoView({ behavior: "smooth", block: "start" });
+                    targetElement.style.border = "2px solid red"; // Highlight the target briefly
+                    setTimeout(() => { targetElement.style.border = ""; }, 2000);
+                }, 500); // Delay to allow page to render
+            }
+        }
+    });
+</script>
+
+
 </body>
 </html>

@@ -180,6 +180,50 @@ public class CartController {
 		return ResponseEntity.ok(Map.of("success", true, "message", "Quantity updated"));
 	}
 
+	@PostMapping("/buy-again/{itemID}")
+	@Transactional
+	public @ResponseBody Response buyAgain(@PathVariable Long itemID, HttpSession session) {
+		// ✅ Retrieve the logged-in user from session
+		User user = (User) session.getAttribute("user");
+
+		if (user == null) {
+			System.out.println("❌ User not logged in.");
+			return new Response(false, "User not logged in.");
+		}
+
+		System.out.println("🛍 Buy Again Request: Item ID: " + itemID + ", User: " + user.getUserID());
+
+		Optional<Item> itemOpt = itemRepository.findById(itemID);
+
+		if (itemOpt.isEmpty()) {
+			System.out.println("❌ Invalid item.");
+			return new Response(false, "Invalid item.");
+		}
+
+		Item item = itemOpt.get();
+
+		if (item.getQuality() < 1) {
+			System.out.println("⚠️ Out of stock.");
+			return new Response(false, "Item is out of stock.");
+		}
+
+		// ✅ Check if the item is already in the cart
+		Cart cart = cartRepository.findFirstByUserAndItem(user, item).orElse(new Cart());
+
+		cart.setItem(item);
+		cart.setUser(user);
+		cart.setQuantity(cart.getCartID() == null ? 1 : cart.getQuantity() + 1); // ✅ Always add just 1 quantity
+		cart.setCreatedAt(LocalDateTime.now());
+
+		cartRepository.save(cart);
+
+		int cartCount = cartRepository.countByUser(user);
+
+		System.out.println("✅ Item added to cart again. Cart count: " + cartCount);
+
+		return new Response(true, "Item added to cart again.", cartCount);
+	}
+
 	// ✅ DTO for Cart Count Response
 	static class CartCountResponse {
 		private final int cartCount;

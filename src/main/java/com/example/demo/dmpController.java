@@ -159,11 +159,6 @@ public class dmpController {
 		return "auctionHistory";
 	}
 
-	@GetMapping("/confirmDelivery")
-	public String confirmDelivery() {
-		return "confirmDelivery";
-	}
-
 	@GetMapping("/trackDelivery")
 	public String trackDelivery() {
 		return "deliverytrack";

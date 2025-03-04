@@ -39,6 +39,7 @@ public class NotificationController {
 
 		// ✅ Fetch all notifications for the user
 		List<Notification> notifications = notificationRepo.findByUserOrderByCreatedAtDesc(user);
+
 		model.addAttribute("notifications", notifications);
 
 		// ✅ Mark all notifications as seen

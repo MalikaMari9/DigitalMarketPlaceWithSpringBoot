@@ -21,6 +21,7 @@ import com.example.demo.entity.Address;
 import com.example.demo.entity.Cart;
 import com.example.demo.entity.Delivery;
 import com.example.demo.entity.Item;
+import com.example.demo.entity.Notification;
 import com.example.demo.entity.Order;
 import com.example.demo.entity.Payment;
 import com.example.demo.entity.Receipt;
@@ -29,6 +30,7 @@ import com.example.demo.repository.AddressRepository;
 import com.example.demo.repository.CartRepository;
 import com.example.demo.repository.DeliveryRepository;
 import com.example.demo.repository.ItemRepository;
+import com.example.demo.repository.NotificationRepository;
 import com.example.demo.repository.OrderRepository;
 import com.example.demo.repository.PaymentRepository;
 import com.example.demo.repository.ReceiptRepository;
@@ -58,6 +60,8 @@ public class CheckoutController {
 
 	@Autowired
 	private ItemRepository itemRepository;
+	@Autowired
+	private NotificationRepository notificationRepository;
 
 	// ✅ Show Checkout Page with Addresses
 	@GetMapping("/checkout")
@@ -238,6 +242,17 @@ public class CheckoutController {
 
 		// ✅ Remove Ordered Items from Cart
 		cartRepository.deleteAll(selectedCartItems);
+
+		// ✅ Create Notification for the Seller
+		User seller = selectedCartItems.get(0).getItem().getSeller();
+		Notification sellerNotification = new Notification();
+		sellerNotification.setUser(seller); // Seller receives the notification
+		sellerNotification.setSender(buyer); // Buyer placed the order
+		sellerNotification.setReceipt(receipt); // ✅ Set Receipt reference
+		sellerNotification
+				.setNotiText("You have a new order from " + buyer.getUsername() + ". Click to view order details.");
+		sellerNotification.setNotiType("NEW_ORDER");
+		notificationRepository.save(sellerNotification);
 
 		response.put("success", true);
 		response.put("message", "Order placed successfully!");
