@@ -1,68 +1,85 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Orders List</title>
-  <link rel="stylesheet" th:href="@{/CSS/admin/dashboard.css}" />
-  <link rel="stylesheet" th:href="@{/CSS/admin/orders.css}" />
+    <link rel="stylesheet" th:href="@{/CSS/admin/dashboard.css}" />
+    <link rel="stylesheet" th:href="@{/CSS/admin/orders.css}" />
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-    <script src="https://unpkg.com/feather-icons"></script>
-    <script th:src="@{/JS/admin/orders.js}"></script>
-    
+
     <link th:href="@{/CSS/admin/admin-header.css}" rel="stylesheet">
-         <script th:src="@{/JS/admin/admin-header.js}"></script>
-  </head>
-  <body class="bg-dark">
-    <!--header-->
+    <script th:src="@{/JS/admin/admin-header.js}"></script>
+</head>
+<body class="bg-dark">
 
-   <header th:insert="~{fragments/admin-header :: header}"></header>
-    <!--main-->
+    <!-- ✅ Admin Header -->
+    <header th:insert="~{fragments/admin-header :: header}"></header>
+
+    <!-- ✅ Orders Table -->
     <div class="min-h-screen p-8">
-      <div class="grid">
-        <div class="orders-list-grid">
-          <div class="card">
-            <div class="card-header">
-              <h2 class="card-title">Orders List</h2>
-            </div>
-            <div class="card-content">
-              <div class="table-container">
-                <table class="orders-table">
-                  <thead>
-                    <tr>
-                      <th>Order ID</th>
-                      <th>Order Date</th>
-                      <th>Customer Name</th>
-                      <th>Item ID</th>
-                      <th>Item Name</th>
-                      <th>Quantity</th>
-                      <th>Price</th>
-                      <th>Sell Type</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody id="ordersTableBody">
-                    <!-- Table content will be populated by JavaScript -->
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+        <div class="grid">
+            <div class="orders-list-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Orders List</h2>
+                    </div>
+                    <div class="card-content">
+                        <div class="table-container">
+                            <table class="orders-table">
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Order Date</th>
+                                        <th>Customer Name</th>
+                                        <th>Item ID</th>
+                                        <th>Item Name</th>
+                                        <th>Quantity</th>
+                                        <th>Price</th>
+                                        <th>Sell Type</th>
+                                        <th>Receipt ID</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- ✅ Loop through orders dynamically -->
+                                    <tr th:each="order : ${orders}">
+                                        <td th:text="${order.orderID}"></td>
+                                        <td th:text="${#temporals.format(order.receipt.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+                                        <td>
+                                            <a th:href="@{/viewSeller/{buyerID}(buyerID=${order.buyer.userID})}" 
+                                               class="table-link" 
+                                               th:text="${order.buyer.username}">
+                                            </a>
+                                        </td>
+                                        <td th:text="${order.item.itemID}"></td>
+                                        <td>
+                                            <a th:href="@{/itemList/{itemID}(itemID=${order.item.itemID})}" 
+                                               class="table-link" 
+                                               th:text="${order.item.itemName}">
+                                            </a>
+                                        </td>
+                                        <td th:text="${order.quantity}"></td>
+                                        <td th:text="'USD ' + ${order.price}"></td>
+                                        <td th:text="${order.item.sellType}"></td>
+                                        <td th:text="'#' + ${order.receipt.receiptID}"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- ✅ If no orders exist -->
+                <p th:if="${#lists.isEmpty(orders)}" class="empty-message">No orders found.</p>
 
-    <!-- Modal for viewing order image -->
-    <div id="orderImageModal" class="modal">
-      <div class="modal-content">
-        <span class="close-modal">&times;</span>
-        <img id="orderImage" src="" alt="Order Image" />
-      </div>
+            </div>
+        </div>
     </div>
 
     <script>
-      lucide.createIcons();
+        lucide.createIcons();
     </script>
-  </body>
+
+</body>
 </html>

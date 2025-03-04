@@ -18,72 +18,86 @@
     <div id="container">
     <h2 id="page-title">Sale History</h2>
 
-    <form id="search-form">
-        <label class="search-label">Search: </label>
-        <input type="text" id="search-field" name="searchfield" value="">
-        <label class="search-label">Sort By: </label>
-        <select id="sort-by" name="sortby">
-            <option value="date">Sale Date</option>
-            <option value="item">Item Name</option>
-            <option value="price">Price</option>
-            <option value="buyer">Buyer</option>
-            <option value="status">Delivery Status</option>
-        </select>
-        <input type="submit" id="search-button" name="search" value="Search">
-    </form>
-    <table id="sales-table">
-        <tr>
-            <th>Order No</th>
-            <th>Item Name</th>
-            <th>Item Image</th>
-            <th>Quantity</th>
-            <th>Price</th>
-            <th>Sale Date</th>
-            <th>Buyer</th>
-            <th>Delivery Status</th>
-        </tr>
-        <tr>
-            <td>AA0234</td>
-            <td><a class="table-link" href="">Nikkari Aoe Nendoroid</a></td>
-            <td><img class="item-image" src="Image/nendo1.jpg" alt=""></td>
-            <td>1</td>
-            <td>USD $66</td>
-            <td>yyyy/mm/dd</td>
-            <td><a class="table-link" href="">Malika</a></td>
-            <td><img src="Image/icon/package-check.png" width="25px" height="25px"></td>
-        </tr>
-        <tr>
-            <td>AA0234</td>
-            <td><a class="table-link" href="">Nikkari Aoe Nendoroid</a></td>
-            <td><img class="item-image" src="Image/nendo1.jpg" alt=""></td>
-            <td>1</td>
-            <td>USD $66</td>
-            <td>yyyy/mm/dd</td>
-            <td><a class="table-link" href="">Malika</a></td>
-            <td><img src="Image/icon/package-x.png" width="25px" height="25px"></td>
-        </tr>
-        <tr>
-            <td>AA0234</td>
-            <td><a class="table-link" href="">Nikkari Aoe Nendoroid</a></td>
-            <td><img class="item-image" src="Image/nendo1.jpg" alt=""></td>
-            <td>1</td>
-            <td>USD $66</td>
-            <td>yyyy/mm/dd</td>
-            <td><a class="table-link" href="">Malika</a></td>
-            <td><img src="Image/icon/package-check.png" width="25px" height="25px"></td>
-        </tr>
-        <tr>
-            <td>AA0234</td>
-            <td><a class="table-link" href="">Nikkari Aoe Nendoroid</a></td>
-            <td><img class="item-image" src="Image/nendo1.jpg" alt=""></td>
-            <td>1</td>
-            <td>USD $66</td>
-            <td>yyyy/mm/dd</td>
-            <td><a class="table-link" href="">Malika</a></td>
-            <td><img src="Image/icon/package-x.png" width="25px" height="25px"></td>
-        </tr>
-        <!-- Additional rows -->
-    </table>
+<form id="search-form" method="get" action="/saleHistory">
+    <label class="search-label">Search: </label>
+    <input type="text" id="search-field" name="search" th:value="${searchQuery}">
+    
+    <label class="search-label">Sort By: </label>
+    <select id="sort-by" name="sortBy">
+        <option value="date" th:selected="${selectedSortBy == 'date'}">Sale Date</option>
+        <option value="item" th:selected="${selectedSortBy == 'item'}">Item Name</option>
+        <option value="price" th:selected="${selectedSortBy == 'price'}">Price</option>
+        <option value="buyer" th:selected="${selectedSortBy == 'buyer'}">Buyer</option>
+        <option value="status" th:selected="${selectedSortBy == 'status'}">Delivery Status</option>
+    </select>
+
+    <input type="submit" id="search-button" value="Search">
+    <button type="button" id="clear-filters" onclick="window.location.href='/saleHistory'">
+        Clear Filters
+    </button>
+</form>
+
+   <table id="sales-table">
+    <tr>
+        <th>Order No</th>
+        <th>Item Name</th>
+        <th>Item Image</th>
+        <th>Quantity</th>
+        <th>Price</th>
+        <th>Sale Date</th>
+        <th>Buyer</th>
+        <th>Delivery Status</th>
+    </tr>
+
+    <tr th:each="receipt : ${salesReceipts}">
+        <td th:text="'#' + ${receipt.receiptID}"></td>
+
+        <td>
+            <a class="table-link" th:href="@{/itemList/{itemID}(itemID=${receipt.orders[0].item.itemID})}"
+               th:text="${receipt.orders[0].item.itemName}"></a>
+        </td>
+
+        <td>
+            <img class="item-image"
+                 th:src="@{/Image/Item/{itemID}/{fileName}(itemID=${receipt.orders[0].item.itemID}, 
+                 fileName=${receipt.orders[0].item.images[0]?.imagePath})}"
+                 alt="Product Image">
+        </td>
+
+        <td th:text="${receipt.orders[0].quantity}"></td>
+
+        <td th:text="'USD ' + ${receipt.orders[0].price}"></td>
+
+        <td th:text="${#temporals.format(receipt.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+
+        <td>
+            <a class="table-link" th:href="@{/viewBuyer/{buyerID}(buyerID=${receipt.buyer.userID})}"
+               th:text="${receipt.buyer.username}"></a>
+        </td>
+
+        <td>
+            <img th:src="@{${receipt.delivery.status == 'DELIVERED' ? '/Image/icon/package-check.png' : '/Image/icon/package-x.png'}}"
+                 width="25px" height="25px">
+        </td>
+    </tr>
+</table>
+<div class="pagination">
+    <a th:if="${salesPage.hasPrevious()}" 
+       th:href="@{/saleHistory(page=${salesPage.number - 1}, search=${searchQuery}, sortBy=${selectedSortBy})}" 
+       class="pagination-button">
+        Previous
+    </a>
+
+    <span>Page <span th:text="${salesPage.number + 1}"></span> of <span th:text="${salesPage.totalPages}"></span></span>
+
+    <a th:if="${salesPage.hasNext()}" 
+       th:href="@{/saleHistory(page=${salesPage.number + 1}, search=${searchQuery}, sortBy=${selectedSortBy})}" 
+       class="pagination-button">
+        Next
+    </a>
+</div>
+
+
     </div>
     <footer th:insert="~{fragments/footer :: footer}"></footer>
  <script>

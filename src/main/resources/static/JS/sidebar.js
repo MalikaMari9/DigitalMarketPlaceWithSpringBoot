@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Elements
     const header = document.getElementById('headeryoon');
     const menuBtn = document.getElementById('menuBtnyoon');
@@ -6,10 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const sidebar = document.getElementById('sidebaryoon');
     const categoriesBtn = document.getElementById('categoriesBtnyoon');
     const categoriesDropdown = document.getElementById('categoriesDropdownyoon');
-    
-    // Cart count
-    let cartCount = 0;
-    
+
     // Scroll handler
     window.addEventListener('scroll', () => {
         if (window.scrollY > 20) {
@@ -18,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
             header.classList.remove('scrolledyoon');
         }
     });
-    
+
     // Categories dropdown
     categoriesBtn?.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -27,24 +24,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 categoriesDropdown.style.display === 'block' ? 'none' : 'block';
         }
     });
-    
-    // Close dropdown when clicking outside
+
     document.addEventListener('click', () => {
         if (categoriesDropdown) {
             categoriesDropdown.style.display = 'none';
         }
     });
-    
+
     // Sidebar handlers
     menuBtn?.addEventListener('click', () => {
         sidebar?.classList.add('activeyoon');
     });
-    
+
     closeBtn?.addEventListener('click', () => {
         sidebar?.classList.remove('activeyoon');
     });
-    
-    // Close sidebar when clicking outside
+
     document.addEventListener('click', (e) => {
         if (sidebar?.classList.contains('activeyoon') &&
             !sidebar.contains(e.target) &&
@@ -52,28 +47,90 @@ document.addEventListener('DOMContentLoaded', function() {
             sidebar.classList.remove('activeyoon');
         }
     });
-    
+
     // Update cart count
-    function updateCartCount(count) {
-        const cartCountElement = document.getElementById('cartCountyoon');
-        if (cartCountElement) {
-            cartCountElement.textContent = count.toString();
-            cartCountElement.style.display = count > 0 ? 'flex' : 'none';
+    async function updateCartCount() {
+        try {
+            const response = await fetch("/cart/count");
+            if (!response.ok) throw new Error("Failed to fetch cart count");
+
+            const data = await response.json();
+            const cartCountElement = document.getElementById("cartCountyoon");
+
+            if (cartCountElement) {
+                cartCountElement.textContent = data.cartCount;
+                cartCountElement.style.display = data.cartCount > 0 ? "flex" : "none";
+            }
+        } catch (error) {
+            console.error("❌ Error fetching cart count:", error);
         }
     }
-    
+
+    // Update notification count
+    async function updateNotificationIcon() {
+        try {
+            const response = await fetch("/notifications/unread-count");
+            if (!response.ok) throw new Error("Failed to fetch unread notifications");
+
+            const data = await response.json();
+            const notifCountElement = document.getElementById("notifCount");
+            const notifIconElement = document.getElementById("notifIcon");
+
+            if (notifCountElement && notifIconElement) {
+                if (data.unreadCount > 0) {
+                    notifCountElement.textContent = data.unreadCount;
+                    notifCountElement.style.display = "flex"; 
+                    notifIconElement.setAttribute("data-lucide", "bell-ring"); 
+                } else {
+                    notifCountElement.style.display = "none";
+                    notifIconElement.setAttribute("data-lucide", "bell"); 
+                }
+            }
+
+            lucide.createIcons();
+        } catch (error) {
+            console.error("❌ Error fetching unread notifications:", error);
+        }
+    }
+
+    // ✅ Fetch undelivered order count
+    async function updateUndeliveredOrderCount() {
+        try {
+            const response = await fetch("/confirmDelivery/count");
+            if (!response.ok) throw new Error("Failed to fetch undelivered order count");
+
+            const data = await response.json();
+            const undeliveredCountElement = document.getElementById("undeliveredCount");
+
+            if (undeliveredCountElement) {
+                if (data.count > 0) {
+                    undeliveredCountElement.textContent = data.count;
+                    undeliveredCountElement.style.display = "flex";
+                } else {
+                    undeliveredCountElement.style.display = "none";
+                }
+            }
+        } catch (error) {
+            console.error("❌ Error fetching undelivered order count:", error);
+        }
+    }
+
+    // ✅ Auto-update on page load
+    updateCartCount();
+    updateNotificationIcon();
+    updateUndeliveredOrderCount();
+
     // Set copyright year
     const currentYear = new Date().getFullYear();
     document.getElementById('copyright-yearyoon').textContent = `© ${currentYear}`;
-    
-    // Newsletter subscription
+
+    // Newsletter Subscription
     const newsletterInput = document.getElementById('newsletter-emailyoon');
     if (newsletterInput) {
         newsletterInput.addEventListener('keypress', function(event) {
             if (event.key === 'Enter') {
                 const email = this.value.trim();
-                if (isValidEmail(email)) {
-                    console.log('Newsletter subscription for:', email);
+                if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
                     alert('Thank you for subscribing!');
                     this.value = '';
                 } else {
@@ -83,66 +140,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Email validation helper
-    function isValidEmail(email) {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailRegex.test(email);
-    }
-    
-    // Initialize cart count
-    updateCartCount(cartCount);
-    
-    // Create icons
+    // Initialize Lucide Icons
     lucide.createIcons();
 });
-
-async function updateCartCount() {
-    try {
-        const response = await fetch("/cart/count"); // Ensure this matches your backend endpoint
-        if (!response.ok) {
-            throw new Error("Failed to fetch cart count");
-        }
-
-        const data = await response.json();
-        const cartCountElement = document.getElementById("cartCountyoon");
-
-        if (cartCountElement) {
-            cartCountElement.textContent = data.cartCount;
-            cartCountElement.style.display = data.cartCount > 0 ? "inline" : "none";
-        }
-    } catch (error) {
-        console.error("❌ Error fetching cart count:", error);
-    }
-}
-async function updateNotificationIcon() {
-    try {
-        const response = await fetch("/notifications/unread-count");
-        if (!response.ok) throw new Error("Failed to fetch unread notifications");
-
-        const data = await response.json();
-        const notifCountElement = document.getElementById("notifCount");
-        const notifIconElement = document.getElementById("notifIcon");
-
-        if (notifCountElement && notifIconElement) {
-            if (data.unreadCount > 0) {
-                notifCountElement.textContent = data.unreadCount;
-                notifCountElement.style.display = "flex"; // ✅ Show when unread exists
-                notifIconElement.setAttribute("data-lucide", "bell-ring"); // 🔔 Unread notifications
-            } else {
-                notifCountElement.style.display = "none";
-                notifIconElement.setAttribute("data-lucide", "bell"); // 🔕 Default bell
-            }
-        }
-
-        lucide.createIcons(); // ✅ Refresh Lucide icons dynamically
-    } catch (error) {
-        console.error("❌ Error fetching unread notifications:", error);
-    }
-}
-
-// ✅ Auto-update on page load
-document.addEventListener("DOMContentLoaded", updateNotificationIcon);
-
-
-// ✅ Fetch cart count on every page load
-document.addEventListener("DOMContentLoaded", updateCartCount);

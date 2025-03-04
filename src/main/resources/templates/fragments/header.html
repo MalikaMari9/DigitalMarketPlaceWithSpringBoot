@@ -12,7 +12,7 @@
     <a th:href="@{/sellerDashboard}" class="logoyoon">TRADESPHERE</a>
 </th:block>
 
-    
+    <th:block th:if="${session.user == null or session.user.role == 'BUYER'}">
               <div class="categories-searchyoon">
                 <div class="dropdownyoon">
                  <button class="dropdown-buttonyoon" id="categoriesBtnyoon">
@@ -58,7 +58,7 @@
                         </div>
               </div>
             </div>
-    
+   </th:block> 
             <!-- Right Navigation -->
             <div class="header-rightyoon">
             <a th:href="@{/faq}">
@@ -94,17 +94,21 @@
            <th:block th:if="${session.user != null}">
           	 <th:block th:if="${session.user.role=='SELLER' and session.user.seller.approval!='pending'} ">
               
-               <button class="cart-buttonyoon">
-                <i data-lucide="book-check"></i>
-               
-              </button>
-              <a href="/notifications" id="notificationLink">
-    <button class="notif-buttonyoon" id="notificationLink">
-    <i data-lucide="bell" id="notifIcon"></i>
-    <span class="notif-countyoon" id="notifCount" style="display: none;"></span>
-</button>
-
+<a th:href="@{/confirmDelivery}">
+    <button class="cart-buttonyoon">
+        <i data-lucide="book-check"></i>
+        <span class="cart-countyoon" id="undeliveredCount" style="display: none;"></span>
+    </button>
 </a>
+
+<!-- ✅ Notification Button (No Change, Just for Reference) -->
+<a href="/notifications" id="notificationLink">
+    <button class="notif-buttonyoon" id="notificationLink">
+        <i data-lucide="bell" id="notifIcon"></i>
+        <span class="notif-countyoon" id="notifCount" style="display: none;"></span>
+    </button>
+</a>
+
               </th:block>
               </th:block>
     <th:block th:if="${session.user == null}">
@@ -359,7 +363,7 @@
             <div class="sidebar-buttonsyoon">
              <a th:href="@{/confirmDelivery}">
               <button class="sidebar-buttonyoon">
-                <i data-lucide="check-circle"></i>Confirm Delivery
+               <i data-lucide="book-check"></i>Confirm Delivery
               </button>
               </a>
                <a th:href="@{/trackDelivery}">

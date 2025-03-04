@@ -33,6 +33,7 @@ import com.example.demo.entity.Item.ApprovalStatus;
 import com.example.demo.entity.ItemApproval;
 import com.example.demo.entity.ItemImage;
 import com.example.demo.entity.Notification;
+import com.example.demo.entity.Order;
 import com.example.demo.entity.Seller;
 import com.example.demo.entity.User;
 import com.example.demo.entity.Auction.Auction;
@@ -43,6 +44,7 @@ import com.example.demo.repository.ItemApprovalRepository;
 import com.example.demo.repository.ItemImageRepository;
 import com.example.demo.repository.ItemRepository;
 import com.example.demo.repository.NotificationRepository;
+import com.example.demo.repository.OrderRepository;
 import com.example.demo.repository.SellerRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.repository.ViewRepository;
@@ -90,6 +92,8 @@ public class AdminController {
 	SellerRepository sellerRepo;
 	@Autowired
 	NotificationRepository notificationRepo;
+	@Autowired
+	OrderRepository orderRepo;
 
 	private final String BASE_DIR = "src/main/resources/static/Image/Item/";
 
@@ -363,12 +367,16 @@ public class AdminController {
 	}
 
 	@GetMapping("/admin/orders")
-	public String viewOrders(HttpSession session) {
+	public String viewOrders(HttpSession session, Model model) {
 		if (session.getAttribute("admin") == null) { // ✅ Check if admin session exists
 			return "redirect:/loginPage?error=Session Expired"; // ✅ Redirect to login if session expired
 		}
-		return "admin/orders";
 
+		// ✅ Fetch all orders for admin
+		List<Order> orders = orderRepo.findAll();
+		model.addAttribute("orders", orders);
+
+		return "admin/orders";
 	}
 
 	@GetMapping("/admin/sellers")

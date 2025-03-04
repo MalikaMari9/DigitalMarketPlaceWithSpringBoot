@@ -19,36 +19,45 @@
                 <form th:action="@{/update-address/{id}(id=${address.addressID})}" method="POST" th:object="${address}">
                     <label for="addressName">Address Name</label>
                     <input type="text" id="addressName" th:field="*{addressName}" required>
+                    <span class="error-message"></span>
 
                     <label for="custName">Customer Name</label>
                     <input type="text" id="custName" name="custName" th:field="*{custName}" required>
+                    <span class="error-message"></span>
 
                     <label for="postalCode">Postal Code</label>
                     <input type="text" id="postalCode" name="postalCode" th:field="*{postalCode}">
+                    <span class="error-message"></span>
 
                     <label for="phoneNumber">Phone Number</label>
                     <input type="text" id="phoneNumber" name="phone" maxlength="12" th:field="*{phone}" required>
+                    <span class="error-message"></span>
 
                     <label for="city">City</label>
                     <select id="city" name="city" required onchange="fetchTownships()">
                         <option value="">Select City</option>
                         <option th:each="city : ${cities}" th:value="${city}" 
                                 th:text="${city}" th:selected="${city == address.city}"></option>
+                                
                     </select>
-
+<span class="error-message"></span>
                     <label for="township">Township</label>
                     <select id="township" name="township" required>
                         <option value="">Select Township</option>
                     </select>
+                    <span class="error-message"></span>
 
                     <label for="building">Building / House No / Floor / Street</label>
                     <input type="text" id="building" name="building" th:field="*{building}">
+                    <span class="error-message"></span>
 
                     <label for="addressDetail">Address Detail</label>
                     <textarea id="addressDetail" name="addres" th:field="*{addres}"></textarea>
+                    <span class="error-message"></span>
 
                     <label for="deliveryNote">Delivery Note</label>
                     <textarea id="deliveryNote" name="delinote" th:field="*{delinote}"></textarea>
+                    <span class="error-message"></span>
 
                     <button type="submit">Update</button>
                 </form>
@@ -56,6 +65,8 @@
         </div>
     </div>
 </body>
+<script src="/JS/addressvalidation.js"></script>
+<script th:src="@{/JS/addressvalidation.js}"></script>
 
 <!-- ✅ JavaScript for City & Township Persistence -->
 <script>

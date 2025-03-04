@@ -26,39 +26,48 @@
 
 					<label for="name">Address Name</label>
                     <input type="text" id="name" th:field="*{addressName}" required>
+                    <span class="error-message"></span>
 
                     <label for="name">Customer Name</label>
                     <input type="text" id="name" th:field="*{custName}" required>
+                    <span class="error-message"></span>
 
                     <label for="postalCode">Postal-Code</label>
                     <input type="text" id="postalCode" th:field="*{postalCode}" required>
+                    <span class="error-message"></span>
 
                     <label for="phoneNumber">Phone Number</label>
                     <input type="text" id="phoneNumber" th:field="*{phone}" maxlength="12" required>
+                    <span class="error-message"></span>
 
                  <label for="city">City</label>
 <select id="city" name="city" required onchange="fetchTownships()">
     <option value="">Select City</option>
     <option th:each="city : ${cities}" th:value="${city}" th:text="${city}"></option>
 </select>
+<span class="error-message"></span>
 
 <label for="township">Township</label>
 <select id="township" name="township" required>
     <option value="">Select Township</option>
 </select>
+<span class="error-message"></span>
 
 
 
                     <label for="building">Building / House No / Floor / Street</label>
                     <input type="text" id="building" th:field="*{building}" required>
+                    <span class="error-message"></span>
 
                     
 
                     <label for="addressDetail">Address Detail</label>
                     <textarea id="addressDetail" th:field="*{addres}" required></textarea> <!-- ✅ FIXED -->
+                    <span class="error-message"></span>
 
                     <label for="deliveryNote">Delivery Note</label>
                     <textarea id="deliveryNote" th:field="*{delinote}"></textarea> <!-- ✅ FIXED -->
+                    <span class="error-message"></span>
 
                     <button type="submit">Save</button>
                 </form>
@@ -71,6 +80,9 @@
 
     <!-- ✅ Fixed JS Path -->
     <script th:src="@{/JS/script.js}"></script>
+    <script th:src="@{/JS/addressvalidation.js}"></script>
+    
+ 
     <script>
         function goBack() {
             window.history.back();
