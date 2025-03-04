@@ -74,6 +74,28 @@ public class User {
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Address> addresses; // ✅ User can have multiple addresses
 
+	@OneToMany(mappedBy = "reviewer", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Review> writtenReviews; // Reviews given by the user
+
+	@OneToMany(mappedBy = "reviewed", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Review> receivedReviews; // Reviews received by the user
+
+	public List<Review> getWrittenReviews() {
+		return writtenReviews;
+	}
+
+	public void setWrittenReviews(List<Review> writtenReviews) {
+		this.writtenReviews = writtenReviews;
+	}
+
+	public List<Review> getReceivedReviews() {
+		return receivedReviews;
+	}
+
+	public void setReceivedReviews(List<Review> receivedReviews) {
+		this.receivedReviews = receivedReviews;
+	}
+
 	@PrePersist
 	protected void onCreate() {
 		this.createdAt = LocalDateTime.now();
