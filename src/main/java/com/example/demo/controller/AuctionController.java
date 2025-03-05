@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -115,5 +116,60 @@ public class AuctionController {
 		model.addAttribute("auctionEndTimes", auctionEndTimes);
 
 		return "currentBidding"; // ✅ Load currentBidding.html
+	}
+
+	@GetMapping("/winningBids")
+	public String viewWinningBids(Model model, HttpSession session) {
+		User user = (User) session.getAttribute("user");
+		if (user == null) {
+			return "redirect:/loginPage";
+		}
+
+		// ✅ Find auctions where the user had the highest final bid
+		List<AuctionTrack> userBids = auctionTrackRepo.findByUser(user);
+
+		// ✅ Get auctions the user won (only COMPLETED auctions)
+		List<Auction> wonAuctions = userBids.stream().map(AuctionTrack::getAuction) // Get auction
+				.filter(auction -> auction.getStat() == Auction.AuctionStatus.COMPLETED) // Only completed auctions
+				.filter(auction -> {
+					Double maxBid = auctionTrackRepo.findMaxPriceByAuctionID(auction.getAuctionID());
+					Double userBid = auctionTrackRepo.findLastBidByUserAndAuction(user.getUserID(),
+							auction.getAuctionID());
+					return maxBid != null && userBid != null && maxBid.equals(userBid);
+				}).distinct().collect(Collectors.toList());
+
+		// ✅ Fetch winning bid amount, payment status, and payment deadline
+		Map<Long, Double> winningBids = new HashMap<>();
+		Map<Long, Boolean> paymentStatus = new HashMap<>();
+		Map<Long, LocalDateTime> paymentDeadlines = new HashMap<>();
+
+		for (Auction auction : wonAuctions) {
+			Long auctionID = auction.getAuctionID();
+
+			// ✅ Get final winning bid (highest bid)
+			Double winningBid = auctionTrackRepo.findMaxPriceByAuctionID(auctionID);
+			winningBids.put(auctionID, winningBid != null ? winningBid : auction.getStartPrice());
+
+			// ✅ Calculate payment deadline (48 hours after auction end)
+			LocalDateTime paymentDeadline = auction.getEndTime().plusHours(72);
+			paymentDeadlines.put(auctionID, paymentDeadline);
+
+			// ✅ Check if the user has paid (assuming payment status is stored)
+			boolean isPaid = checkPaymentStatus(user.getUserID(), auctionID); // Implement payment check logic
+			paymentStatus.put(auctionID, isPaid);
+		}
+
+		model.addAttribute("wonAuctions", wonAuctions);
+		model.addAttribute("winningBids", winningBids);
+		model.addAttribute("paymentStatus", paymentStatus);
+		model.addAttribute("paymentDeadlines", paymentDeadlines);
+
+		return "winningBids"; // ✅ Load winningBids.html
+	}
+
+	// ✅ Mock payment check (replace with actual payment status retrieval)
+	private boolean checkPaymentStatus(Long userID, Long auctionID) {
+		// Implement actual payment status check (e.g., from payment_tbl)
+		return false; // Default: Not paid
 	}
 }

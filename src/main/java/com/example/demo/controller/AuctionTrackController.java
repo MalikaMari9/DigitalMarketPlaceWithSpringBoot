@@ -116,18 +116,24 @@ public class AuctionTrackController {
 			Optional<AuctionTrack> highestBid = auctionTrackRepository.findTopByAuctionOrderByPriceDesc(auction);
 			if (highestBid.isPresent()) {
 				AuctionTrack winningBid = highestBid.get();
-				System.out.println("🏆 Highest bidder ID: " + winningBid.getUser().getUserID() + " | Bid Price: "
-						+ winningBid.getPrice());
+				User winner = winningBid.getUser();
+
+				System.out.println(
+						"🏆 Highest bidder ID: " + winner.getUserID() + " | Bid Price: " + winningBid.getPrice());
+
+				// ✅ Calculate payment deadline dynamically (48 hours from auction end)
+				LocalDateTime paymentDeadline = auction.getEndTime().plusHours(72);
+				System.out.println("⏳ Payment deadline for User ID " + winner.getUserID() + ": " + paymentDeadline);
 
 				// ✅ Add item to the winner's cart
 				Cart cart = new Cart();
 				cart.setItem(auction.getItem());
-				cart.setUser(winningBid.getUser());
+				cart.setUser(winner);
 				cart.setQuantity(1);
 				cart.setCreatedAt(LocalDateTime.now());
 
 				cartRepository.save(cart);
-				System.out.println("✅ Item added to cart for User ID: " + winningBid.getUser().getUserID());
+				System.out.println("✅ Item added to cart for User ID: " + winner.getUserID());
 
 				// ✅ Mark auction as completed
 				auction.setStat(Auction.AuctionStatus.COMPLETED);

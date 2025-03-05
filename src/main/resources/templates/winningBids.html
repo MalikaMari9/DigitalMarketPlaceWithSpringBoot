@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Winning Bids</title>
+    
+    <link rel="stylesheet" th:href="@{/CSS/orderhistory.css}">
+    <link rel="stylesheet" th:href="@{/CSS/headerFooter.css}">
+    
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script th:src="@{/JS/sidebar.js}"></script>
+      <script th:src="@{/JS/winningBids.js}"></script>
+    <script th:src="@{/JS/CategorySelect.js}"></script>
+</head>
+<body>
+<header th:insert="fragments/header :: header"></header>
+
+<div class="checkout-body">
+    <div class="completed-orders-wrapper" 
+          th:if="${auction.auctionID != null}" 
+          th:id="'auction-' + ${auction.auctionID}" 
+          th:each="auction : ${wonAuctions}">
+
+        <!-- Auction Header -->
+        <div class="order-history-header">
+            <h2>Won Auction from 
+                <a th:href="@{/viewSeller/{sellerID}(sellerID=${auction.getItem().getSeller().getUserID()})}" 
+                   class="shop-name" 
+                   th:text="${auction.getItem().getSeller().getUsername()}">
+                </a>
+            </h2> 
+            
+            <p>
+                <strong>Status:</strong> 
+                <span th:if="${paymentStatus[auction.auctionID]}" class="paid">✅ Paid</span>
+                <span th:unless="${paymentStatus[auction.auctionID]}" class="unpaid">❌ Unpaid</span>
+            </p>
+
+           <!-- Payment Countdown -->
+<p th:if="${not paymentStatus[auction.auctionID]}">
+    <strong>Time Left to Pay:</strong> 
+    <span class="countdown" th:data-deadline="${paymentDeadlines[auction.auctionID]}"></span>
+</p>
+
+
+
+        </div>
+
+<!-- Auction Items -->
+<div class="order-card">
+    <div class="order-card-header">
+        <img th:src="@{${auction.getItem().getThumbnail()}}" alt="Product Image" class="order-image">
+        
+        <div class="order-info">
+            <h4 class="order-title" th:text="${auction.getItem().getItemName()}"></h4>
+            <p class="order-date">
+                <i class="fas fa-calendar-alt"></i> 
+                <span th:text="${#temporals.format(auction.getEndTime(), 'yyyy-MM-dd HH:mm')}"></span>
+            </p>
+        </div>
+    </div>
+
+    <div class="order-details">
+        <p><strong>Auction No:</strong> <span th:text="${auction.auctionID}"></span></p>
+        <p><strong>Final Price:</strong> 
+            <span class="order-price" th:text="'USD ' + ${winningBids[auction.auctionID]}"></span>
+        </p>
+        
+        <!-- Payment Countdown (Unpaid Only) -->
+        <p th:if="${not paymentStatus[auction.auctionID]}">
+            <strong>Time Left to Pay:</strong> 
+            <span class="countdown" th:data-deadline="${paymentDeadlines[auction.auctionID]}"></span>
+        </p>
+
+        <!-- Move "Go to Cart" Button Here -->
+        <div class="order-footer" th:if="${not paymentStatus[auction.auctionID]}">
+            <a th:href="@{/cart/view}" class="go-to-cart-btn">
+                <button class="proceed-button">Go to Cart</button>
+            </a>
+        </div>
+    </div> 
+</div>
+
+<!-- Download Invoice (Only if paid) -->
+<div class="order-footer" th:if="${paymentStatus[auction.auctionID]}">
+    <button class="download-button" th:attr="data-auction-id=${auction.auctionID}">
+        <i class="fas fa-file-download"></i> Download Invoice
+    </button>
+</div>
+
+    </div>
+</div>
+
+
+<footer th:insert="fragments/footer :: footer"></footer>
+
+<script>
+    lucide.createIcons();
+    document.querySelectorAll(".download-button").forEach((btn) => {
+        btn.addEventListener("click", () => {
+            const auctionID = btn.getAttribute("data-auction-id");
+            window.location.href = `/download-invoice/${auctionID}`;
+        });
+    });
+</script>
+
+</body>
+</html>

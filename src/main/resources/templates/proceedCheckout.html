@@ -82,12 +82,35 @@
                                 <h4 class="order-title">
                                     <a th:href="@{/itemList/{itemID}(itemID=${cartItem.item.itemID})}" th:text="${cartItem.item.itemName}"></a>
                                 </h4>
-                                <p>
-                                    <strong>Price:</strong> 
-                                    <span th:text="${cartItem.quantity}"></span> x $ 
-                                    <span th:text="${cartItem.item.price}"></span> = $ 
-                                    <span th:text="${cartItem.quantity * cartItem.item.price}"></span>
-                                </p>
+<!-- Debugging Log -->
+<p th:text="'🔍 Debug: auctionMaxBids=' + ${auctionMaxBids}"></p>
+<p>
+    <strong>Price:</strong> 
+    <span th:text="${cartItem.quantity}"></span> x $ 
+
+  <th:block th:with="highestBid=${auctionMaxBids != null and auctionMaxBids[cartItem.item.itemID] != null ? auctionMaxBids[cartItem.item.itemID] : cartItem.item.price}">
+    
+
+        <span th:if="${cartItem.item.sellType != null and cartItem.item.sellType.name() == 'AUCTION'}"
+              th:text=" ${auctionMaxBids[cartItem.item.itemID]}">
+        </span>
+        <span th:if="${cartItem.item.sellType == null or cartItem.item.sellType.name() != 'AUCTION'}"
+              th:text="${cartItem.item.price}">
+        </span> = $
+
+        <span th:if="${cartItem.item.sellType != null and cartItem.item.sellType.name() == 'AUCTION'}"
+              th:text="${cartItem.quantity * (highestBid != null ? highestBid : cartItem.item.price)}">
+        </span>
+
+        <span th:if="${cartItem.item.sellType == null or cartItem.item.sellType.name() != 'AUCTION'}"
+              th:text="${cartItem.quantity * cartItem.item.price}">
+        </span>
+
+    </th:block>
+</p>
+
+
+
                             </div>
                         </div>
                     </div>
@@ -107,7 +130,8 @@
                     <!-- Total Price -->
                     <div class="total-section">
                         <p class="total-label">Total</p>
-                        <p class="total-price" id="totalPriceText" th:text="'$' + (${subtotal} + 5.00)"></p>
+                        <p class="total-price" id="totalPriceText" th:text="'$' + (${auctionAdjustedSubtotal} + 5.00)"></p>
+
                     </div>
 
                     <div class="place-order-btn">

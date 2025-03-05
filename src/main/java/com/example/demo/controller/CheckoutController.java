@@ -28,6 +28,7 @@ import com.example.demo.entity.Order;
 import com.example.demo.entity.Payment;
 import com.example.demo.entity.Receipt;
 import com.example.demo.entity.User;
+import com.example.demo.entity.Auction.Auction;
 import com.example.demo.repository.AddressRepository;
 import com.example.demo.repository.CartRepository;
 import com.example.demo.repository.DeliTrackRepository;
@@ -37,6 +38,8 @@ import com.example.demo.repository.NotificationRepository;
 import com.example.demo.repository.OrderRepository;
 import com.example.demo.repository.PaymentRepository;
 import com.example.demo.repository.ReceiptRepository;
+import com.example.demo.repository.Auction.AuctionRepository;
+import com.example.demo.repository.Auction.AuctionTrackRepository;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -70,11 +73,16 @@ public class CheckoutController {
 	@Autowired
 	private DeliTrackRepository deliTrackRepository;
 
-	// ✅ Show Checkout Page with Addresses
+	@Autowired
+	private AuctionTrackRepository auctionTrackRepository;
+	@Autowired
+	private AuctionRepository auctionRepo;
+
 	@GetMapping("/checkout")
 	public String checkoutPage(@RequestParam("sellerID") Long sellerID,
 			@RequestParam(value = "deliveryFee", required = false, defaultValue = "5.00") double deliveryFee,
 			ModelMap model, HttpSession session) {
+
 		User user = (User) session.getAttribute("user");
 
 		if (user == null) {
@@ -84,7 +92,7 @@ public class CheckoutController {
 		// ✅ Fetch user's saved addresses
 		List<Address> userAddresses = addressRepository.findByUser(user);
 
-		// ✅ Fetch all cart items
+		// ✅ Fetch all cart items for the user
 		List<Cart> cartItems = cartRepository.findByUser(user);
 
 		if (cartItems == null || cartItems.isEmpty()) {
@@ -108,17 +116,38 @@ public class CheckoutController {
 		User seller = selectedCartItems.get(0).getItem().getSeller();
 		model.addAttribute("seller", seller); // ✅ Pass seller to the view
 
-		// ✅ Calculate subtotal
-		double subtotal = selectedCartItems.stream().mapToDouble(cart -> cart.getItem().getPrice() * cart.getQuantity())
-				.sum();
+		// ✅ Fetch highest bid prices for auction items
+		Map<Long, Double> auctionMaxBids = new HashMap<>();
+
+		// ✅ Get all auction items in a single query
+		List<Auction> auctionResults = auctionRepo.findAllByItemIn(selectedCartItems.stream().map(Cart::getItem)
+				.filter(item -> item.getSellType() == Item.SellType.AUCTION).toList());
+
+		// ✅ Retrieve highest bids and store them in the map
+		for (Auction auction : auctionResults) {
+			Double maxBid = auctionTrackRepository.findMaxPriceByAuctionID(auction.getAuctionID());
+			auctionMaxBids.put(auction.getItem().getItemID(), maxBid != null ? maxBid : auction.getStartPrice());
+		}
+
+		// ✅ Pass auction bid prices to the view
+		model.addAttribute("auctionMaxBids", auctionMaxBids);
+
+		// ✅ Calculate subtotal using the correct highest bid for auction items
+		double auctionAdjustedSubtotal = selectedCartItems.stream().mapToDouble(cart -> {
+			if (cart.getItem().getSellType() != null && cart.getItem().getSellType() == Item.SellType.AUCTION) {
+				Double highestBid = auctionMaxBids.get(cart.getItem().getItemID());
+				return cart.getQuantity() * (highestBid != null ? highestBid : cart.getItem().getPrice());
+			}
+			return cart.getQuantity() * cart.getItem().getPrice();
+		}).sum();
 
 		model.addAttribute("cartItems", selectedCartItems);
-		model.addAttribute("subtotal", subtotal);
+		model.addAttribute("subtotal", auctionAdjustedSubtotal);
 		model.addAttribute("cartCount", cartItems.size());
 		model.addAttribute("deliveryFee", deliveryFee);
 		model.addAttribute("userAddresses", userAddresses); // ✅ Pass addresses to the view
 
-		return "proceedCheckout"; // Ensure this Thymeleaf file exists
+		return "proceedCheckout"; // ✅ Ensure this Thymeleaf file exists
 	}
 
 	@PostMapping("/place-order")
@@ -203,8 +232,26 @@ public class CheckoutController {
 		}
 
 		// ✅ Calculate Total Price
-		double subtotal = selectedCartItems.stream().mapToDouble(cart -> cart.getItem().getPrice() * cart.getQuantity())
-				.sum();
+		// ✅ Fetch the highest bids for auction items
+		Map<Long, Double> auctionMaxBids = new HashMap<>();
+		List<Auction> auctionResults = auctionRepo.findAllByItemIn(selectedCartItems.stream().map(Cart::getItem)
+				.filter(item -> item.getSellType() == Item.SellType.AUCTION).toList());
+
+		for (Auction auction : auctionResults) {
+			Double maxBid = auctionTrackRepository.findMaxPriceByAuctionID(auction.getAuctionID());
+			auctionMaxBids.put(auction.getItem().getItemID(), maxBid != null ? maxBid : auction.getStartPrice());
+		}
+
+		// ✅ Calculate Total Price (Adjust for Auctions)
+		double subtotal = selectedCartItems.stream().mapToDouble(cart -> {
+			if (cart.getItem().getSellType() == Item.SellType.AUCTION) {
+				return cart.getQuantity()
+						* auctionMaxBids.getOrDefault(cart.getItem().getItemID(), cart.getItem().getPrice());
+			} else {
+				return cart.getQuantity() * cart.getItem().getPrice();
+			}
+		}).sum();
+
 		double totalPrice = subtotal + deliveryFee;
 
 		// ✅ Create & Save Receipt
@@ -221,13 +268,18 @@ public class CheckoutController {
 			item.setQuality(item.getQuality() - cart.getQuantity()); // ✅ Reduce stock
 			itemRepository.save(item); // ✅ Save updated stock
 
+			// ✅ Get the correct price for this item (auction or regular)
+			Double highestBid = auctionMaxBids.get(cart.getItem().getItemID());
+			double finalPrice = highestBid != null ? highestBid : cart.getItem().getPrice();
+
+			// ✅ Create & Save Orders
 			Order order = new Order();
 			order.setReceipt(receipt);
 			order.setBuyer(buyer);
 			order.setSeller(cart.getItem().getSeller());
 			order.setItem(item);
 			order.setQuantity(cart.getQuantity());
-			order.setPrice(cart.getItem().getPrice());
+			order.setPrice(finalPrice); // ✅ Store the actual highest bid
 			orderRepository.save(order);
 		}
 
