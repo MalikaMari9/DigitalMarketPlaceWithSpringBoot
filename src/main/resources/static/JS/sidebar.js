@@ -1,3 +1,6 @@
+
+
+
 document.addEventListener('DOMContentLoaded', function () {
     // Elements
     const header = document.getElementById('headeryoon');
@@ -7,6 +10,16 @@ document.addEventListener('DOMContentLoaded', function () {
     const categoriesBtn = document.getElementById('categoriesBtnyoon');
     const categoriesDropdown = document.getElementById('categoriesDropdownyoon');
 
+	// ✅ Run chat unread message check & notifications
+	   checkUnreadMessages();
+	   setInterval(checkUnreadMessages, 10000);
+
+	   // ✅ Hide chat notification dot when the user is on the chat page
+	   if (window.location.pathname.includes("/chat")) {
+	       const chatNotificationDots = document.querySelectorAll(".chat-notification-dot");
+	       chatNotificationDots.forEach(dot => dot.style.display = "none");
+	   }
+	
     // Scroll handler
     window.addEventListener('scroll', () => {
         if (window.scrollY > 20) {
@@ -143,3 +156,37 @@ document.addEventListener('DOMContentLoaded', function () {
     // Initialize Lucide Icons
     lucide.createIcons();
 });
+
+function checkUnreadMessages() {
+    fetch("/api/messages/unread-count")
+        .then((response) => response.json())
+        .then((data) => {
+            const chatNotificationDots = document.querySelectorAll(".chat-notification-dot");
+
+            if (data.unreadCount > 0) {
+                chatNotificationDots.forEach(dot => dot.style.display = "block");
+            } else {
+                chatNotificationDots.forEach(dot => dot.style.display = "none");
+            }
+        })
+        .catch((error) => console.error("Error checking unread chat messages:", error));
+}
+
+// ✅ Show browser notification when a new message arrives
+function showMessageNotification(message, senderName) {
+    if (!("Notification" in window)) {
+        return;
+    }
+
+    const title = senderName ? `${senderName} sent you a message` : "New Message";
+
+    if (Notification.permission === "granted") {
+        new Notification(title, { body: message });
+    } else if (Notification.permission !== "denied") {
+        Notification.requestPermission().then(function (permission) {
+            if (permission === "granted") {
+                new Notification(title, { body: message });
+            }
+        });
+    }
+}

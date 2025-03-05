@@ -3,7 +3,6 @@ let ws = null;
 let tempChat = null;
 let conversationsList = [];
 let reconnectInterval = 3000; // Reconnect every 3 seconds
-connectWebSocket();
 
 const createNewConversationDialog = document.getElementById(
 	"create_new_conversation_dialog"
@@ -30,10 +29,18 @@ createNewConversationBtn.addEventListener("click", function () {
 
 document.addEventListener("DOMContentLoaded", function () {
 	loadUsers();
+	connectWebSocket();
+	const chatDots = document.querySelectorAll(".chat-notification-dot");
+	chatDots.forEach((dot) => (dot.style.display = "none"));
 });
 
 const senderIdInput = document.getElementById("senderId");
-sessionStorage.setItem("user_id", senderIdInput.value);
+if (senderIdInput) {
+	sessionStorage.setItem("user_id", senderIdInput.value);
+} else {
+	console.error("Error: senderIdInput not found.");
+}
+
 
 function scrollToBottom() {
 	const chatMessages = document.getElementById("chatMessages");
@@ -43,7 +50,7 @@ function scrollToBottom() {
 const urlParams = new URLSearchParams(window.location.search);
 const receiverId = urlParams.get("receiverID");
 const receiverName = urlParams.get("receiverName");
-if (receiverId && receiverName) {
+if (receiverId && receiverName && receiverId.trim() !== "") {
 	selectUser(receiverId, receiverName, "/Image/profile/default.png");
 
 	const alreadyExist = conversationsList.some(
@@ -72,13 +79,11 @@ function loadUsers() {
 			return response.json();
 		})
 		.then((users) => {
-			if (receiverId && receiverName) {
-				conversationsList = conversationsList.concat(users);
-			} else {
+			console.log("loading convesations");
+		
 				conversationsList = users;
-			}
+			
 			renderConversations(conversationsList);
-			console.log(conversationsList);
 		})
 		.catch((error) => {
 			console.error("Error loading users:", error);
@@ -160,7 +165,7 @@ function selectUser(userId, username, userImage) {
 	);
 	messageInput.focus();
 	document.getElementById("chat-input").style.opacity = "100";
-	connectWebSocket();
+
 	fetchMessages();
 }
 
@@ -284,6 +289,8 @@ function fetchMessages() {
 			});
 
 			scrollToBottom();
+			markMessagesAsRead(senderID, selectedUserId);
+			loadUsers();
 		})
 		.catch((error) => console.error("Error fetching messages:", error));
 }
@@ -294,35 +301,34 @@ function connectWebSocket() {
 		return;
 	}
 
+	const userId = sessionStorage.getItem("user_id");
 	console.log("Connecting to WebSocket...");
-	ws = new WebSocket("ws://localhost:8080/chat");
+	ws = new WebSocket(`ws://localhost:8080/chat?user_id=${userId}`);
 
 	ws.onopen = function () {
 		console.log("WebSocket connected.");
+		loadUsers();
 	};
 
 	ws.onmessage = function (event) {
 		console.log("Received WebSocket message:", event.data);
-		/* const chatMessages = document.getElementById("chatMessages");
-                const messageElement = document.createElement("div");
-                messageElement.className = "message-container received";
-                messageElement.textContent = event.data;
-                chatMessages.appendChild(messageElement);*/
 		loadUsers();
-		fetchMessages();
-		scrollToBottom();
+		fetchMessages().then(() => scrollToBottom());
 	};
 
+
+
 	ws.onclose = function (event) {
-		console.warn(
-			"WebSocket closed. Code: " + event.code + " Reason: " + event.reason
-		);
+		console.warn("WebSocket closed. Code: " + event.code + " Reason: " + event.reason);
+		ws = null; // Ensure no duplicate connections
 
 		if (event.code !== 1000) {
-			console.warn(
-				"Reconnecting in " + reconnectInterval / 1000 + " seconds..."
-			);
-			setTimeout(connectWebSocket, reconnectInterval);
+			console.warn("Reconnecting in " + reconnectInterval / 1000 + " seconds...");
+			setTimeout(() => {
+				if (!ws || ws.readyState === WebSocket.CLOSED) {
+					connectWebSocket();
+				}
+			}, reconnectInterval);
 		}
 	};
 
@@ -421,28 +427,89 @@ function deleteMessage(messageID) {
 		})
 		.catch((error) => console.error("Error deleting message:", error));
 }
-
 function renderConversations(users) {
-	userList.innerHTML = "";
-	users.forEach((user) => {
-		const userItem = document.createElement("li");
-		const profileImg = document.createElement("img");
+    userList.innerHTML = "";
+    const senderID = sessionStorage.getItem("user_id");
 
-		// Set profile image
-		const userImage = user.profile
-			? "/Image/profile/" + user.profile
-			: "/Image/profile/default.png";
+    users.forEach((user) => {
+        const userItem = document.createElement("li");
+        userItem.classList.add("chat-item");
+        userItem.setAttribute("data-user-id", user.user_id);
 
-		profileImg.src = userImage;
-		profileImg.alt = user.username;
-		profileImg.className = "profile-pic";
+        const profileImg = document.createElement("img");
+        profileImg.src = user.profile ? "/Image/profile/" + user.profile : "/Image/profile/default.png";
+        profileImg.alt = user.username;
+        profileImg.className = "profile-pic";
 
-		userItem.textContent = user.username;
-		userItem.prepend(profileImg);
+        const conversationInfo = document.createElement("div");
+        conversationInfo.classList.add("conversation-info");
+        conversationInfo.innerHTML = `<span>${user.username}</span><br><small>${user.last_message || "-"}</small>`;
 
-		userItem.onclick = function () {
-			selectUser(user.user_id, user.username, userImage);
-		};
-		userList.appendChild(userItem);
-	});
+        // ✅ Notification dot for unread messages
+        const notificationDot = document.createElement("span");
+        notificationDot.classList.add("chat-notification-dot");
+        
+        // Show the red dot if the last message was NOT sent by the current user and is unread
+        if (!user.is_last_message_read && senderID != user.last_message_sender_id) {
+            notificationDot.style.display = "block";
+        } else {
+            notificationDot.style.display = "none";
+        }
+
+        userItem.append(conversationInfo);
+        userItem.prepend(profileImg);
+        userItem.appendChild(notificationDot);
+
+        userItem.onclick = function () {
+            selectUser(user.user_id, user.username, profileImg.src);
+        };
+
+        userList.appendChild(userItem);
+    });
 }
+
+function markMessagesAsRead(userId, otherUserId) {
+	fetch("/api/messages/read", {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({
+			currentUserId: userId,
+			otherUserId: otherUserId,
+		}),
+	})
+		.then((response) => response.json())
+		.then((data) => {
+			if (data.success) {
+				// Refresh the conversation list to update read status
+				loadUsers();
+			}
+		})
+		.catch((error) => console.error("Error marking messages as read:", error));
+}
+
+function checkChatNotifications() {
+    fetch("/api/messages/unread-count")
+        .then(response => response.json())
+        .then(data => {
+            const chatItems = document.querySelectorAll(".chat-item");
+
+            chatItems.forEach(chatItem => {
+                const userId = chatItem.getAttribute("data-user-id");
+                const notificationDot = chatItem.querySelector(".chat-notification-dot");
+
+                // Check if this user has unread messages
+                if (data.unreadConversations.includes(parseInt(userId))) {
+                    notificationDot.style.display = "block";
+                } else {
+                    notificationDot.style.display = "none";
+                }
+            });
+        })
+        .catch(error => console.error("Error checking chat notifications:", error));
+}
+
+// ✅ Run this function every 10 seconds
+setInterval(checkChatNotifications, 10000);
+

@@ -23,6 +23,12 @@ public class Conversation {
 	@Column(nullable = false)
 	private int receiverID;
 
+	@Column(nullable = false)
+	private String lastMessage;
+
+	@Column(nullable = false)
+	private boolean isLastMessageRead = false;
+
 	@Column(nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
 	private LocalDateTime createdAt = LocalDateTime.now();
 
@@ -33,11 +39,27 @@ public class Conversation {
 	protected Conversation() {
 	}
 
-	public Conversation(int senderID, int receiverID) {
+	@Column(nullable = false)
+	private int lastMessageSenderID;
+
+	// Add to constructor
+	public Conversation(int senderID, int receiverID, String lastMessage) {
 		this.senderID = senderID;
 		this.receiverID = receiverID;
+		this.lastMessage = lastMessage;
+		this.lastMessageSenderID = senderID; // Add this line
+		this.isLastMessageRead = false;
 		this.createdAt = LocalDateTime.now();
 		this.updatedAt = LocalDateTime.now();
+	}
+
+	// Add getter and setter
+	public int getLastMessageSenderID() {
+		return lastMessageSenderID;
+	}
+
+	public void setLastMessageSenderID(int lastMessageSenderID) {
+		this.lastMessageSenderID = lastMessageSenderID;
 	}
 
 	// Getters and Setters
@@ -63,6 +85,22 @@ public class Conversation {
 
 	public void setReceiverID(int receiverID) {
 		this.receiverID = receiverID;
+	}
+
+	public String getLastMessage() {
+		return lastMessage;
+	}
+
+	public void setLastMessage(String lastMessage) {
+		this.lastMessage = lastMessage;
+	}
+
+	public boolean isLastMessageRead() {
+		return isLastMessageRead;
+	}
+
+	public void setLastMessageRead(boolean isLastMessageRead) {
+		this.isLastMessageRead = isLastMessageRead;
 	}
 
 	public LocalDateTime getCreatedAt() {

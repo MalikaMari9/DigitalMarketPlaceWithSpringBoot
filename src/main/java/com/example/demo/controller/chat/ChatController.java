@@ -2,6 +2,7 @@ package com.example.demo.controller.chat;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,15 +62,18 @@ public class ChatController {
 							|| (conv.getSenderID() == receiverID && conv.getReceiverID() == senderID));
 
 			if (!conversationExists) {
-				conversation = new Conversation(senderID, receiverID);
+				conversation = new Conversation(senderID, receiverID, messageText);
 			} else {
 				conversation = existingConversations.stream()
 						.filter(conv -> (conv.getSenderID() == senderID && conv.getReceiverID() == receiverID)
 								|| (conv.getSenderID() == receiverID && conv.getReceiverID() == senderID))
 						.findFirst().get();
 			}
-
-			conversation.setUpdatedAt(java.time.LocalDateTime.now()); // Update the timestamp
+			// In sendMessage method, update these lines:
+			conversation.setLastMessage(messageText);
+			conversation.setLastMessageSenderID(senderID);
+			conversation.setLastMessageRead(false);
+			conversation.setUpdatedAt(java.time.LocalDateTime.now());
 			conversationRepository.save(conversation);
 
 			Message message = new Message(senderID, receiverID, messageText, null);
@@ -106,24 +110,28 @@ public class ChatController {
 		}
 		Long senderIDLong = (Long) session.getAttribute("user_id");
 		int senderID = senderIDLong.intValue();
-
+		System.out.println("senderId - " + senderID);
 		List<Conversation> conversations = conversationRepository.findBySenderIDOrReceiverID(senderID, senderID);
 
 		List<Map<String, Object>> conversationUsers = conversations.stream()
-				.sorted((c1, c2) -> c2.getUpdatedAt().compareTo(c1.getUpdatedAt())) // Sort by updatedAt in descending
-																					// order
-				.map(conversation -> {
-					// Get the other user's ID (not the current user)
+				.sorted((c1, c2) -> c2.getUpdatedAt().compareTo(c1.getUpdatedAt())).map(conversation -> {
 					int otherUserId = conversation.getSenderID() == senderID ? conversation.getReceiverID()
 							: conversation.getSenderID();
 					Long otherUserIdLong = Long.valueOf(otherUserId);
 					return userRepository.findById(otherUserIdLong).map(user -> {
+						// In getConversations method, modify the userMap creation:
+						// In getConversations method, add lastMessageSenderID to userMap
 						Map<String, Object> userMap = new HashMap<>();
 						userMap.put("user_id", user.getUserID());
 						userMap.put("username", user.getUsername());
 						userMap.put("email", user.getEmail());
 						userMap.put("profile", user.getProfilePath());
 						userMap.put("conversation_id", conversation.getConversationID());
+						userMap.put("last_message", conversation.getLastMessage());
+						userMap.put("last_message_sender_id", conversation.getLastMessageSenderID()); // Add this line
+						boolean isUnread = conversation.getLastMessageSenderID() != senderID
+								&& !conversation.isLastMessageRead();
+						userMap.put("is_last_message_read", !isUnread);
 
 						return userMap;
 					}).orElse(null);
@@ -175,6 +183,28 @@ public class ChatController {
 			// ✅ Save file to `uploads/` directory
 			file.transferTo(uploadFile);
 
+			List<Conversation> existingConversations = conversationRepository.findBySenderIDOrReceiverID(senderID,
+					senderID);
+
+			Conversation conversation;
+			boolean conversationExists = existingConversations.stream()
+					.anyMatch(conv -> (conv.getSenderID() == senderID && conv.getReceiverID() == receiverID)
+							|| (conv.getSenderID() == receiverID && conv.getReceiverID() == senderID));
+
+			if (!conversationExists) {
+				conversation = new Conversation(senderID, receiverID, "Sent a photo.");
+			} else {
+				conversation = existingConversations.stream()
+						.filter(conv -> (conv.getSenderID() == senderID && conv.getReceiverID() == receiverID)
+								|| (conv.getSenderID() == receiverID && conv.getReceiverID() == senderID))
+						.findFirst().get();
+			}
+			// In sendMessage method, update these lines:
+			conversation.setLastMessage("Sent a photo.");
+			conversation.setLastMessageSenderID(senderID);
+			conversation.setLastMessageRead(false);
+			conversation.setUpdatedAt(java.time.LocalDateTime.now());
+			conversationRepository.save(conversation);
 			// ✅ Save message with image URL (relative path)
 			Message message = new Message(senderID, receiverID, null, fileName);
 			messageRepository.save(message);
@@ -190,10 +220,24 @@ public class ChatController {
 	@GetMapping
 	public ResponseEntity<?> getMessages(@RequestParam int senderID, @RequestParam int receiverID) {
 		try {
+			// Get messages
 			List<Message> messages = messageRepository
 					.findBySenderIDAndReceiverIDOrSenderIDAndReceiverIDOrderByCreatedAtAsc(senderID, receiverID,
 							receiverID, senderID);
 
+			// Update read status if necessary
+			List<Conversation> conversations = conversationRepository.findBySenderIDOrReceiverID(senderID, senderID);
+
+			Conversation conversation = conversations.stream()
+					.filter(conv -> (conv.getSenderID() == senderID && conv.getReceiverID() == receiverID)
+							|| (conv.getSenderID() == receiverID && conv.getReceiverID() == senderID))
+					.findFirst().orElse(null);
+
+			if (conversation != null && conversation.getLastMessageSenderID() != senderID) {
+				conversation.setLastMessageRead(true);
+				conversationRepository.save(conversation);
+			}
+			System.out.println(messages);
 			return ResponseEntity.ok(messages);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -238,4 +282,56 @@ public class ChatController {
 			return ResponseEntity.status(500).body(Map.of("error", "Failed to delete message"));
 		}
 	}
+
+	// Add this new endpoint
+	@PostMapping("/read")
+	public ResponseEntity<?> markMessagesAsRead(@RequestBody Map<String, Object> requestData) {
+		try {
+			int currentUserId = Integer.parseInt(requestData.get("currentUserId").toString());
+			int otherUserId = Integer.parseInt(requestData.get("otherUserId").toString());
+
+			// Find the specific conversation between these two users
+			Conversation conversation = conversationRepository.findBySenderIDOrReceiverID(currentUserId, currentUserId)
+					.stream()
+					.filter(conv -> (conv.getSenderID() == currentUserId && conv.getReceiverID() == otherUserId)
+							|| (conv.getSenderID() == otherUserId && conv.getReceiverID() == currentUserId))
+					.findFirst().orElse(null);
+
+			if (conversation != null && conversation.getLastMessageSenderID() != currentUserId) {
+				conversation.setLastMessageRead(true);
+				conversationRepository.save(conversation);
+			}
+
+			return ResponseEntity.ok(Map.of("success", true));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(500).body(Map.of("error", "Failed to mark messages as read"));
+		}
+	}
+
+	@GetMapping("/unread-count")
+	@ResponseBody
+	public ResponseEntity<?> getUnreadMessageCount(HttpSession session) {
+		Long userIdLong = (Long) session.getAttribute("user_id");
+		if (userIdLong == null) {
+			return ResponseEntity.status(401).body(Map.of("error", "User not logged in."));
+		}
+		int userId = userIdLong.intValue();
+
+		List<Conversation> conversations = conversationRepository.findBySenderIDOrReceiverID(userId, userId);
+
+		long unreadCount = 0;
+		List<Integer> unreadConversations = new ArrayList<>();
+
+		for (Conversation conversation : conversations) {
+			if (conversation.getLastMessageSenderID() != userId && !conversation.isLastMessageRead()) {
+				unreadCount++;
+				unreadConversations.add(conversation.getSenderID() == userId ? conversation.getReceiverID()
+						: conversation.getSenderID());
+			}
+		}
+
+		return ResponseEntity.ok(Map.of("unreadCount", unreadCount, "unreadConversations", unreadConversations));
+	}
+
 }
