@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +15,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.demo.entity.Address;
+import com.example.demo.entity.DeliTrack;
 import com.example.demo.entity.Delivery;
 import com.example.demo.entity.Receipt;
 import com.example.demo.entity.User;
+import com.example.demo.repository.DeliTrackRepository;
 import com.example.demo.repository.DeliveryRepository;
 import com.example.demo.repository.ReceiptRepository;
 
@@ -30,6 +33,9 @@ public class DeliHistoryController {
 
 	@Autowired
 	private DeliveryRepository deliveryRepository;
+
+	@Autowired
+	private DeliTrackRepository deliTrackRepository;
 
 	@GetMapping("/deliHistory")
 	public String getDeliHistory(Model model, HttpSession session, // ✅ Use session to get the logged-in user
@@ -57,7 +63,6 @@ public class DeliHistoryController {
 	@GetMapping("/deli-track")
 	public String trackDeli(@RequestParam(value = "receiptID", required = false) Long receiptID, Model model,
 			HttpSession session) {
-
 		if (receiptID == null) {
 			model.addAttribute("error", "No receipt ID provided.");
 			return "deliverytrack";
@@ -86,6 +91,9 @@ public class DeliHistoryController {
 			return "deliverytrack";
 		}
 
+		// ✅ Get all tracking history for this delivery
+		List<DeliTrack> trackingHistory = deliTrackRepository.findByDelivery(delivery);
+
 		// ✅ Calculate days difference between updatedAt and today
 		long daysDifference = 0;
 		if (delivery.getUpdatedAt() != null) {
@@ -96,12 +104,13 @@ public class DeliHistoryController {
 		// ✅ Get delivery status
 		String deliveryStatus = delivery.getStatus().name();
 
-		// ✅ Pass the objects, status, and daysDifference to Thymeleaf
+		// ✅ Pass the objects, status, daysDifference, and tracking history to Thymeleaf
 		model.addAttribute("receipt", receipt);
 		model.addAttribute("delivery", delivery);
 		model.addAttribute("address", address);
 		model.addAttribute("daysDifference", daysDifference);
 		model.addAttribute("deliveryStatus", deliveryStatus);
+		model.addAttribute("trackingHistory", trackingHistory); // ✅ Pass tracking history
 
 		return "deliverytrack";
 	}
@@ -137,7 +146,7 @@ public class DeliHistoryController {
 
 		if (receiptID == null) {
 			model.addAttribute("error", "No receipt ID provided.");
-			return "deliverytrack";
+			return "deliTrackBuyer";
 		}
 
 		Object userObj = session.getAttribute("user");
@@ -148,20 +157,23 @@ public class DeliHistoryController {
 		Receipt receipt = receiptRepository.findById(receiptID).orElse(null);
 		if (receipt == null) {
 			model.addAttribute("error", "Delivery record not found.");
-			return "deliverytrack";
+			return "deliTrackBuyer";
 		}
 
 		Delivery delivery = receipt.getDelivery();
 		if (delivery == null) {
 			model.addAttribute("error", "Delivery details not available.");
-			return "deliverytrack";
+			return "deliTrackBuyer";
 		}
 
 		Address address = delivery.getAddress();
 		if (address == null) {
 			model.addAttribute("error", "Address details missing.");
-			return "deliverytrack";
+			return "deliTrackBuyer";
 		}
+
+		// ✅ Fetch tracking history from `deli_track_tbl`
+		List<DeliTrack> trackingHistory = deliTrackRepository.findByDelivery(delivery);
 
 		// ✅ Calculate days difference between updatedAt and today
 		long daysDifference = 0;
@@ -177,6 +189,7 @@ public class DeliHistoryController {
 		model.addAttribute("receipt", receipt);
 		model.addAttribute("delivery", delivery);
 		model.addAttribute("address", address);
+		model.addAttribute("trackingHistory", trackingHistory); // ✅ Pass tracking history
 		model.addAttribute("daysDifference", daysDifference);
 		model.addAttribute("deliveryStatus", deliveryStatus);
 
@@ -205,6 +218,13 @@ public class DeliHistoryController {
 			delivery.setStatus(Delivery.DeliveryStatus.RECEIVED);
 			delivery.setUpdatedAt(LocalDateTime.now()); // ✅ Update timestamp
 			deliveryRepository.save(delivery);
+
+			// ✅ Insert tracking entry in `deli_track_tbl`
+			DeliTrack track = new DeliTrack();
+			track.setDelivery(delivery);
+			track.setStatus(Delivery.DeliveryStatus.RECEIVED);
+			track.setNote("Customer has received the order.");
+			deliTrackRepository.save(track); // ✅ Corrected Repository Usage
 		}
 
 		return "redirect:/deli-track?receiptID=" + receiptID;

@@ -419,11 +419,7 @@ public class ItemController {
 
 	@GetMapping("/search")
 	public String searchItems(@RequestParam(value = "query", required = false) String query,
-			@RequestParam(value = "categoryID", required = false) Long categoryID, HttpSession session, // ✅ Add session
-																										// to check
-																										// logged-in
-																										// user
-			Model model) {
+			@RequestParam(value = "categoryID", required = false) Long categoryID, HttpSession session, Model model) {
 
 		List<Item> searchResults;
 
@@ -437,17 +433,28 @@ public class ItemController {
 			searchResults = itemRepo.findAll();
 		}
 
+		// ✅ Filter out non-approved items
+		searchResults = searchResults.stream().filter(item -> item.getApprove() == Item.ApprovalStatus.APPROVED)
+				.toList();
+
+		// ✅ Fetch auctions related to the approved search results
 		List<Auction> auctionResults = auctionRepo.findAllByItemIn(searchResults);
 
-		// ✅ Fetch category name if category is selected
-		Category selectedCategory = categoryID != null ? categoryRepo.findById(categoryID).orElse(null) : null;
+		// ✅ Filter out auctions that haven't started yet
 
 		// ✅ Fetch highest bids for auction items
+		// ✅ Ensure each auction has a starting price if there are no bids
 		Map<Long, Double> auctionMaxBids = new HashMap<>();
 		for (Auction auction : auctionResults) {
 			Double maxBid = auctionTrackRepo.findMaxPriceByAuctionID(auction.getAuctionID());
 			auctionMaxBids.put(auction.getAuctionID(), maxBid != null ? maxBid : auction.getStartPrice());
 		}
+
+		// Pass it to the model
+		model.addAttribute("auctionMaxBids", auctionMaxBids);
+
+		// ✅ Fetch category name if category is selected
+		Category selectedCategory = categoryID != null ? categoryRepo.findById(categoryID).orElse(null) : null;
 
 		// ✅ Fetch wishlisted item IDs for the logged-in user
 		User user = (User) session.getAttribute("user");
@@ -472,17 +479,25 @@ public class ItemController {
 	@GetMapping("/category-search")
 	public String categorySearch(@RequestParam("categoryID") Long categoryID, Model model, HttpSession session) {
 		List<Item> searchResults = itemRepo.findItemsByCategory(categoryID);
+
+		// ✅ Filter out non-approved items
+		searchResults = searchResults.stream().filter(item -> item.getApprove() == Item.ApprovalStatus.APPROVED)
+				.toList();
+
+		// ✅ Fetch auctions related to the approved search results
 		List<Auction> auctionResults = auctionRepo.findAllByItemIn(searchResults);
 
-		// ✅ Fetch the selected category name
-		Category selectedCategory = categoryRepo.findById(categoryID).orElse(null);
+		// ✅ Filter out auctions that haven't started yet
 
 		// ✅ Fetch highest bids for auction items
 		Map<Long, Double> auctionMaxBids = new HashMap<>();
-		for (Auction auction : auctionResults) {
+		for (Auction auction : activeAuctions) {
 			Double maxBid = auctionTrackRepo.findMaxPriceByAuctionID(auction.getAuctionID());
 			auctionMaxBids.put(auction.getAuctionID(), maxBid != null ? maxBid : auction.getStartPrice());
 		}
+
+		// ✅ Fetch the selected category name
+		Category selectedCategory = categoryRepo.findById(categoryID).orElse(null);
 
 		// ✅ Fetch wishlisted items for the logged-in user
 		User user = (User) session.getAttribute("user");
@@ -494,10 +509,10 @@ public class ItemController {
 		// ✅ Add data to the model
 		model.addAttribute("auctionMaxBids", auctionMaxBids);
 		model.addAttribute("searchResults", searchResults);
-		model.addAttribute("auctionResults", auctionResults);
+		model.addAttribute("auctionResults", auctionResults); // Only auctions that have started
 		model.addAttribute("categoryID", categoryID);
 		model.addAttribute("selectedCategory", selectedCategory);
-		model.addAttribute("wishlistedItemIds", wishlistedItemIds); // ✅ Pass wishlist items
+		model.addAttribute("wishlistedItemIds", wishlistedItemIds);
 
 		return "searchResults";
 	}

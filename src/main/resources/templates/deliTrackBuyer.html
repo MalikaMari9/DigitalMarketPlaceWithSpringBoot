@@ -59,17 +59,13 @@
 
     <!-- Delivery Status Section -->
     <div class="status">
-        <!-- Order Sent -->
         <div th:classappend="${deliveryStatus == 'PENDING' ? 'active' : ''}">
             <img th:src="@{/Image/icon/box.png}" alt="Order Sent" width="300" height="200">
-            <span th:style="${deliveryStatus == 'PENDING' ? 'color: green;' : ''}">
-                Your order has been sent
-            </span>
+            <span th:style="${deliveryStatus == 'PENDING' ? 'color: green;' : ''}">Your order has been sent</span>
         </div>
 
         <span class="arrow">&#10132;</span>
 
-        <!-- Being Delivered -->
         <div th:classappend="${deliveryStatus == 'SHIPPED' or (deliveryStatus == 'DELIVERED' and daysDifference < 3) ? 'active' : ''}">
             <img th:src="@{/Image/icon/deli.png}" alt="Being Delivered" width="300" height="200">
             <span th:style="${(deliveryStatus == 'SHIPPED' or (deliveryStatus == 'DELIVERED' and daysDifference < 3)) ? 'color: green;' : ''}">
@@ -79,7 +75,6 @@
 
         <span class="arrow">&#10132;</span>
 
-        <!-- Order Delivered -->
         <div th:classappend="${deliveryStatus == 'DELIVERED' and daysDifference >= 3 ? 'active' : ''}">
             <img th:src="@{/Image/icon/deli1.png}" alt="Delivered" width="300" height="200">
             <span th:style="${deliveryStatus == 'DELIVERED' and daysDifference >= 3 ? 'color: green;' : ''}">
@@ -89,7 +84,6 @@
 
         <span class="arrow">&#10132;</span>
 
-        <!-- Customer Has Received -->
         <div th:classappend="${deliveryStatus == 'RECEIVED' ? 'active' : ''}">
             <img th:src="@{/Image/icon/order-received-icon-vector.jpg}" alt="Customer Received" width="300" height="200">
             <span th:style="${deliveryStatus == 'RECEIVED' ? 'color: green;' : ''}">
@@ -110,11 +104,12 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td th:text="${#temporals.format(delivery.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
-                <td th:text="${delivery.status}"></td>
-                <td>Package is at the warehouse</td>
-                <td th:text="${address.city}"></td>
+            <!-- ✅ Loop through tracking history from `deli_track_tbl` -->
+            <tr th:each="track : ${trackingHistory}">
+                <td th:text="${#temporals.format(track.updatedAt, 'yyyy-MM-dd HH:mm')}"></td>
+                <td th:text="${track.status}"></td>
+                <td th:text="${track.note}"></td>
+                <td th:text="${address.city}"></td> <!-- ✅ Displaying City from Address -->
             </tr>
         </tbody>
     </table>

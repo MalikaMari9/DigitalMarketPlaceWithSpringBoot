@@ -140,4 +140,6 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
 	int countByApprove(ApprovalStatus pending);
 
+	List<Item> findBySeller_UserIDAndApprove(Long userID, ApprovalStatus approved);
+
 }

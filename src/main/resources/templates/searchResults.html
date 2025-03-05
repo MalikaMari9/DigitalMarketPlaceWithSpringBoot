@@ -33,7 +33,7 @@
     <!-- Search results container -->
     <div class="search-results-container">
     
-        <div th:each="item : ${searchResults}" class="sale-item-container">
+        <div th:each="item : ${searchResults}" class="sale-item-container" th:if="${item.approve.name() == 'APPROVED'}">
             
             <!-- Normal Sale Items -->
             <div class="pg-product-card" 
@@ -46,9 +46,6 @@
         th:data-item-id="${item.itemID}">
     <span th:text="${wishlistedItemIds.contains(item.itemID) ? '♥' : '♡'}"></span>
 </button>
-
-
- 
                 </div>
 
                 <div class="pg-product-info">
@@ -56,11 +53,7 @@
                     <p class="pg-price" th:text="'$' + ${item.price}"></p>
                     <p class="pg-seller" th:text="${item.seller.username}"></p>
 
-                    <div class="pg-rating">
-                        <div class="pg-stars">★★★★☆</div>
-                        <span>4.5</span>
-                    </div>
-
+                    
                     <div class="pg-buttons">
                        <th:block th:if="${session.user == null or session.user.userID != item.seller.userID}">
                                   <button class="pg-cart-btn"  
@@ -90,33 +83,26 @@
                 <div class="pg-product-info">
                     <h3 class="pg-product-title" th:text="${item.itemName}"></h3>
                     
-                 
-                    <p class="pg-price" th:each="auction : ${auctionResults}"
+               
+              <p class="pg-price" th:each="auction : ${auctionResults}"
    th:if="${auction.item.itemID == item.itemID}"
-   th:text="'$' + ${auctionMaxBids[auction.auctionID] != null ? auctionMaxBids[auction.auctionID] : auction.startPrice}">
+   th:text="'$' + (${auctionMaxBids[auction.auctionID] != null ? auctionMaxBids[auction.auctionID] : auction.startPrice})">
 </p>
-                    
+
+  
                     <p class="pg-seller" th:text="${item.seller.username}"></p>
 
-                    <div class="pg-rating">
-                        <div class="pg-stars">★★★★☆</div>
-                        <span>4.5</span>
-                    </div>
-
                     <div class="pg-buttons">
-<th:block th:if="${session.user == null or session.user.userID != item.seller.userID}">
-                                  <button class="pg-cart-btn"  
-				  th:data-item-id="${item.itemID}"
-				  th:data-user-id="${session.user != null ? session.user.userID : ''}">Add to Cart</button>
-    </th:block>
+                        <th:block th:if="${session.user == null or session.user.userID != item.seller.userID}">
+                            <a th:href="@{/itemList/{itemID}(itemID=${item.itemID})}">
+                                <button class="pg-cart-btn">Auction</button>
+                            </a>
+                        </th:block>
 
-    <!-- If the user is the seller, show "Edit" button -->
-    <th:block th:if="${session.user != null and session.user.userID == item.seller.userID}">
-        <a th:href="@{/edit-item/{itemID}(itemID=${item.itemID})}" th:text="'Edit'" class="pg-view-btn"></a>
-    </th:block>
-
-    <!-- View Item Button for Everyone -->
-    <a th:href="@{/itemList/{itemID}(itemID=${item.itemID})}" th:text="'👁'" class="pg-view-btn"></a>
+                        <!-- If the user is the seller, show "Edit" button -->
+                        <th:block th:if="${session.user != null and session.user.userID == item.seller.userID}">
+                            <a th:href="@{/edit-item/{itemID}(itemID=${item.itemID})}" th:text="'Edit'" class="pg-view-btn"></a>
+                        </th:block>
                     </div>
                 </div>
             </div>
@@ -124,6 +110,7 @@
         </div>
     </div>
 </div>
+
 </div>
 <footer th:insert="fragments/footer :: footer"></footer>
 <script> lucide.createIcons(); </script>

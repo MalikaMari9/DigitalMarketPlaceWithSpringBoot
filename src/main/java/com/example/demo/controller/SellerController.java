@@ -8,7 +8,9 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,7 @@ import com.example.demo.entity.Item;
 import com.example.demo.entity.ItemApproval;
 import com.example.demo.entity.Seller;
 import com.example.demo.entity.User;
+import com.example.demo.entity.Auction.Auction;
 import com.example.demo.repository.AdminNotificationRepository;
 import com.example.demo.repository.CategoryRepository;
 import com.example.demo.repository.ItemApprovalRepository;
@@ -41,6 +44,8 @@ import com.example.demo.repository.ItemRepository;
 import com.example.demo.repository.SellerRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.repository.WishlistRepository;
+import com.example.demo.repository.Auction.AuctionRepository;
+import com.example.demo.repository.Auction.AuctionTrackRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -64,6 +69,10 @@ public class SellerController {
 	WishlistRepository wishlistRepo;
 	@Autowired
 	AdminNotificationRepository adminNotificationRepo;
+	@Autowired
+	AuctionTrackRepository auctionTrackRepo;
+	@Autowired
+	AuctionRepository auctionRepo;
 
 	@ModelAttribute("categories")
 	public List<Category> loadCategories() {
@@ -175,9 +184,25 @@ public class SellerController {
 			}
 		}
 
-		// ✅ Fetch items sold by the seller
-		List<Item> itemList = itemRepo.findBySeller_UserID(seller.getUserID());
+		// ✅ Fetch only APPROVED items sold by the seller
+		List<Item> itemList = itemRepo.findBySeller_UserIDAndApprove(seller.getUserID(), Item.ApprovalStatus.APPROVED);
 		int postCount = itemList.size();
+
+		// ✅ Separate auction items from normal items (only APPROVED ones)
+		List<Item> auctionItemList = itemList.stream().filter(item -> item.getSellType() == Item.SellType.AUCTION)
+				.toList();
+
+		// ✅ Fetch auctions related to the seller's auction items
+		List<Auction> auctionResults = auctionRepo.findAllByItemIn(auctionItemList);
+
+		// ✅ Filter out auctions that haven't started yet
+
+		// ✅ Fetch highest bids for filtered auctions
+		Map<Long, Double> auctionMaxBids = new HashMap<>();
+		for (Auction auction : auctionResults) {
+			Double maxBid = auctionTrackRepo.findMaxPriceByAuctionID(auction.getAuctionID());
+			auctionMaxBids.put(auction.getAuctionID(), maxBid != null ? maxBid : auction.getStartPrice());
+		}
 
 		// ✅ Fetch wishlist items for the logged-in user
 		User user = (User) session.getAttribute("user");
@@ -188,7 +213,10 @@ public class SellerController {
 		}
 
 		// ✅ Add attributes to the model
-		model.addAttribute("itemList", itemList);
+		model.addAttribute("itemList", itemList); // Normal + Auction items
+		model.addAttribute("auctionItemList", auctionItemList); // Auction items only (approved)
+		model.addAttribute("auctionResults", auctionResults); // Only auctions that have started
+		model.addAttribute("auctionMaxBids", auctionMaxBids);
 		model.addAttribute("seller", seller);
 		model.addAttribute("wishlistedItemIds", wishlistedItemIds);
 		model.addAttribute("postCount", postCount);

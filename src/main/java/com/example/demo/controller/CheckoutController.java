@@ -2,6 +2,7 @@
 package com.example.demo.controller;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.demo.entity.Address;
 import com.example.demo.entity.Cart;
+import com.example.demo.entity.DeliTrack;
 import com.example.demo.entity.Delivery;
 import com.example.demo.entity.Item;
 import com.example.demo.entity.Notification;
@@ -28,6 +30,7 @@ import com.example.demo.entity.Receipt;
 import com.example.demo.entity.User;
 import com.example.demo.repository.AddressRepository;
 import com.example.demo.repository.CartRepository;
+import com.example.demo.repository.DeliTrackRepository;
 import com.example.demo.repository.DeliveryRepository;
 import com.example.demo.repository.ItemRepository;
 import com.example.demo.repository.NotificationRepository;
@@ -60,8 +63,12 @@ public class CheckoutController {
 
 	@Autowired
 	private ItemRepository itemRepository;
+
 	@Autowired
 	private NotificationRepository notificationRepository;
+
+	@Autowired
+	private DeliTrackRepository deliTrackRepository;
 
 	// ✅ Show Checkout Page with Addresses
 	@GetMapping("/checkout")
@@ -229,7 +236,13 @@ public class CheckoutController {
 		delivery.setReceipt(receipt);
 		delivery.setStatus(Delivery.DeliveryStatus.PENDING);
 		delivery.setAddress(selectedAddress);
-		deliveryRepository.save(delivery);
+		delivery.setUpdatedAt(LocalDateTime.now()); // ✅ Set updated date to now
+		delivery = deliveryRepository.save(delivery);
+
+		// ✅ Insert a new record into DeliTrack table for the initial order
+		DeliTrack deliTrack = new DeliTrack(delivery, Delivery.DeliveryStatus.PENDING,
+				"Order placed and is now pending");
+		deliTrackRepository.save(deliTrack); // ✅ Save tracking history
 
 		// ✅ Create & Save Payment
 		Payment payment = new Payment();

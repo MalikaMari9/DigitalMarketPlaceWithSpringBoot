@@ -92,10 +92,7 @@
                 <h3 class="pg-product-title" th:text="${item.itemName}"></h3>
                 <p class="pg-price" th:text="'$' +${item.price}"></p>
                 <p class="pg-seller" th:text="${item.seller.username}"></p>
-                <div class="pg-rating">
-                  <div class="pg-stars">★★★★☆</div>
-                  <span>4.5</span>
-                </div>
+               
                <div class="pg-buttons">
     <!-- If the user is NOT the seller, show "Add to Cart" -->
     <th:block th:if="${session.user == null or session.user.userID != item.seller.userID}">
@@ -119,6 +116,54 @@
      
               
             </div>
+                     <div class="posts">
+    <h3>All Approved Auctions</h3>
+</div>
+
+<div class="search-results-container">
+    <div class="pg-product-card" th:each="item : ${auctionItemList}" th:if="${item.approve.name() == 'APPROVED'}">
+        
+        <th:block th:each="auction : ${auctionResults}" th:if="${auction.item.itemID == item.itemID}">
+            <div class="pg-product-image">
+                <img th:src="@{${item.getThumbnail()}}" alt="Thumbnail">
+                
+                <th:block th:if="${session.user != null and session.user.userID != item.seller.userID}">
+                    <button class="pg-wishlist-btn"
+                            th:classappend="${wishlistedItemIds.contains(item.itemID) ? 'wishlisted' : ''}"
+                            th:data-item-id="${item.itemID}">
+                        <span th:text="${wishlistedItemIds.contains(item.itemID) ? '♥' : '♡'}"></span>
+                    </button>
+                </th:block>
+            </div>
+
+            <div class="pg-product-info">
+                <h3 class="pg-product-title" th:text="${item.itemName}"></h3>
+
+                <p class="pg-price"
+                   th:text="'$' + ${auctionMaxBids[auction.auctionID] != null ? auctionMaxBids[auction.auctionID] : auction.startPrice}">
+                </p>
+
+                <p class="pg-seller" th:text="${item.seller.username}"></p>
+
+                <div class="pg-buttons">
+                    <!-- If the user is NOT the seller, show "Auction" button -->
+                    <th:block th:if="${session.user == null or session.user.userID != item.seller.userID}">
+                        <a th:href="@{/itemList/{itemID}(itemID=${item.itemID})}">
+                            <button class="pg-auction-btn">Auction</button>
+                        </a>
+                    </th:block>
+
+                    <!-- If the user is the seller, show "Edit" button -->
+                    <th:block th:if="${session.user != null and session.user.userID == item.seller.userID}">
+                        <a th:href="@{/edit-item/{itemID}(itemID=${item.itemID})}" th:text="'Edit'" class="pg-view-btn"></a>
+                    </th:block>
+                </div>
+            </div>
+        </th:block>
+    </div>
+</div>
+
+
             <div id="reviews" class="tab-content">
                 <h3>Reviews</h3>
                 <p>You have no reviews yet.</p>

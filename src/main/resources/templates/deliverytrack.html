@@ -80,28 +80,28 @@
 		   
 	</div>
 
+	<!-- History Information -->
+	<h2 style="text-align: left;">History Information</h2>
+	<table>
+	    <thead>
+	        <tr>
+	            <th>State Occurrence Date</th>
+	            <th>Record</th>
+	            <th>Details</th>
+	            <th>City</th>
+	        </tr>
+	    </thead>
+	    <tbody>
+	        <!-- ✅ Loop through all tracking history -->
+	        <tr th:each="track : ${trackingHistory}">
+	            <td th:text="${#temporals.format(track.updatedAt, 'yyyy-MM-dd HH:mm')}"></td>
+	            <td th:text="${track.status}"></td>
+	            <td th:text="${track.note}"></td>
+	            <td th:text="${address.city}"></td>
+	        </tr>
+	    </tbody>
+	</table>
 
-
-    <!-- History Information -->
-    <h2 style="text-align: left;">History Information</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>State Occurrence Date</th>
-                <th>Record</th>
-                <th>Details</th>
-                <th>City</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td th:text="${#temporals.format(delivery.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
-                <td th:text="${delivery.status}"></td>
-                <td>Package is at the warehouse</td>
-                <td th:text="${address.city}"></td>
-            </tr>
-        </tbody>
-    </table>
 
     <!-- Office Contact Information -->
     <div class="section">
