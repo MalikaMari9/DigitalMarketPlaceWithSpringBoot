@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -20,12 +21,13 @@ import com.example.demo.entity.Wishlist;
 import com.example.demo.repository.CartRepository;
 import com.example.demo.repository.ItemRepository;
 import com.example.demo.repository.WishlistRepository;
+import com.example.demo.repository.Auction.AuctionTrackRepository;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 
 @RestController
-
+@Controller
 public class WishlistController {
 
 	@Autowired
@@ -36,6 +38,9 @@ public class WishlistController {
 
 	@Autowired
 	private CartRepository cartRepo;
+
+	@Autowired
+	private AuctionTrackRepository auctionTrackRepo;
 
 	// ✅ Toggle Wishlist (Add/Remove)
 	@PostMapping("/wishlist/toggle/{itemID}")

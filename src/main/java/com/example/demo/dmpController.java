@@ -129,7 +129,8 @@ public class dmpController {
 		}
 
 		// ✅ Fetch all wishlisted items for the user
-		List<Wishlist> wishlistedItems = wishlistRepo.findByUser(user);
+		List<Wishlist> wishlistedItems = wishlistRepo.findByUser(user).stream()
+				.filter(wishlist -> wishlist.getItem().getSellType() != Item.SellType.AUCTION).toList();
 
 		// ✅ Fetch all items in the user's cart
 		List<Item> cartItems = cartRepo.findByUser(user).stream().map(Cart::getItem).collect(Collectors.toList());

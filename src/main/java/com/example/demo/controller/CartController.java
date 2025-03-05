@@ -1,9 +1,7 @@
 package com.example.demo.controller;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -27,9 +25,11 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import com.example.demo.entity.Cart;
 import com.example.demo.entity.Item;
 import com.example.demo.entity.User;
+import com.example.demo.entity.Auction.Auction;
 import com.example.demo.repository.CartRepository;
 import com.example.demo.repository.ItemRepository;
-import com.example.demo.repository.UserRepository;
+import com.example.demo.repository.Auction.AuctionRepository;
+import com.example.demo.repository.Auction.AuctionTrackRepository;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
@@ -46,7 +46,9 @@ public class CartController {
 	private ItemRepository itemRepository;
 
 	@Autowired
-	private UserRepository userRepository;
+	private AuctionRepository auctionRepo;
+	@Autowired
+	private AuctionTrackRepository auctionTrackRepo;
 
 	// ✅ Add item to cart
 	@PostMapping("/add")
@@ -102,24 +104,20 @@ public class CartController {
 		return ResponseEntity.ok(response);
 	}
 
-	// ✅ View cart (Grouped by Seller)
 	@GetMapping("/view")
 	public String viewCart(ModelMap model, HttpSession session) {
 		User user = (User) session.getAttribute("user");
-		System.out.print("I am here");
+
 		if (user == null) {
-			System.out.print("user is null");
-			return "redirect:/loginPage"; // Change this to your actual login page route
-		} else {
-			System.out.print("user is not null");
+			return "redirect:/loginPage";
 		}
 
 		List<Cart> cartItems = cartRepository.findByUser(user);
 
 		if (cartItems == null || cartItems.isEmpty()) {
 			model.addAttribute("emptyCartMessage", "Your cart is empty.");
-			model.addAttribute("cartCount", 0); // Ensure cartCount is always available
-			return "cart"; // Thymeleaf file
+			model.addAttribute("cartCount", 0);
+			return "cart";
 		}
 
 		// ✅ Group items by seller
@@ -127,22 +125,39 @@ public class CartController {
 				.filter(cart -> cart.getItem() != null && cart.getItem().getSeller() != null)
 				.collect(Collectors.groupingBy(cart -> cart.getItem().getSeller()));
 
-		// ✅ Convert to LinkedHashMap to maintain order
-		Map<User, List<Cart>> sortedGroupedCart = groupedBySeller.entrySet().stream()
-				.sorted(Comparator.comparing(entry -> entry.getKey().getUsername())) // Sort by seller name
-				// Alternative: .sorted(Comparator.comparing(entry ->
-				// entry.getKey().getUserID())) // Sort by seller ID
-				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new // ✅
-																														// Ensures
-																														// order
-																														// is
-																														// maintained
-				));
+		// ✅ Fetch auctions related to cart items
+		List<Auction> auctionResults = auctionRepo.findAllByItemIn(cartItems.stream().map(Cart::getItem)
+				.filter(item -> item.getSellType() == Item.SellType.AUCTION).toList());
 
-		model.addAttribute("groupedCart", sortedGroupedCart);
-		model.addAttribute("cartCount", cartItems.size()); // ✅ Send `cartCount` to Thymeleaf
+		// ✅ Fetch highest bids for auction items
+		Map<Long, Double> auctionMaxBids = new HashMap<>();
+		for (Auction auction : auctionResults) {
+			Double maxBid = auctionTrackRepo.findMaxPriceByAuctionID(auction.getAuctionID());
+			auctionMaxBids.put(auction.getItem().getItemID(), maxBid != null ? maxBid : auction.getStartPrice());
+		}
 
-		return "cart"; // Ensure Thymeleaf file name is correct
+		// ✅ Calculate total price per seller
+		Map<User, Double> sellerTotalPrice = new HashMap<>();
+		for (Map.Entry<User, List<Cart>> entry : groupedBySeller.entrySet()) {
+			double total = 0.0;
+			for (Cart cartItem : entry.getValue()) {
+				if (cartItem.getItem().getSellType() != null
+						&& cartItem.getItem().getSellType() == Item.SellType.AUCTION) {
+					Double bidPrice = auctionMaxBids.get(cartItem.getItem().getItemID());
+					total += cartItem.getQuantity() * (bidPrice != null ? bidPrice : cartItem.getItem().getPrice());
+				} else {
+					total += cartItem.getQuantity() * cartItem.getItem().getPrice();
+				}
+			}
+			sellerTotalPrice.put(entry.getKey(), total);
+		}
+
+		model.addAttribute("groupedCart", groupedBySeller);
+		model.addAttribute("cartCount", cartItems.size());
+		model.addAttribute("auctionMaxBids", auctionMaxBids);
+		model.addAttribute("sellerTotalPrice", sellerTotalPrice); // ✅ Send to Thymeleaf
+
+		return "cart";
 	}
 
 	@DeleteMapping("/remove/{cartID}")

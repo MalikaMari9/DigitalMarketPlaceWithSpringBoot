@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Current Bidding</title>
+    <link rel="stylesheet" th:href="@{/CSS/wish.css}">
+    
+    <link th:href="@{/CSS/headerFooter.css}" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script th:src="@{/JS/sidebar.js}"></script>
+    <script th:src="@{/JS/CategorySelect.js}"></script>
+</head>
+<body>
+<header th:insert="fragments/header :: header"></header>
+<div class="checkout-body">
+    <h2 class="wishlist-title">Current Bidding <i class="fas fa-gavel"></i></h2>
+
+    <!-- ✅ Show message if no active bids -->
+    <p class="empty-wishlist" th:if="${activeUserAuctions.isEmpty()}">You have no active bids. Start bidding! 🏆</p>
+
+    <!-- ✅ Loop through active user auctions -->
+    <div class="completed-orders-wrapper" th:each="auction : ${activeUserAuctions}">
+
+        <div class="order-card">
+            <div class="order-card-header">
+                <img th:src="@{${auction.getItem().getThumbnail()}}" alt="Item Image" class="order-image">
+                <div class="order-info">
+                    <h4 class="order-title" th:text="${auction.getItem().getItemName()}"></h4>
+                    <p class="order-date">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span th:text="${#temporals.format(auction.getCreatedAt(), 'yyyy-MM-dd HH:mm')}"></span>
+                    </p>
+                    <a th:href="@{/viewProfile/{sellerID}(sellerID=${auction.getItem().getSeller().getUserID()})}" 
+                       class="shop-name" 
+                       th:text="${auction.getItem().getSeller().getUsername()}">
+                    </a>
+
+                    <div class="order-details">
+                        <p>
+                            <strong>Your Last Bid:</strong> 
+                            $ <span th:text="${userLastBids[auction.auctionID]}"></span>
+                        </p>
+                        <p>
+                            <strong>Highest Bid:</strong> 
+                            $ <span th:text="${auctionMaxBids[auction.auctionID]}"></span>
+                        </p>
+                       <p>
+    <strong>Time Left:</strong> 
+    <span class="countdown-timer"
+          th:data-end-time="${auction.getEndTime()}"
+          th:text="${auctionEndTimes[auction.auctionID]}">
+    </span>
+</p>
+
+                    </div>
+                </div>
+                <div class="order-actions-wrapper">
+                    <!-- ✅ View Auction Button -->
+                    <a th:href=" @{/itemList/{itemID}(itemID=${auction.getItem().getItemID()})}">
+              
+                        <button class="icon-button view-button">
+                            <i data-lucide="eye"></i>
+                        </button>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:insert="fragments/footer :: footer"></footer>
+
+<script>
+    lucide.createIcons();
+</script>
+<script>
+    function updateCountdowns() {
+        const countdownElements = document.querySelectorAll('.countdown-timer');
+
+        countdownElements.forEach(timer => {
+            const endTime = new Date(timer.getAttribute('data-end-time')).getTime();
+            const now = new Date().getTime();
+            const timeLeft = endTime - now;
+
+            if (timeLeft > 0) {
+                const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+                timer.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+            } else {
+                timer.textContent = "Expired";
+            }
+        });
+    }
+
+    // Update countdown every second
+    setInterval(updateCountdowns, 1000);
+
+    // Run once on page load
+    updateCountdowns();
+</script>
+
+</body>
+</html>

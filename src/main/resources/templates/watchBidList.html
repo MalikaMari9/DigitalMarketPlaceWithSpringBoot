@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wishlist</title>
+    <title>Watch Bid List</title>
     <link rel="stylesheet" th:href="@{/CSS/wish.css}">
     
     <link th:href="@{/CSS/headerFooter.css}" rel="stylesheet">
@@ -15,14 +15,14 @@
 <body>
 <header th:insert="fragments/header :: header"></header>
 <div class="checkout-body">
-    <h2 class="wishlist-title">Wishlist <i class="fas fa-heart"></i></h2>
+    <h2 class="wishlist-title">Watch Bid List <i class="fas fa-eye"></i></h2>
 
-    <!-- ✅ Show message if wishlist is empty -->
-    <p class="empty-wishlist" th:if="${wishlistedItems.isEmpty()}">Your wishlist is empty. Start adding items! ❤️</p>
+    <!-- ✅ Show message if watchlist is empty -->
+    <p class="empty-wishlist" th:if="${wishlistedItems.isEmpty()}">Your Watch Bid List is empty. Start adding auctions! 👀</p>
 
-    <!-- ✅ Loop through wishlisted items -->
-   <div class="completed-orders-wrapper" th:each="wishlist : ${wishlistedItems}"
-     th:if="${wishlist.item.sellType.name() != 'AUCTION'}">
+    <!-- ✅ Loop through wishlisted auction items -->
+    <div class="completed-orders-wrapper" th:each="wishlist : ${wishlistedItems}" 
+         th:if="${wishlist.item.sellType.name() == 'AUCTION'}">
 
         <div class="order-card">
             <div class="order-card-header">
@@ -37,23 +37,35 @@
                        class="shop-name" 
                        th:text="${wishlist.item.seller.username}">
                     </a>
+
                     <div class="order-details">
-                        <p><strong>Price:</strong> $ <span th:text="${wishlist.item.price}"></span></p>
+                        <p>
+                            <strong>Highest Bid:</strong> 
+                            $ <span th:text="${auctionMaxBids[wishlist.item.itemID] != null 
+                            ? auctionMaxBids[wishlist.item.itemID] 
+                            : wishlist.item.price}"></span>
+                        </p>
+<p>
+    <strong>Time Left:</strong> 
+    <span th:text="${auctionEndTimes[wishlist.item.itemID] != null 
+    ? auctionEndTimes[wishlist.item.itemID] 
+    : 'N/A'}"></span>
+</p>
+
                     </div>
                 </div>
                 <div class="order-actions-wrapper">
-                    <!-- ✅ Add to Cart Button -->
-                   <button class="icon-button cart-button"
-    th:data-item-id="${wishlist.item.itemID}"
-    onclick="addToCart(this)">
-    <i data-lucide="shopping-cart"></i>
-</button>
+                    <!-- ✅ View Auction Button -->
+            
+                    <a th:href=" @{/itemList/{itemID}(itemID=${wishlist.item.itemID})}">
+                        <button class="icon-button view-button">
+                            <i data-lucide="eye"></i>
+                        </button>
+                    </a>
 
-
-                    
-                    <!-- ❌ Remove from Wishlist Button -->
-                    <button class="icon-button delete-button" title="Remove from Wishlist" th:data-item-id="${wishlist.item.itemID}" onclick="removeFromWishlist(this)">
-                        
+                    <!-- ❌ Remove from Watch Bid List -->
+                    <button class="icon-button delete-button" title="Remove from Watchlist" 
+                            th:data-item-id="${wishlist.item.itemID}" onclick="removeFromWatchlist(this)">
                         <i data-lucide="trash-2"></i>
                     </button>
                 </div>
@@ -67,7 +79,7 @@
 <script>
     lucide.createIcons();
 
-    async function removeFromWishlist(button) {
+    async function removeFromWatchlist(button) {
         const itemId = button.getAttribute("data-item-id");
 
         if (!itemId) {
@@ -80,42 +92,16 @@
             const data = await response.json();
 
             if (data.success) {
-                alert("❌ Removed from Wishlist!");
+                alert("❌ Removed from Watch Bid List!");
                 location.reload(); // ✅ Refresh page after removal
             } else {
                 alert("⚠️ Error: " + data.message);
             }
         } catch (error) {
-            console.error("❌ Wishlist removal failed:", error);
-            alert("❌ Error removing from wishlist.");
+            console.error("❌ Watchlist removal failed:", error);
+            alert("❌ Error removing from watchlist.");
         }
     }
-
-    async function addToCart(button) {
-        const itemId = button.getAttribute("data-item-id");
-
-        if (!itemId) {
-            alert("⚠️ Error: Item ID is missing.");
-            return;
-        }
-
-        try {
-            const response = await fetch(`/wishlist/addToCart/${itemId}`, { method: "POST" });
-            const message = await response.text();
-
-            if (response.ok) {
-                alert("✅ " + message);
-            } else {
-                alert("⚠️ " + message); // Show error message from server
-            }
-        } catch (error) {
-            console.error("❌ Add to Cart failed:", error);
-            alert("❌ Error adding to cart.");
-        }
-    }
-
-
-
 </script>
 </body>
 </html>

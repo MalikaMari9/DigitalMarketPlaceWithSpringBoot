@@ -33,4 +33,9 @@ public interface AuctionTrackRepository extends JpaRepository<AuctionTrack, Long
 
 	List<AuctionTrack> findByAuctionOrderByCreatedAtDesc(Auction auction);
 
+	List<AuctionTrack> findByUser(User user);
+
+	@Query("SELECT a.price FROM AuctionTrack a WHERE a.user.userID = :userID AND a.auction.auctionID = :auctionID ORDER BY a.createdAt DESC LIMIT 1")
+	Double findLastBidByUserAndAuction(@Param("userID") Long userID, @Param("auctionID") Long auctionID);
+
 }

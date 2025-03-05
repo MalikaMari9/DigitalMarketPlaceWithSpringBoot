@@ -292,6 +292,15 @@ public class AdminController {
 
 	}
 
+	@GetMapping("/admin/announcement")
+	public String viewAnnouncement(HttpSession session) {
+		if (session.getAttribute("admin") == null) { // ✅ Check if admin session exists
+			return "redirect:/loginPage?error=Session Expired"; // ✅ Redirect to login if session expired
+		}
+		return "admin/announcement";
+
+	}
+
 	@GetMapping("/admin/items")
 	public String viewItems(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "6") int size,
 			Model model, HttpSession session) {

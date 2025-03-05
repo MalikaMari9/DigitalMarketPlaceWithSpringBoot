@@ -21,6 +21,7 @@ import com.example.demo.entity.Auction.AuctionTrack;
 import com.example.demo.repository.CartRepository;
 import com.example.demo.repository.ItemRepository;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.repository.WishlistRepository;
 import com.example.demo.repository.Auction.AuctionRepository;
 import com.example.demo.repository.Auction.AuctionTrackRepository;
 
@@ -44,6 +45,8 @@ public class AuctionTrackController {
 
 	@Autowired
 	private ItemRepository itemRepository;
+	@Autowired
+	private WishlistRepository wishlistRepo;
 
 	@PostMapping("/placeBid")
 	@Transactional

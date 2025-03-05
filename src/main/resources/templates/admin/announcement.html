@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Delivery Management</title>
+    <link rel="stylesheet" th:href="@{/CSS/admin/dashboard.css}" />
+    <link rel="stylesheet" th:href="@{/CSS/admin/delivery.css}" />
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+   <script th:src="@{/JS/admin/announcement.js}"></script>
+        <link th:href="@{/CSS/admin/admin-header.css}" rel="stylesheet">
+         <script th:src="@{/JS/admin/admin-header.js}"></script>
+  </head>
+  <body class="bg-dark">
+    <!--header-->
+  <header th:insert="~{fragments/admin-header :: header}"></header>
+    <!--main-->
+    <div class="min-h-screen p-8">
+      <div class="grid">
+        <div class="delivery-list-grid">
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">Announcement Management</h2>
+            </div>
+            <div class="card-content">
+              <div class="table-container">
+                <table class="delivery-table">
+                  <thead>
+                    <tr>
+                      <th>Announcement ID</th>
+                      <th>Topic</th>
+                      <th>Priority</th>
+                      <th>Content</th>
+                      <th>Last Updated</th>
+                      <th>Actions</th>
+                    
+                    </tr>
+                  </thead>
+                  <tbody id="deliveryTableBody">
+                    <!-- Table content will be populated by JavaScript -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal for viewing item images -->
+    <div id="itemImageModal" class="modal">
+      <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <img id="itemImage" src="" alt="Item Image" />
+      </div>
+    </div>
+
+    <script>
+      lucide.createIcons();
+    </script>
+  </body>
+</html>

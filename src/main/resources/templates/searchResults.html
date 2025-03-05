@@ -77,7 +77,10 @@
                   
                 <div class="pg-product-image">
                     <img th:src="@{${item.getThumbnail()}}" alt="Thumbnail">
-                    <button class="pg-wishlist-btn">♡</button>
+                   <button class="pg-wishlist-btn"
+        th:classappend="${wishlistedItemIds.contains(item.itemID) ? 'wishlisted' : ''}"
+        th:data-item-id="${item.itemID}">
+    <span th:text="${wishlistedItemIds.contains(item.itemID) ? '♥' : '♡'}"></span>
                 </div>
 
                 <div class="pg-product-info">

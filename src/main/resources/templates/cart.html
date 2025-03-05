@@ -65,15 +65,17 @@
 						</p>
                     </div>
                     
-                    <!-- Wishlist & Remove Buttons -->
-                    <div class="order-actions">
-                        <button class="wishlist-button" title="Add to Wishlist">
-                            <i class="fas fa-heart"></i> 
-                        </button>
-                        <button class="trash-button" title="Remove from Cart" th:data-cart-id="${cartItem.cartID}">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
-                    </div>
+<!-- Wishlist & Remove Buttons (Only for Non-Auction Items) -->
+<div class="order-actions" 
+     th:if="${cartItem.item.sellType == null or cartItem.item.sellType.name() != 'AUCTION'}">
+    <button class="wishlist-button" title="Add to Wishlist">
+        <i class="fas fa-heart"></i> 
+    </button>
+    <button class="trash-button" title="Remove from Cart" th:data-cart-id="${cartItem.cartID}">
+        <i class="fas fa-trash-alt"></i>
+    </button>
+</div>
+
                 </div>
 
 				<div class="order-details">
@@ -90,24 +92,52 @@
 				        </th:block>
 				    </p>
 
-				    <p>
-				        <strong>Price: </strong> 
-				        <span th:text="${cartItem.quantity}"></span> x $ 
-				        <span th:text="${cartItem.item.price}"></span> = $
-				        <span th:text="${cartItem.quantity * cartItem.item.price}"></span>
-				    </p>
+				   <p>
+    <strong>Price: </strong> 
+    <span th:text="${cartItem.quantity}"></span> x $ 
+    <span th:if="${cartItem.item.sellType != null and cartItem.item.sellType.name() == 'AUCTION'}"
+          th:text="${auctionMaxBids[cartItem.item.itemID] != null ? auctionMaxBids[cartItem.item.itemID] : cartItem.item.price}">
+    </span>
+    <span th:if="${cartItem.item.sellType == null or cartItem.item.sellType.name() != 'AUCTION'}"
+          th:text="${cartItem.item.price}">
+    </span> = $
+
+    <span th:if="${cartItem.item.sellType != null and cartItem.item.sellType.name() == 'AUCTION'}"
+          th:text="${cartItem.quantity * (auctionMaxBids[cartItem.item.itemID] != null ? auctionMaxBids[cartItem.item.itemID] : cartItem.item.price)}">
+    </span>
+
+    <span th:if="${cartItem.item.sellType == null or cartItem.item.sellType.name() != 'AUCTION'}"
+          th:text="${cartItem.quantity * cartItem.item.price}">
+    </span>
+</p>
+ 
+
 				</div>
+				
+				
+
+
 
             </div>
 
             <!-- Total price for this seller's items -->
-            <div class="order-footer">
-                <p><strong>Total:</strong> USD 
-                    <span th:text="${#aggregates.sum(entry.value.![item.price * quantity])}"></span>
-                </p>
-            </div>
+
+
+
+
+
+<div class="order-footer">
+    <p><strong>Total:</strong> USD 
+        <span th:text="${sellerTotalPrice[entry.key]}"></span>
+    </p>
+</div>
+
 
             <div class="order-footer">
+
+
+
+            
               <a th:href="@{/checkout(sellerID=${entry.key.userID})}"> <button class="proceed-button">Proceed to Order</button></a>
             </div>
         </div>

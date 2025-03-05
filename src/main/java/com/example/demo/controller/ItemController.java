@@ -491,7 +491,7 @@ public class ItemController {
 
 		// ✅ Fetch highest bids for auction items
 		Map<Long, Double> auctionMaxBids = new HashMap<>();
-		for (Auction auction : activeAuctions) {
+		for (Auction auction : auctionResults) {
 			Double maxBid = auctionTrackRepo.findMaxPriceByAuctionID(auction.getAuctionID());
 			auctionMaxBids.put(auction.getAuctionID(), maxBid != null ? maxBid : auction.getStartPrice());
 		}

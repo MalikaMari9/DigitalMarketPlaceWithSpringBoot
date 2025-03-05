@@ -18,4 +18,6 @@ public interface AuctionRepository extends JpaRepository<Auction, Long> {
 	List<Auction> findAllByItemIn(@Param("items") List<Item> items);
 
 	List<Auction> findByEndTimeBeforeAndStat(LocalDateTime now, Auction.AuctionStatus status);
+
+	Auction findByItem(Item item);
 }
