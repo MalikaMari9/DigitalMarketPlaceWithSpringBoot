@@ -9,6 +9,7 @@
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <link th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css}" rel="stylesheet">
      <script th:src="@{/JS/sidebar.js}"></script>
+      <script th:src="@{/JS/auctionReactivation.js}"></script>
      <script th:src="@{/JS/CategorySelect.js}"></script>
    
 </head>
@@ -21,17 +22,17 @@
 
     <form id="search-form">
         <label class="search-label">Search: </label>
-        <input type="text" id="search-field" name="searchfield" value="">
-        <label class="search-label">Sort By: </label>
-        <select id="sort-by" name="sortby">
+        <input type="text" id="search-field" name="searchfield" th:value="${searchfield}">
 
-            <option value="item">Item Name</option>
-            <option value="price">Price</option>
-            <option value="buyer">Buyer</option>
-            <option value="Auctionstatus">Auction Status</option>
-            <option value="status">Delivery Status</option>
-        </select>
+        <label class="search-label">Sort By: </label>
+      <select id="sort-by" name="sortby">
+    <option value="item" th:selected="${sortby == 'item'}">Item Name</option>
+    <option value="buyer" th:selected="${sortby == 'buyer'}">Buyer</option>
+    <option value="Auctionstatus" th:selected="${sortby == 'Auctionstatus'}">Auction Status</option>
+</select>
+
         <input type="submit" id="search-button" name="search" value="Search">
+         <button type="button" id="clear-filters">Clear Filters</button>
     </form>
     <table id="sales-table">
         <tr>
@@ -43,7 +44,8 @@
             <th>Auction Status</th>
             <th>Highest Bidder</th>
         </tr>
-        <tr th:each="auction : ${sellingAuctions}">
+        <tr th:each="auction : ${auctionPage.content}">
+
             <td th:text="${auction.auctionID}"></td>
             <td>
                 <a class="table-link" th:href="@{/itemList/{id}(id=${auction.item.itemID})}" th:text="${auction.item.itemName}"></a>
@@ -57,7 +59,18 @@
 </td>
 
             <td th:text="${#temporals.format(auction.endTime, 'yyyy/MM/dd HH:mm')}"></td>
-            <td th:text="${auction.stat}"></td>
+           <td>
+    <span th:text="${auction.stat}"></span>
+    
+    <!-- ✅ Show Reactivate button only if auction is FAILED and user is the seller -->
+    <button th:if="${auction.stat.name() == 'FAILED' and session.user != null and session.user.userID == auction.item.seller.userID}" 
+            class="reactivate-btn"
+            th:data-auction-id="${auction.auctionID}"
+            onclick="reactivateAuction(this)">
+        Reactivate Auction
+    </button>
+</td>
+
             <td>
                 <a class="table-link" 
        th:if="${not #lists.isEmpty(auction.auctionTracks)}"
@@ -68,12 +81,27 @@
             </td>
         </tr>
     </table>
+    <!-- ✅ Pagination Controls -->
+<div class="pagination">
+    <a th:if="${currentPage > 0}" th:href="@{/auctionHistory(page=${currentPage - 1}, searchfield=${searchfield}, sortby=${sortby})}">Previous</a>
+
+    <span th:text="'Page ' + (${currentPage + 1}) + ' of ' + ${totalPages}"></span>
+
+    <a th:if="${currentPage + 1 < totalPages}" th:href="@{/auctionHistory(page=${currentPage + 1}, searchfield=${searchfield}, sortby=${sortby})}">Next</a>
+</div>
+    
 
 </div>
 </div>
  <footer th:insert="~{fragments/footer :: footer}"></footer>
  <script>
         lucide.createIcons();
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("clear-filters").addEventListener("click", function () {
+                window.location.href = "/auctionHistory"; // Reload with default values
+            });
+        });
+
         </script>
 
 </body>

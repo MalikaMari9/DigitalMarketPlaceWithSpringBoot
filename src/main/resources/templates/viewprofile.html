@@ -59,18 +59,23 @@
 </div>
 
 
-        <div class="profile-tabs">
-            <button class="tab active" onclick="showSection('all-posts')">All Posts</button>
-            <button class="tab" onclick="showSection('reviews')">Reviews</button>
-           
-        </div>
+<div class="profile-tabs">
+    <button class="tab active" onclick="showSection('all-posts')">Items & Auctions</button>
+    <button class="tab" onclick="showSection('reviews')">Reviews</button>
+</div>
 
-        <div class="profile-content">
-            <div id="all-posts" class="tab-content active">
-            <div class="posts">
+     <div class="profile-content">
+    <!-- ✅ This will now contain both items and auctions -->
+    <div id="all-posts" class="tab-content active">
+        <h3>Items & Auctions</h3>    
+        
+        
+         <div class="posts">
                 <h3>All Posts</h3>
               </div>  
-                
+                <div th:if="${#lists.isEmpty(itemList)}">
+    <p class="no-posts-message">This user has not listed any items for sale.</p>
+</div>
                 
                     <div class="search-results-container">
     <div class="pg-product-card" th:each="item : ${itemList}"
@@ -114,12 +119,12 @@
             </div>
 </div>
      
-              
-            </div>
-                     <div class="posts">
+      <div class="posts">
     <h3>All Approved Auctions</h3>
 </div>
-
+<div th:if="${#lists.isEmpty(auctionItemList)}">
+    <p class="no-posts-message">This user has no approved auctions.</p>
+</div>
 <div class="search-results-container">
     <div class="pg-product-card" th:each="item : ${auctionItemList}" th:if="${item.approve.name() == 'APPROVED'}">
         
@@ -163,7 +168,10 @@
     </div>
 </div>
 
-
+     
+              
+            </div>
+                    
             <div id="reviews" class="tab-content">
                 <h3>Reviews</h3>
                 <p>You have no reviews yet.</p>

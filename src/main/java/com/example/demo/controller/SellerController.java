@@ -54,7 +54,6 @@ import jakarta.servlet.http.HttpSession;
 public class SellerController {
 
 	private static final String UPLOAD_DIR = "src/main/resources/static/Images/NRC/";
-
 	@Autowired
 	private ItemRepository itemRepo;
 	@Autowired

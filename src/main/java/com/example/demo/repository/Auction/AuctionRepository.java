@@ -3,11 +3,14 @@ package com.example.demo.repository.Auction;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.example.demo.entity.Item;
+import com.example.demo.entity.User;
 import com.example.demo.entity.Auction.Auction;
 
 public interface AuctionRepository extends JpaRepository<Auction, Long> {
@@ -34,5 +37,15 @@ public interface AuctionRepository extends JpaRepository<Auction, Long> {
 
 	@Query("SELECT a FROM Auction a LEFT JOIN FETCH a.auctionTracks WHERE a.endTime <= :now AND a.stat = 'ACTIVE'")
 	List<Auction> findExpiredAuctions(@Param("now") LocalDateTime now);
+
+	Page<Auction> findByItem_Seller(User seller, Pageable pageable);
+
+	@Query("SELECT a FROM Auction a JOIN a.item i WHERE i.seller = :seller AND LOWER(i.itemName) LIKE LOWER(CONCAT('%', :itemName, '%'))")
+	Page<Auction> findByItem_SellerAndItem_ItemNameContainingIgnoreCase(@Param("seller") User seller,
+			@Param("itemName") String itemName, Pageable pageable);
+
+	@Query("SELECT a FROM Auction a WHERE a.item.seller = :seller AND (:searchfield IS NULL OR LOWER(a.item.itemName) LIKE LOWER(CONCAT('%', :searchfield, '%')) OR LOWER(a.stat) LIKE LOWER(CONCAT('%', :searchfield, '%')))")
+	Page<Auction> findBySellerAndSearch(@Param("seller") User seller, @Param("searchfield") String searchfield,
+			Pageable pageable);
 
 }

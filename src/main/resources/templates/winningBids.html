@@ -18,6 +18,9 @@
 <header th:insert="fragments/header :: header"></header>
 
 <div class="checkout-body">
+<p class="empty-wishlist" th:if="${#lists.isEmpty(wonAuctions)}">
+        You haven't won any auctions yet. Keep bidding! 🎉
+    </p>
     <div class="completed-orders-wrapper" 
           th:if="${auction.auctionID != null}" 
           th:id="'auction-' + ${auction.auctionID}" 

@@ -1,4 +1,3 @@
-// Function to switch between profile sections
 function showSection(sectionId) {
     // Hide all tab contents
     document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
@@ -11,7 +10,7 @@ function showSection(sectionId) {
 
     // Highlight the active tab
     document.querySelectorAll('.tab').forEach(tab => {
-        if (tab.textContent.toLowerCase() === sectionId.replace('-', ' ')) {
+        if (tab.textContent.trim().toLowerCase() === sectionId.replace('-', ' ')) {
             tab.classList.add('active');
         }
     });

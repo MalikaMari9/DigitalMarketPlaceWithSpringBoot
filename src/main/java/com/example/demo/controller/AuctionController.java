@@ -1,21 +1,33 @@
 package com.example.demo.controller;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import com.example.demo.entity.Notification;
 import com.example.demo.entity.User;
 import com.example.demo.entity.Wishlist;
 import com.example.demo.entity.Auction.Auction;
 import com.example.demo.entity.Auction.AuctionTrack;
 import com.example.demo.repository.ItemRepository;
+import com.example.demo.repository.NotificationRepository;
 import com.example.demo.repository.WishlistRepository;
 import com.example.demo.repository.Auction.AuctionRepository;
 import com.example.demo.repository.Auction.AuctionTrackRepository;
@@ -34,6 +46,8 @@ public class AuctionController {
 	private AuctionRepository auctionRepo;
 	@Autowired
 	private ItemRepository itemRepo;
+	@Autowired
+	private NotificationRepository notificationRepo;
 
 	// ✅ Watch Bid List (Shows only auction items from wishlist)
 	@GetMapping("/watchlist")
@@ -171,21 +185,102 @@ public class AuctionController {
 	}
 
 	@GetMapping("/auctionHistory")
-	public String auctionHistory(Model model, HttpSession session) {
-		User user = (User) session.getAttribute("user"); // ✅ First, cast it to User
+	public String auctionHistory(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "6") int size,
+			@RequestParam(required = false, defaultValue = "") String searchfield,
+			@RequestParam(required = false, defaultValue = "item") String sortby, HttpSession session, Model model) {
 
-		if (user == null) {
-			return "redirect:/login"; // Redirect to login if user is not found
+		User seller = (User) session.getAttribute("user");
+		if (seller == null) {
+			return "redirect:/loginPage";
 		}
 
-		Long userID = user.getUserID(); // ✅ Now extract userID
+		Sort sort = Sort.by(Sort.Direction.ASC, "item.itemName"); // Default sorting
 
-		// Fetch auctions where user is the seller (linked through Item)
-		List<Auction> sellingAuctions = auctionRepo.findBySellerUserID(userID);
+		if ("price".equals(sortby)) {
+			sort = Sort.by(Sort.Direction.ASC, "startPrice");
+		} else if ("buyer".equals(sortby)) {
+			sort = Sort.by(Sort.Direction.ASC, "item.itemID"); // ✅ Sort by item ID instead (avoids error)
+		} else if ("Auctionstatus".equalsIgnoreCase(sortby)) {
+			sort = Sort.by(Sort.Direction.ASC, "stat");
+		}
 
-		model.addAttribute("sellingAuctions", sellingAuctions);
+		Pageable pageable = PageRequest.of(page, size, sort);
+
+		// ✅ Fetch auctions based on search criteria
+		Page<Auction> auctionPage;
+		if (searchfield != null && !searchfield.isEmpty()) {
+			auctionPage = auctionRepo.findBySellerAndSearch(seller, searchfield, pageable);
+		} else {
+			auctionPage = auctionRepo.findByItem_Seller(seller, pageable);
+		}
+
+		model.addAttribute("auctionPage", auctionPage);
+		model.addAttribute("currentPage", page);
+		model.addAttribute("totalPages", auctionPage.getTotalPages());
+		model.addAttribute("searchfield", searchfield);
+		model.addAttribute("sortby", sortby);
 
 		return "auctionHistory";
+	}
+
+	@GetMapping("/updateAuctionStatus")
+	public String updateAuctionStatuses() {
+		List<Auction> expiredAuctions = auctionRepo.findExpiredAuctions(LocalDateTime.now());
+
+		for (Auction auction : expiredAuctions) {
+			User seller = auction.getItem().getSeller(); // Seller who owns the auction
+
+			if (auction.hasNoBids()) {
+				auction.setStat(Auction.AuctionStatus.FAILED);
+				notificationRepo.save(new Notification(seller,
+						"Your auction for '" + auction.getItem().getItemName() + "' ended with no bids.",
+						"AUCTION_FAILED"));
+			} else {
+				auction.setStat(Auction.AuctionStatus.COMPLETED);
+				User highestBidder = auction.getAuctionTracks().stream()
+						.max(Comparator.comparing(AuctionTrack::getPrice)).get().getUser(); // Get the highest bidder
+
+				notificationRepo.save(new Notification(seller,
+						"Your auction for '" + auction.getItem().getItemName() + "' has ended. Winner: "
+								+ highestBidder.getUsername() + " for USD $" + auction.getHighestBid(),
+						"AUCTION_COMPLETED"));
+
+				notificationRepo.save(
+						new Notification(highestBidder, "You won the auction for '" + auction.getItem().getItemName()
+								+ "'. Your winning bid: USD $" + auction.getHighestBid(), "AUCTION_WINNER"));
+			}
+			auctionRepo.save(auction);
+		}
+		return "redirect:/auctionHistory";
+	}
+
+	@PostMapping("/reactivate/{auctionID}")
+	public ResponseEntity<String> reactivateAuction(@PathVariable Long auctionID, HttpSession session) {
+		Auction auction = auctionRepo.findById(auctionID).orElse(null);
+
+		if (auction == null) {
+			return ResponseEntity.badRequest().body("❌ Auction not found.");
+		}
+
+		User loggedInUser = (User) session.getAttribute("user");
+
+		// ✅ Ensure only the seller can reactivate the auction
+		if (loggedInUser == null || !auction.getItem().getSeller().getUserID().equals(loggedInUser.getUserID())) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN)
+					.body("❌ You are not authorized to reactivate this auction.");
+		}
+
+		// ✅ Ensure auction is actually FAILED before allowing reactivation
+		if (auction.getStat() != Auction.AuctionStatus.FAILED) {
+			return ResponseEntity.badRequest().body("❌ Only failed auctions can be reactivated.");
+		}
+
+		// ✅ Extend auction end date by 7 days
+		auction.setEndTime(LocalDateTime.now().plusDays(7));
+		auction.setStat(Auction.AuctionStatus.ACTIVE); // Change status to ACTIVE
+		auctionRepo.save(auction);
+
+		return ResponseEntity.ok("✅ Auction successfully reactivated for 7 more days!");
 	}
 
 	// ✅ Mock payment check (replace with actual payment status retrieval)

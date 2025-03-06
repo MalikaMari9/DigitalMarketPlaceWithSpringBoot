@@ -8,6 +8,7 @@
     <link th:href="@{/CSS/viewItem.css}" rel="stylesheet">
     <link th:href="@{/CSS/headerFooter.css}" rel="stylesheet">
       <script th:src="@{/JS/admin/approvals.js}"></script> 
+       <script th:src="@{/JS/auctionReactivation.js}"></script>
         <link rel="stylesheet" th:href="@{/CSS/product-gridRec.css}" />
 
     <!-- External Libraries -->
@@ -108,6 +109,14 @@
 
         <!-- Edit & Delete Buttons (Only for the Seller) -->
         <th:block th:if="${session.user != null and session.user.userID == item.seller.userID}">
+        <th:block th:if="${auction.stat.name() == 'FAILED' }">
+    <button class="reactivate-btn"
+            th:data-auction-id="${auction.auctionID}"
+            onclick="reactivateAuction(this)">
+      <i data-lucide="timer-reset"></i> 
+    </button>
+</th:block>
+        
             <button class="delete-btn" th:attr="data-item-id=${item.itemID}" onclick="deleteItem(this)">
                 <i class="fas fa-trash-alt"></i> <!-- Trash Icon -->
             </button>

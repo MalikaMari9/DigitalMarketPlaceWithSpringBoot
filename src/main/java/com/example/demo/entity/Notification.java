@@ -97,6 +97,7 @@ public class Notification {
 		this.notiText = notiText;
 		this.notiType = notiType;
 	}
+
 	/*
 	 * public Notification(User user, Order order, String notiText, String notiType)
 	 * { this.user = user; this.order = order; this.notiText = notiText;

@@ -323,7 +323,7 @@
               <th:block th:if="${session.user.seller.businessType=='C2C' and session.user.seller.approval!='accepted' }">
              <button class="sidebar-buttonyoon">
              <a th:href="@{/convert-to-buyer}">              
-                <i data-lucide="message-square"></i>Buy with us!
+                <i data-lucide="shopping-basket"></i>Buy with us!
               </button>
               </a>
               </th:block>
@@ -349,7 +349,7 @@
                           <a th:href="@{/pending-sale(page=0, size=6, searchfield='', sortby='itemID')}">
 
               <button class="sidebar-buttonyoon">
-                <i data-lucide="gavel"></i>Pending Sale
+                <i data-lucide="calendar-arrow-up"></i>Pending Sale
               </button>
               </a>
      
@@ -416,7 +416,7 @@
               <th:block th:if="${session.user.seller.businessType=='C2C'}">
              <button class="sidebar-buttonyoon">
              <a th:href="@{/convert-to-buyer}">              
-                <i data-lucide="message-square"></i>Buy with us!
+                <i data-lucide="shopping-basket"></i>Buy with us!
               </button>
               </a>
               </th:block>
