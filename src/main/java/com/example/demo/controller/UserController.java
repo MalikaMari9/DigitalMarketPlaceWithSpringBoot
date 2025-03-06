@@ -7,13 +7,17 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -25,8 +29,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.entity.Address;
+import com.example.demo.entity.PasswordReset;
 import com.example.demo.entity.User;
 import com.example.demo.repository.AddressRepository;
+import com.example.demo.repository.NotificationRepository;
+import com.example.demo.repository.PasswordResetRepository;
 import com.example.demo.repository.UserRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,9 +44,16 @@ import jakarta.servlet.http.HttpSession;
 public class UserController {
 
 	@Autowired
+	private JavaMailSender mailSender;
+
+	@Autowired
+	private PasswordResetRepository passwordResetRepository;
+	@Autowired
 	private UserRepository userRepository;
 	@Autowired
 	private AddressRepository addressRepository;
+	@Autowired
+	private NotificationRepository notificationRepo;
 
 	// Show Registration Form
 	@GetMapping("/register")
@@ -432,4 +446,127 @@ public class UserController {
 		}
 		return hexString.toString();
 	}
+
+	@GetMapping("/gmail")
+	public String gmail() {
+		return "gmail";
+	}
+
+	@PostMapping("/gmail")
+	public String handleForgetPassword(@RequestParam String email, Model model) {
+		System.out.println("This function should work");
+		Optional<User> userOptional = userRepository.findByEmail(email);
+
+		if (userOptional.isPresent()) {
+			String token = generateResetToken();
+			LocalDateTime expiryDate = LocalDateTime.now().plusMinutes(15);
+
+			// ✅ Debugging: Print Generated Token
+			System.out.println("✅ Generated Token: " + token);
+
+			PasswordReset passwordReset = new PasswordReset(userOptional.get(), token, expiryDate);
+			passwordResetRepository.save(passwordReset);
+
+			// ✅ Debugging: Check if token is saved
+			Optional<PasswordReset> checkSaved = passwordResetRepository.findByToken(token);
+			if (checkSaved.isPresent()) {
+				System.out.println("✅ Token successfully saved in the database!");
+			} else {
+				System.out.println("❌ Token not found in database after save!");
+			}
+
+			sendPasswordResetEmail(email, token);
+			System.out.println("📧 Email sent to: " + email);
+			return "redirect:/reset-code?email=" + email;
+		} else {
+			System.out.print("No user opt");
+		}
+
+		model.addAttribute("message",
+				"If an account exists with this email, you will receive password reset instructions.");
+		return "gmail";
+	}
+
+	@GetMapping("/reset-code")
+	public String showResetCodeForm(@RequestParam String email, Model model) {
+		model.addAttribute("email", email);
+		return "resetcode";
+	}
+
+	@PostMapping("/verify-reset-code")
+	public String verifyResetCode(@RequestParam String email, @RequestParam String token, Model model) {
+		Optional<User> userOptional = userRepository.findByEmail(email);
+
+		if (userOptional.isPresent()) {
+			User user = userOptional.get();
+			Long userId = userOptional.get().getUserID();
+			Optional<PasswordReset> resetOptional = passwordResetRepository.findByTokenAndUsedFalse(token);
+
+			if (resetOptional.isPresent()) {
+				PasswordReset reset = resetOptional.get();
+				if (reset.getExpiryDate().isAfter(LocalDateTime.now()) && reset.getUser().getUserID().equals(userId)) {
+					reset.setUsed(true);
+					passwordResetRepository.save(reset);
+					return "redirect:/reset-password?email=" + email + "&token=" + token;
+				}
+			}
+		}
+
+		model.addAttribute("error", "Invalid or expired code");
+		model.addAttribute("email", email);
+		return "resetcode";
+	}
+
+	@GetMapping("/reset-password")
+	public String showResetPasswordForm(@RequestParam String email, @RequestParam String token, Model model) {
+		model.addAttribute("email", email);
+		model.addAttribute("token", token);
+		return "resetpassword";
+	}
+
+	@PostMapping("/reset-password")
+	@Transactional
+	public String handlePasswordReset(@RequestParam String email, @RequestParam String token,
+			@RequestParam String newPassword, Model model) throws NoSuchAlgorithmException {
+		Optional<User> userOptional = userRepository.findByEmail(email);
+
+		if (userOptional.isPresent()) {
+			User user = userOptional.get();
+			Optional<PasswordReset> resetOptional = passwordResetRepository.findByToken(token);
+
+			if (resetOptional.isPresent()) {
+				PasswordReset reset = resetOptional.get();
+				if (reset.getUser().getUserID().equals(user.getUserID())) {
+					// Update password
+					user.setPassword(hashPassword(newPassword));
+					userRepository.save(user);
+
+					return "redirect:/login?resetSuccess=true";
+				}
+			}
+		}
+
+		model.addAttribute("error", "Invalid reset attempt");
+		return "resetpassword";
+	}
+
+	private String generateResetToken() {
+		return String.valueOf((int) ((Math.random() * 900000) + 100000));
+	}
+
+	private void sendPasswordResetEmail(String to, String token) {
+		SimpleMailMessage message = new SimpleMailMessage();
+		message.setFrom("hanlin1646@gmail.com");
+		message.setTo(to);
+		message.setSubject("Password Reset Request");
+		message.setText("Use this code to reset your password: " + token + "\n\n"
+				+ "Go to this link to reset: http://localhost:8080/reset-code?email=" + to);
+
+		// ✅ Debugging Log
+		System.out.println("📩 Sending password reset email to: " + to);
+		System.out.println("🔗 Reset link: http://localhost:8080/reset-code?email=" + to);
+
+		mailSender.send(message);
+	}
+
 }
