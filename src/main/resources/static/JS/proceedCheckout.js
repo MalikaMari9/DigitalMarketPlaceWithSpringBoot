@@ -1,29 +1,67 @@
 document.addEventListener("DOMContentLoaded", () => {
-    lucide.createIcons();
+    console.log("🚀 JavaScript Loaded!");
 
-    // ✅ Delivery Fee & Total Price Update
+    // ✅ Elements for Delivery Fee & Total Price Update
     const deliveryOption = document.getElementById("deliveryOption");
+    const deliveryAddress = document.getElementById("deliveryAddress");
+    const serviceFeeText = document.getElementById("serviceFeeText");
+    const locationFeeText = document.getElementById("locationFeeText");
     const deliveryFeeText = document.getElementById("deliveryFeeText");
     const totalPriceText = document.getElementById("totalPriceText");
     const subtotalText = document.getElementById("subtotalText");
 
     function updateDeliveryFee() {
-        let subtotal = parseFloat(subtotalText.innerText.replace('$', '')) || 0;
-        let selectedDeliveryFee = deliveryOption?.value === "express" ? 10.00 : 5.00;
+        let subtotal = parseFloat(subtotalText.innerText.replace('$', '').trim()) || 0;
+        let serviceFee = deliveryOption?.value === "express" ? 10.00 : 5.00;
 
-        // ✅ Update delivery fee dynamically
-        deliveryFeeText.innerText = `$${selectedDeliveryFee.toFixed(2)}`;
+        // ✅ Get Selected Address for Buyer
+        let selectedAddress = deliveryAddress.options[deliveryAddress.selectedIndex];
+        if (!selectedAddress.value) {
+            console.warn("⚠️ No address selected.");
+            serviceFeeText.innerText = `$${serviceFee.toFixed(2)}`;
+            locationFeeText.innerText = `$--`;
+            deliveryFeeText.innerText = `$--`;
+            totalPriceText.innerText = `$--`;
+            return;
+        }
 
-        // ✅ Update the total price dynamically
-        let totalPrice = subtotal + selectedDeliveryFee;
-        totalPriceText.innerText = `$${totalPrice.toFixed(2)}`;
+        // ✅ Get Buyer's City & Town from the selected option
+        let buyerCity = selectedAddress.getAttribute("data-city");
+        let buyerTown = selectedAddress.getAttribute("data-town");
+        let sellerCity = deliveryAddress.dataset.sellerCity;
+        let sellerTown = deliveryAddress.dataset.sellerTown;
+
+        console.log("📌 Seller City:", sellerCity);
+        console.log("📌 Seller Town:", sellerTown);
+        console.log("🛒 Buyer Selected Address:");
+        console.log("   📍 City:", buyerCity);
+        console.log("   📍 Town:", buyerTown);
+
+        // ✅ Calculate Location-Based Fee
+        let locationFee = 10.00; // Default: Different City
+        if (buyerTown === sellerTown) {
+            locationFee = 2.00; // ✅ Same Town
+        } else if (buyerCity === sellerCity) {
+            locationFee = 5.00; // ✅ Same City, Different Town
+        }
+
+        console.log("🚚 Service Fee:", serviceFee);
+        console.log("📍 Location-Based Fee:", locationFee);
+
+        // ✅ Calculate Total Delivery Fee (Service Fee + Location Fee)
+        let totalDeliveryFee = serviceFee + locationFee;
+
+        // ✅ Update UI with fees
+        serviceFeeText.innerText = `$${serviceFee.toFixed(2)}`;
+        locationFeeText.innerText = `$${locationFee.toFixed(2)}`;
+        deliveryFeeText.innerText = `$${totalDeliveryFee.toFixed(2)}`;
+        totalPriceText.innerText = `$${(subtotal + totalDeliveryFee).toFixed(2)}`;
     }
 
-    // ✅ Trigger event when delivery option changes
-    if (deliveryOption) {
-        deliveryOption.addEventListener("change", updateDeliveryFee);
-        updateDeliveryFee(); // Initialize on page load
-    }
+    // ✅ Event Listeners for Fee Update
+    if (deliveryOption) deliveryOption.addEventListener("change", updateDeliveryFee);
+    if (deliveryAddress) deliveryAddress.addEventListener("change", updateDeliveryFee);
+    window.addEventListener("load", updateDeliveryFee);
 
     // ✅ Order Placement Logic
     document.querySelectorAll(".btn-place-order").forEach((btn) => {
@@ -31,30 +69,43 @@ document.addEventListener("DOMContentLoaded", () => {
             event.preventDefault();
             console.log("✅ Place Order button clicked!");
 
+            // ✅ Fetch input values
             const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value;
-            const deliveryOption = document.getElementById("deliveryOption")?.value;
-            const addressID = document.getElementById("deliveryAddress")?.value; // ✅ FIXED ID
-
+            const deliveryOptionValue = deliveryOption?.value;
+            const addressID = deliveryAddress?.value;
             const sellerID = btn.getAttribute("data-seller-id");
 
+            // ✅ Ensure values are correctly fetched
             if (!sellerID) {
                 alert("❌ Missing seller ID!");
                 return;
             }
-
-            if (!paymentMethod || !deliveryOption || !addressID) {
-                alert("❌ Please select an address, delivery option, and payment method!");
+            if (!paymentMethod) {
+                alert("❌ Please select a payment method.");
+                return;
+            }
+            if (!addressID) {
+                alert("❌ Please select a delivery address.");
                 return;
             }
 
-            // ✅ Ensure we fetch the subtotal dynamically
-            const subtotalText = document.querySelector(".total-price").innerText.replace('$', '').trim();
-            let subtotal = parseFloat(subtotalText) || 0;
+            // ✅ Fetch the calculated delivery fee dynamically
+            let totalDeliveryFee = parseFloat(deliveryFeeText.innerText.replace('$', '').trim()) || 0;
 
-            let deliveryFee = deliveryOption === "express" ? 10.00 : 5.00;
-            let totalAmount = (subtotal + deliveryFee).toFixed(2);
+            // ✅ Fetch the subtotal dynamically
+            let subtotal = parseFloat(subtotalText.innerText.replace('$', '').trim()) || 0;
+            let totalAmount = (subtotal + totalDeliveryFee).toFixed(2);
 
-            console.log(`🛒 Subtotal: $${subtotal}, 🚚 Delivery Fee: $${deliveryFee}, 💰 Total: $${totalAmount}`);
+            // ✅ Debugging Log
+            console.log("🚀 DEBUGGING ORDER DATA:");
+            console.log(`🛒 Subtotal: $${subtotal}`);
+            console.log(`💰 Total Delivery Fee: $${totalDeliveryFee}`);
+            console.log(`💵 Final Total Amount: $${totalAmount}`);
+            console.log(`👤 Seller ID: ${sellerID}`);
+            console.log(`🏠 Address ID: ${addressID}`);
+            console.log(`💳 Payment Method: ${paymentMethod}`);
+            console.log(`🚚 Delivery Option: ${deliveryOptionValue}`);
+            console.log("✅ Data ready for backend request!");
 
             // ✅ Redirect for online payment
             if (paymentMethod === "online") {
@@ -69,9 +120,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         paymentMethod: paymentMethod,
-                        deliveryOption: deliveryOption,
-                        addressID: addressID,
-                        deliveryFee: deliveryFee,
+                        deliveryOption: deliveryOptionValue,
+                        addressID: parseInt(addressID),
+                        deliveryFee: totalDeliveryFee,  // ✅ Send final delivery fee from frontend
                         sellerID: parseInt(sellerID),
                         totalAmount: totalAmount
                     })

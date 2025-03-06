@@ -6,11 +6,11 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -79,9 +79,7 @@ public class CheckoutController {
 	private AuctionRepository auctionRepo;
 
 	@GetMapping("/checkout")
-	public String checkoutPage(@RequestParam("sellerID") Long sellerID,
-			@RequestParam(value = "deliveryFee", required = false, defaultValue = "5.00") double deliveryFee,
-			ModelMap model, HttpSession session) {
+	public String checkoutPage(@RequestParam("sellerID") Long sellerID, ModelMap model, HttpSession session) {
 
 		User user = (User) session.getAttribute("user");
 
@@ -114,7 +112,16 @@ public class CheckoutController {
 
 		// ✅ Get Seller Info from Cart Items
 		User seller = selectedCartItems.get(0).getItem().getSeller();
-		model.addAttribute("seller", seller); // ✅ Pass seller to the view
+
+		// ✅ Fetch Seller's Main Address
+		Address sellerMainAddress = addressRepository.findMainAddressByUser(sellerID);
+		if (sellerMainAddress == null) {
+			return "redirect:/cart?error=Seller does not have a main address set.";
+		}
+
+		// ✅ Pass seller and seller's main address to the view
+		model.addAttribute("seller", seller);
+		model.addAttribute("sellerMainAddress", sellerMainAddress);
 
 		// ✅ Fetch highest bid prices for auction items
 		Map<Long, Double> auctionMaxBids = new HashMap<>();
@@ -144,7 +151,6 @@ public class CheckoutController {
 		model.addAttribute("cartItems", selectedCartItems);
 		model.addAttribute("subtotal", auctionAdjustedSubtotal);
 		model.addAttribute("cartCount", cartItems.size());
-		model.addAttribute("deliveryFee", deliveryFee);
 		model.addAttribute("userAddresses", userAddresses); // ✅ Pass addresses to the view
 
 		return "proceedCheckout"; // ✅ Ensure this Thymeleaf file exists
@@ -152,6 +158,7 @@ public class CheckoutController {
 
 	@PostMapping("/place-order")
 	@ResponseBody
+	@Transactional // ✅ Ensures atomic execution
 	public Map<String, Object> placeOrder(@RequestBody Map<String, String> requestData, HttpSession session) {
 		Map<String, Object> response = new HashMap<>();
 
@@ -163,164 +170,160 @@ public class CheckoutController {
 			return response;
 		}
 
-		// ✅ Retrieve & Validate sellerID
-		Long sellerID;
 		try {
-			sellerID = Long.parseLong(requestData.get("sellerID"));
-		} catch (NumberFormatException e) {
-			response.put("success", false);
-			response.put("message", "Invalid seller ID.");
-			return response;
-		}
+			// ✅ Fetch & Validate Seller ID
+			Long sellerID = Long.parseLong(requestData.get("sellerID"));
 
-		// ✅ Retrieve & Validate Payment Method
-		String paymentMethod = requestData.get("paymentMethod");
-		if (paymentMethod == null || paymentMethod.isEmpty()) {
-			response.put("success", false);
-			response.put("message", "Payment method is required.");
-			return response;
-		}
-
-		// ✅ Fetch Address from Request
-		Long addressID;
-		try {
-			addressID = Long.parseLong(requestData.get("addressID"));
-		} catch (NumberFormatException e) {
-			response.put("success", false);
-			response.put("message", "Invalid address ID.");
-			return response;
-		}
-
-		// ✅ Validate Address
-		Optional<Address> addressOptional = addressRepository.findById(addressID);
-		if (addressOptional.isEmpty()) {
-			response.put("success", false);
-			response.put("message", "Selected address does not exist.");
-			return response;
-		}
-		Address selectedAddress = addressOptional.get();
-
-		// ✅ Fetch & Filter Cart Items for the Selected Seller
-		List<Cart> cartItems = cartRepository.findByUser(buyer);
-		List<Cart> selectedCartItems = cartItems.stream()
-				.filter(cart -> cart.getItem().getSeller().getUserID().equals(sellerID)).collect(Collectors.toList());
-
-		if (selectedCartItems.isEmpty()) {
-			response.put("success", false);
-			response.put("message", "No items found for this seller.");
-			return response;
-		}
-
-		// ✅ Check if any item has insufficient stock before proceeding
-		for (Cart cart : selectedCartItems) {
-			Item item = cart.getItem();
-			if (item.getQuality() < cart.getQuantity()) {
+			// ✅ Fetch & Validate Payment Method
+			String paymentMethod = requestData.get("paymentMethod");
+			if (paymentMethod == null || paymentMethod.isEmpty()) {
 				response.put("success", false);
-				response.put("message", "Insufficient stock for item: " + item.getItemName());
+				response.put("message", "Payment method is required.");
 				return response;
 			}
-		}
 
-		// ✅ Get & Validate Delivery Fee
-		double deliveryFee;
-		try {
-			deliveryFee = Double.parseDouble(requestData.getOrDefault("deliveryFee", "5.00"));
-		} catch (NumberFormatException e) {
-			response.put("success", false);
-			response.put("message", "Invalid delivery fee.");
-			return response;
-		}
+			// ✅ Fetch & Validate Address ID
+			Long addressID = Long.parseLong(requestData.get("addressID"));
+			Address buyerAddress = addressRepository.findById(addressID)
+					.orElseThrow(() -> new IllegalArgumentException("Selected address does not exist."));
 
-		// ✅ Calculate Total Price
-		// ✅ Fetch the highest bids for auction items
-		Map<Long, Double> auctionMaxBids = new HashMap<>();
-		List<Auction> auctionResults = auctionRepo.findAllByItemIn(selectedCartItems.stream().map(Cart::getItem)
-				.filter(item -> item.getSellType() == Item.SellType.AUCTION).toList());
-
-		for (Auction auction : auctionResults) {
-			Double maxBid = auctionTrackRepository.findMaxPriceByAuctionID(auction.getAuctionID());
-			auctionMaxBids.put(auction.getItem().getItemID(), maxBid != null ? maxBid : auction.getStartPrice());
-		}
-
-		// ✅ Calculate Total Price (Adjust for Auctions)
-		double subtotal = selectedCartItems.stream().mapToDouble(cart -> {
-			if (cart.getItem().getSellType() == Item.SellType.AUCTION) {
-				return cart.getQuantity()
-						* auctionMaxBids.getOrDefault(cart.getItem().getItemID(), cart.getItem().getPrice());
-			} else {
-				return cart.getQuantity() * cart.getItem().getPrice();
+			// ✅ Fetch & Validate Seller's Main Address
+			Address sellerMainAddress = addressRepository.findMainAddressByUser(sellerID);
+			if (sellerMainAddress == null) {
+				response.put("success", false);
+				response.put("message", "Seller does not have a main address set.");
+				return response;
 			}
-		}).sum();
 
-		double totalPrice = subtotal + deliveryFee;
+			// ✅ Fetch & Filter Cart Items for the Selected Seller
+			List<Cart> cartItems = cartRepository.findByUser(buyer);
+			List<Cart> selectedCartItems = cartItems.stream()
+					.filter(cart -> cart.getItem().getSeller().getUserID().equals(sellerID))
+					.collect(Collectors.toList());
 
-		// ✅ Create & Save Receipt
-		Receipt receipt = new Receipt();
-		receipt.setBuyer(buyer);
-		receipt.setSeller(selectedCartItems.get(0).getItem().getSeller());
-		receipt.setTotalPrice(totalPrice);
-		receipt.setDeliFee(deliveryFee);
-		receipt = receiptRepository.save(receipt);
+			if (selectedCartItems.isEmpty()) {
+				response.put("success", false);
+				response.put("message", "No items found for this seller.");
+				return response;
+			}
 
-		// ✅ Create & Save Orders & Reduce Item Stock
-		for (Cart cart : selectedCartItems) {
-			Item item = cart.getItem();
-			item.setQuality(item.getQuality() - cart.getQuantity()); // ✅ Reduce stock
-			itemRepository.save(item); // ✅ Save updated stock
+			// ✅ Check Stock Availability Before Proceeding
+			for (Cart cart : selectedCartItems) {
+				Item item = cart.getItem();
+				if (item.getQuality() < cart.getQuantity()) {
+					response.put("success", false);
+					response.put("message", "Insufficient stock for item: " + item.getItemName());
+					return response;
+				}
+			}
 
-			// ✅ Get the correct price for this item (auction or regular)
-			Double highestBid = auctionMaxBids.get(cart.getItem().getItemID());
-			double finalPrice = highestBid != null ? highestBid : cart.getItem().getPrice();
+			// ✅ Fetch Delivery Fee from Frontend (No Backend Calculation!)
+			double totalDeliveryFee = Double.parseDouble(requestData.get("deliveryFee"));
 
-			// ✅ Create & Save Orders
-			Order order = new Order();
-			order.setReceipt(receipt);
-			order.setBuyer(buyer);
-			order.setSeller(cart.getItem().getSeller());
-			order.setItem(item);
-			order.setQuantity(cart.getQuantity());
-			order.setPrice(finalPrice); // ✅ Store the actual highest bid
-			orderRepository.save(order);
+			// ✅ Fetch the highest bids for auction items
+			Map<Long, Double> auctionMaxBids = new HashMap<>();
+			List<Auction> auctionResults = auctionRepo.findAllByItemIn(selectedCartItems.stream().map(Cart::getItem)
+					.filter(item -> item.getSellType() == Item.SellType.AUCTION).toList());
+
+			for (Auction auction : auctionResults) {
+				Double maxBid = auctionTrackRepository.findMaxPriceByAuctionID(auction.getAuctionID());
+				auctionMaxBids.put(auction.getItem().getItemID(), maxBid != null ? maxBid : auction.getStartPrice());
+			}
+
+			// ✅ Calculate Total Price (Adjust for Auctions)
+			double subtotal = selectedCartItems.stream().mapToDouble(cart -> {
+				if (cart.getItem().getSellType() == Item.SellType.AUCTION) {
+					return cart.getQuantity()
+							* auctionMaxBids.getOrDefault(cart.getItem().getItemID(), cart.getItem().getPrice());
+				} else {
+					return cart.getQuantity() * cart.getItem().getPrice();
+				}
+			}).sum();
+
+			// ✅ Fetch Pre-Calculated Total Amount from Frontend
+			double totalAmount = Double.parseDouble(requestData.get("totalAmount"));
+
+			// ✅ Validate Total Price
+			if (totalAmount != subtotal + totalDeliveryFee) {
+				response.put("success", false);
+				response.put("message", "Total amount mismatch! Please refresh the page and try again.");
+				return response;
+			}
+
+			// ✅ Create & Save Receipt
+			Receipt receipt = new Receipt();
+			receipt.setBuyer(buyer);
+			receipt.setSeller(selectedCartItems.get(0).getItem().getSeller());
+			receipt.setTotalPrice(totalAmount);
+			receipt.setDeliFee(totalDeliveryFee);
+			receipt = receiptRepository.save(receipt);
+
+			// ✅ Remove Ordered Items from Cart FIRST (to avoid conflicts)
+			cartRepository.deleteAll(selectedCartItems);
+
+			// ✅ Fetch fresh item data before reducing stock (Prevents stale data errors)
+			for (Cart cart : selectedCartItems) {
+				Item item = itemRepository.findById(cart.getItem().getItemID()).orElse(null);
+				if (item != null) {
+					item.setQuality(item.getQuality() - cart.getQuantity());
+					itemRepository.save(item);
+				}
+
+				Double highestBid = auctionMaxBids.get(cart.getItem().getItemID());
+				double finalPrice = highestBid != null ? highestBid : cart.getItem().getPrice();
+
+				// ✅ Create & Save Orders
+				Order order = new Order();
+				order.setReceipt(receipt);
+				order.setBuyer(buyer);
+				order.setSeller(cart.getItem().getSeller());
+				order.setItem(item);
+				order.setQuantity(cart.getQuantity());
+				order.setPrice(finalPrice);
+				orderRepository.save(order);
+			}
+
+			// ✅ Create & Save Delivery with the Selected Address
+			Delivery delivery = new Delivery();
+			delivery.setReceipt(receipt);
+			delivery.setStatus(Delivery.DeliveryStatus.PENDING);
+			delivery.setAddress(buyerAddress);
+			delivery.setUpdatedAt(LocalDateTime.now());
+			delivery = deliveryRepository.save(delivery);
+
+			// ✅ Insert a new record into DeliTrack table for the initial order
+			DeliTrack deliTrack = new DeliTrack(delivery, Delivery.DeliveryStatus.PENDING,
+					"Order placed and is now pending");
+			deliTrackRepository.save(deliTrack);
+
+			// ✅ Create & Save Payment
+			Payment payment = new Payment();
+			payment.setReceipt(receipt);
+			payment.setUser(buyer);
+			payment.setAmount(BigDecimal.valueOf(totalAmount));
+			payment.setPaymentMethod(paymentMethod);
+			payment.setPaymentStatus("PENDING");
+			paymentRepository.save(payment);
+
+			// ✅ Create Notification for the Seller
+			User seller = selectedCartItems.get(0).getItem().getSeller();
+			Notification sellerNotification = new Notification();
+			sellerNotification.setUser(seller);
+			sellerNotification.setSender(buyer);
+			sellerNotification.setReceipt(receipt);
+			sellerNotification
+					.setNotiText("You have a new order from " + buyer.getUsername() + ". Click to view order details.");
+			sellerNotification.setNotiType("NEW_ORDER");
+			notificationRepository.save(sellerNotification);
+
+			response.put("success", true);
+			response.put("deliveryFee", totalDeliveryFee);
+			response.put("message", "Order placed successfully!");
+		} catch (Exception e) {
+			response.put("success", false);
+			response.put("message", "An error occurred: " + e.getMessage());
 		}
 
-		// ✅ Create & Save Delivery with the Selected Address
-		Delivery delivery = new Delivery();
-		delivery.setReceipt(receipt);
-		delivery.setStatus(Delivery.DeliveryStatus.PENDING);
-		delivery.setAddress(selectedAddress);
-		delivery.setUpdatedAt(LocalDateTime.now()); // ✅ Set updated date to now
-		delivery = deliveryRepository.save(delivery);
-
-		// ✅ Insert a new record into DeliTrack table for the initial order
-		DeliTrack deliTrack = new DeliTrack(delivery, Delivery.DeliveryStatus.PENDING,
-				"Order placed and is now pending");
-		deliTrackRepository.save(deliTrack); // ✅ Save tracking history
-
-		// ✅ Create & Save Payment
-		Payment payment = new Payment();
-		payment.setReceipt(receipt);
-		payment.setUser(buyer);
-		payment.setAmount(BigDecimal.valueOf(totalPrice));
-		payment.setPaymentMethod(paymentMethod);
-		payment.setPaymentStatus("PENDING");
-		paymentRepository.save(payment);
-
-		// ✅ Remove Ordered Items from Cart
-		cartRepository.deleteAll(selectedCartItems);
-
-		// ✅ Create Notification for the Seller
-		User seller = selectedCartItems.get(0).getItem().getSeller();
-		Notification sellerNotification = new Notification();
-		sellerNotification.setUser(seller); // Seller receives the notification
-		sellerNotification.setSender(buyer); // Buyer placed the order
-		sellerNotification.setReceipt(receipt); // ✅ Set Receipt reference
-		sellerNotification
-				.setNotiText("You have a new order from " + buyer.getUsername() + ". Click to view order details.");
-		sellerNotification.setNotiType("NEW_ORDER");
-		notificationRepository.save(sellerNotification);
-
-		response.put("success", true);
-		response.put("message", "Order placed successfully!");
 		return response;
 	}
 

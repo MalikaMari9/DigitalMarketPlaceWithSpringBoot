@@ -58,13 +58,20 @@
             </div>
 
             <!-- Address Book -->
-<select id="deliveryAddress" name="deliveryAddress" required>
+<select id="deliveryAddress" name="deliveryAddress"
+        th:data-seller-city="${sellerMainAddress.city}" 
+        th:data-seller-town="${sellerMainAddress.township}"
+        required>
     <option value="">Select an Address</option>
     <option th:each="addr : ${userAddresses}" 
             th:value="${addr.addressID}" 
+            th:data-city="${addr.city}" 
+            th:data-town="${addr.township}" 
             th:text="|${addr.addressName} (${addr.city}, ${addr.township})|">
     </option>
 </select>
+
+
 
 
 
@@ -122,17 +129,27 @@
                         <p><strong id="subtotalText" th:text="'$' + ${subtotal}"></strong></p>
                     </div>
 
-                    <div class="price-summary">
-                        <p>Delivery Fee</p>
-                        <p id="deliveryFeeText">$5.00</p> <!-- ✅ Ensure delivery fee is updated dynamically -->
-                    </div>
+<div class="price-summary">
+    <p>Delivery Service Fee</p>
+    <p id="serviceFeeText">$5.00</p> <!-- ✅ Standard or Express Delivery Fee -->
+</div>
 
-                    <!-- Total Price -->
-                    <div class="total-section">
-                        <p class="total-label">Total</p>
-                        <p class="total-price" id="totalPriceText" th:text="'$' + (${auctionAdjustedSubtotal} + 5.00)"></p>
+<div class="price-summary">
+    <p>Location-Based Fee</p>
+    <p id="locationFeeText">$--</p> <!-- ✅ Town/City-Based Fee -->
+</div>
 
-                    </div>
+<div class="price-summary">
+    <p><strong>Total Delivery Fee</strong></p>
+    <p id="deliveryFeeText">$--</p> <!-- ✅ Total = Service Fee + Location Fee -->
+</div>
+
+<!-- Total Price -->
+<div class="total-section">
+    <p class="total-label">Total</p>
+    <p class="total-price" id="totalPriceText">$--</p> <!-- ✅ Final Total -->
+</div>
+
 
                     <div class="place-order-btn">
                         <button class="btn-place-order" th:attr="data-seller-id=${seller.userID}">Place Order</button>
@@ -143,102 +160,14 @@
     </div>
 
     <!-- ✅ JavaScript to Update Delivery Fee and Total Price -->
-    <script>
+<script>
     lucide.createIcons();
-        document.addEventListener("DOMContentLoaded", () => {
-            const deliveryOption = document.getElementById("deliveryOption");
-            const deliveryFeeText = document.getElementById("deliveryFeeText");
-            const totalPriceText = document.getElementById("totalPriceText");
-            const subtotalText = document.getElementById("subtotalText");
 
-            function updateDeliveryFee() {
-                let subtotal = parseFloat(subtotalText.innerText.replace('$', '')) || 0;
-                let selectedDeliveryFee = deliveryOption.value === "express" ? 10.00 : 5.00;
-                
-                // ✅ Update the delivery fee dynamically
-                deliveryFeeText.innerText = `$${selectedDeliveryFee.toFixed(2)}`;
 
-                // ✅ Update the total price dynamically
-                let totalPrice = subtotal + selectedDeliveryFee;
-                totalPriceText.innerText = `$${totalPrice.toFixed(2)}`;
-            }
+</script>
+<script>
 
-            // ✅ Trigger event when delivery option changes
-            deliveryOption.addEventListener("change", updateDeliveryFee);
 
-            // ✅ Call once to initialize correct values
-            updateDeliveryFee();
-        });
-    </script>
-
-    <!-- ✅ JavaScript for Handling Place Order -->
-    <script>
-		document.addEventListener("DOMContentLoaded", () => {
-		    document.querySelectorAll(".btn-place-order").forEach((btn) => {
-		        btn.addEventListener("click", async (event) => {
-		            event.preventDefault();
-		            console.log("✅ Place Order button clicked!");
-
-		            const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
-		            const deliveryOption = document.getElementById("deliveryOption").value;
-		            const addressID = document.getElementById("addressBook").value;
-		            const sellerID = btn.getAttribute("data-seller-id");
-
-		            if (!sellerID) {
-		                alert("❌ Missing seller ID!");
-		                return;
-		            }
-
-		            // ✅ Ensure we fetch the subtotal dynamically
-		            const subtotalText = document.querySelector(".total-price").innerText.replace('$', '').trim();
-		            let subtotal = parseFloat(subtotalText) || 0;
-
-		            let deliveryFee = deliveryOption === "express" ? 10.00 : 5.00;
-		            let totalAmount = (subtotal + deliveryFee).toFixed(2); // Ensure it's a valid decimal number
-
-		            console.log(`🛒 Subtotal: $${subtotal}, 🚚 Delivery Fee: $${deliveryFee}, 💰 Total: $${totalAmount}`);
-
-		            if (!paymentMethod || !deliveryOption || !addressID) {
-		                alert("❌ Missing required fields!");
-		                return;
-		            }
-
-		            // ✅ Redirect correctly if payment method is online
-		            if (paymentMethod === "online") {
-		                window.location.href = `/credit-card-payment?amount=${subtotal}&sellerID=${sellerID}`;
-		                return;
-		            }
-
-		            // ✅ Otherwise, proceed with order placement (COD)
-		            try {
-		                const response = await fetch("/place-order", {
-		                    method: "POST",
-		                    headers: { "Content-Type": "application/json" },
-		                    body: JSON.stringify({
-		                        paymentMethod: paymentMethod,
-		                        deliveryOption: deliveryOption,
-		                        addressID: addressID,
-		                        deliveryFee: deliveryFee,
-		                        sellerID: parseInt(sellerID)
-		                    })
-		                });
-
-		                const data = await response.json();
-		                console.log("🔍 Response:", data);
-
-		                if (response.ok && data.success) {
-		                    alert("✅ Order placed successfully!");
-		                    location.reload(); // ✅ Refresh the page
-		                } else {
-		                    alert("❌ Failed to place order: " + (data.message || "Unknown error"));
-		                }
-		            } catch (error) {
-		                console.error("❌ Fetch error:", error);
-		                alert("❌ An error occurred while placing the order.");
-		            }
-		        });
-		    });
-		});
 
     </script>
     <footer th:insert="fragments/footer :: footer"></footer>
