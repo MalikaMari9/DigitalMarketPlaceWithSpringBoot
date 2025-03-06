@@ -41,6 +41,17 @@ public class Address {
 	@Column(length = 50) // ✅ New column for address name
 	private String addressName;
 
+	@Column(columnDefinition = "BOOLEAN DEFAULT FALSE")
+	private Boolean isMainAddress;
+
+	public Boolean getIsMainAddress() {
+		return isMainAddress;
+	}
+
+	public void setIsMainAddress(Boolean isMainAddress) {
+		this.isMainAddress = isMainAddress;
+	}
+
 	public String getAddressName() {
 		return addressName;
 	}
@@ -136,4 +147,5 @@ public class Address {
 	public void setUser(User user) {
 		this.user = user;
 	}
+
 }

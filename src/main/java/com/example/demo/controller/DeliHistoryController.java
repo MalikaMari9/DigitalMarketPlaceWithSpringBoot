@@ -69,7 +69,9 @@ public class DeliHistoryController {
 		}
 
 		Object userObj = session.getAttribute("user");
-		if (userObj == null) {
+		boolean isAdmin = Boolean.TRUE.equals(session.getAttribute("admin")); // ✅ Check if admin session exists
+
+		if (userObj == null && !isAdmin) {
 			return "redirect:/login";
 		}
 

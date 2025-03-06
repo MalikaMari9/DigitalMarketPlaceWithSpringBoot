@@ -78,14 +78,28 @@
     </table>
 </div>
 
-                    <div class="address-actions">
-                        <a th:href="@{/edit-address/{id}(id=${address.addressID})}" class="edit-button">
-                            <i class="fas fa-edit"></i>
-                        </a>
-                        <a th:href="@{/delete-address/{id}(id=${address.addressID})}" class="delete-button">
-                            <i class="fas fa-trash-alt"></i>
-                        </a>
-                    </div>
+                   <div class="address-actions">
+    <a th:href="@{/edit-address/{id}(id=${address.addressID})}" class="edit-button">
+        <i class="fas fa-edit"></i>
+    </a>
+    <a th:href="@{/delete-address/{id}(id=${address.addressID})}" class="delete-button">
+        <i class="fas fa-trash-alt"></i>
+    </a>
+<br>
+    <!-- ✅ Show "Main Address" label if this address is already the main address -->
+     <th:block th:if="${session.user != null and session.user.role == 'SELLER'}">
+    <span th:if="${address.isMainAddress}" class="main-address-label">Main Address</span>
+</th:block>
+    <!-- ✅ Show "Set as Main" button if this is NOT the main address -->
+   <th:block th:if="${session.user != null and session.user.role == 'SELLER'}">
+        <button th:unless="${address.isMainAddress}"
+                class="set-main-btn"
+                th:data-address-id="${address.addressID}">
+            Set as Main
+        </button>
+    </th:block>
+</div>
+
                 </div>
             </div>
 
@@ -99,6 +113,19 @@
 
 <footer th:insert="fragments/footer :: footer"></footer>
 <script> lucide.createIcons(); </script>
+<script>
+document.querySelectorAll('.set-main-btn').forEach(button => {
+    button.addEventListener('click', function() {
+        const addressID = this.getAttribute('data-address-id');
+
+        fetch(`/set-main?addressID=${addressID}`, {
+            method: 'POST'
+        }).then(response => response.text())
+          .then(alert)
+          .then(() => location.reload());
+    });
+});
+</script>
 
 </body>
 </html>

@@ -13,11 +13,25 @@
     <script th:src="@{/JS/sidebar.js}"></script>
       <script th:src="@{/JS/winningBids.js}"></script>
     <script th:src="@{/JS/CategorySelect.js}"></script>
+    <style>
+    .wishlist-title i {
+    font-size: 1.5rem;
+    color: var(--highlight-color);
+}
+
+.empty-wishlist {
+    font-size: 1.2rem;
+    color: #555;
+    text-align: center;
+    margin-top: 20px;
+}
+    </style>
 </head>
 <body>
 <header th:insert="fragments/header :: header"></header>
 
 <div class="checkout-body">
+    <h2 class="wishlist-title">Winning Bid List <i class="fas fa-eye"></i></h2>
 <p class="empty-wishlist" th:if="${#lists.isEmpty(wonAuctions)}">
         You haven't won any auctions yet. Keep bidding! 🎉
     </p>

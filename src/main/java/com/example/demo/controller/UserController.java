@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -152,6 +154,36 @@ public class UserController {
 		model.addAttribute("address", new Address());
 
 		return "addAddress"; // ✅ Load address entry page
+	}
+
+	@PostMapping("/set-main")
+	public ResponseEntity<String> setMainAddress(@RequestParam Long addressID, HttpSession session) {
+		// ✅ Get user from session
+		User user = (User) session.getAttribute("user");
+		if (user == null) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You must be logged in.");
+		}
+
+		// ✅ Unset previous main address (if any)
+		Address currentMain = addressRepository.findMainAddressByUser(user.getUserID());
+		if (currentMain != null) {
+			currentMain.setIsMainAddress(false);
+			addressRepository.save(currentMain);
+		}
+
+		// ✅ Set new main address
+		Address newMain = addressRepository.findById(addressID)
+				.orElseThrow(() -> new RuntimeException("Address not found"));
+
+		// ✅ Ensure the address belongs to the user
+		if (!newMain.getUser().getUserID().equals(user.getUserID())) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Unauthorized action.");
+		}
+
+		newMain.setIsMainAddress(true);
+		addressRepository.save(newMain);
+
+		return ResponseEntity.ok("Main address updated successfully.");
 	}
 
 	@GetMapping("/townships")

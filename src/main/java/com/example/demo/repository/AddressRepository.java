@@ -22,4 +22,7 @@ public interface AddressRepository extends JpaRepository<Address, Long> {
 	List<String> findTownshipNamesByCity(@Param("cityName") String cityName);
 
 	List<Address> findByUser(User user);
+
+	@Query("SELECT a FROM Address a WHERE a.user.userID = :userID AND a.isMainAddress = true")
+	Address findMainAddressByUser(@Param("userID") Long userID);
 }

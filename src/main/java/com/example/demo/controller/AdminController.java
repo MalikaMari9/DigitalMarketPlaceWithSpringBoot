@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.example.demo.entity.Delivery;
 import com.example.demo.entity.Item;
 import com.example.demo.entity.Item.ApprovalStatus;
 import com.example.demo.entity.ItemApproval;
@@ -40,6 +41,7 @@ import com.example.demo.entity.Auction.Auction;
 import com.example.demo.entity.Auction.AuctionTrack;
 import com.example.demo.repository.CartRepository;
 import com.example.demo.repository.CategoryRepository;
+import com.example.demo.repository.DeliveryRepository;
 import com.example.demo.repository.ItemApprovalRepository;
 import com.example.demo.repository.ItemImageRepository;
 import com.example.demo.repository.ItemRepository;
@@ -94,6 +96,8 @@ public class AdminController {
 	NotificationRepository notificationRepo;
 	@Autowired
 	OrderRepository orderRepo;
+	@Autowired
+	DeliveryRepository deliRepo;
 
 	private final String BASE_DIR = "src/main/resources/static/Image/Item/";
 
@@ -284,12 +288,18 @@ public class AdminController {
 	}
 
 	@GetMapping("/admin/delivery")
-	public String viewDelivery(HttpSession session) {
-		if (session.getAttribute("admin") == null) { // ✅ Check if admin session exists
-			return "redirect:/loginPage?error=Session Expired"; // ✅ Redirect to login if session expired
+	public String viewDelivery(HttpSession session, Model model, @RequestParam(defaultValue = "0") int page) {
+		if (session.getAttribute("admin") == null) { // ✅ Ensure only admins can access
+			return "redirect:/loginPage?error=Session Expired";
 		}
-		return "admin/delivery";
 
+		int pageSize = 10;
+		Page<Delivery> deliveryPage = deliRepo.findAll(PageRequest.of(page, pageSize));
+
+		model.addAttribute("deliveries", deliveryPage.getContent());
+		model.addAttribute("deliveryPage", deliveryPage);
+
+		return "admin/delivery"; // ✅ Match the Thymeleaf template
 	}
 
 	@GetMapping("/admin/announcement")
