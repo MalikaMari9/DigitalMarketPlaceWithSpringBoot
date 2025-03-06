@@ -43,11 +43,12 @@
                         <p class="order-date"><i class="fas fa-calendar-alt"></i> <span th:text="${#temporals.format(order.receipt.createdAt, 'yyyy-MM-dd HH:mm')}"></span></p>
                     </div>
 
-                    <div class="order-actions">
-                        <button class="buy-again"   th:data-item-id="${order.item.itemID}">
-                           Buy Again
-                        </button>
-                    </div>
+                   <div class="order-actions" th:if="${receipt.seller.seller.businessType != 'C2C'}">
+    <button class="buy-again" th:data-item-id="${order.item.itemID}">
+        Buy Again
+    </button>
+</div>
+
 
                     
                 </div>

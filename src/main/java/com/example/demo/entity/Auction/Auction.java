@@ -49,9 +49,15 @@ public class Auction {
 	@OneToMany(mappedBy = "auction", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<AuctionTrack> auctionTracks = new ArrayList<>();
 
+	// ✅ Add a public getter for Thymeleaf to access
+	public List<AuctionTrack> getAuctionTracks() {
+		return auctionTracks;
+	}
+
+	// Enum for auction status
 	// Enum for auction status
 	public enum AuctionStatus {
-		ACTIVE, COMPLETED, CANCELED
+		ACTIVE, COMPLETED, CANCELED, FAILED // ✅ Added FAILED
 	}
 
 	// Getters and Setters
@@ -133,6 +139,11 @@ public class Auction {
 	@Transient
 	public Double getHighestBid() {
 		return auctionTracks.stream().map(AuctionTrack::getPrice).max(Double::compareTo).orElse(null);
+	}
+
+	@Transient
+	public boolean hasNoBids() {
+		return auctionTracks == null || auctionTracks.isEmpty();
 	}
 
 }

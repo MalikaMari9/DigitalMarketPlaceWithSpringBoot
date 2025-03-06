@@ -15,6 +15,7 @@ import com.example.demo.entity.User;
 import com.example.demo.entity.Wishlist;
 import com.example.demo.entity.Auction.Auction;
 import com.example.demo.entity.Auction.AuctionTrack;
+import com.example.demo.repository.ItemRepository;
 import com.example.demo.repository.WishlistRepository;
 import com.example.demo.repository.Auction.AuctionRepository;
 import com.example.demo.repository.Auction.AuctionTrackRepository;
@@ -31,6 +32,8 @@ public class AuctionController {
 	private AuctionTrackRepository auctionTrackRepo;
 	@Autowired
 	private AuctionRepository auctionRepo;
+	@Autowired
+	private ItemRepository itemRepo;
 
 	// ✅ Watch Bid List (Shows only auction items from wishlist)
 	@GetMapping("/watchlist")
@@ -165,6 +168,24 @@ public class AuctionController {
 		model.addAttribute("paymentDeadlines", paymentDeadlines);
 
 		return "winningBids"; // ✅ Load winningBids.html
+	}
+
+	@GetMapping("/auctionHistory")
+	public String auctionHistory(Model model, HttpSession session) {
+		User user = (User) session.getAttribute("user"); // ✅ First, cast it to User
+
+		if (user == null) {
+			return "redirect:/login"; // Redirect to login if user is not found
+		}
+
+		Long userID = user.getUserID(); // ✅ Now extract userID
+
+		// Fetch auctions where user is the seller (linked through Item)
+		List<Auction> sellingAuctions = auctionRepo.findBySellerUserID(userID);
+
+		model.addAttribute("sellingAuctions", sellingAuctions);
+
+		return "auctionHistory";
 	}
 
 	// ✅ Mock payment check (replace with actual payment status retrieval)

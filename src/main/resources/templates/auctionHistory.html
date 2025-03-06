@@ -41,32 +41,34 @@
             <th>Current Winning Bid</th>
             <th>End Date</th>
             <th>Auction Status</th>
-            <th>Buyer</th>
-            <th>Delivery Status</th>
+            <th>Highest Bidder</th>
         </tr>
-        <tr>
-            <td>AA0234</td>
-            <td><a class="table-link" href="">Nikkari Aoe Nendoroid</a></td>
-            <td><img class="item-image" src="Image/nendo1.jpg" alt=""></td>
-            <td>USD $66</td>
-            <td>yyyy/mm/dd</td>
-            <td>Completed</td>
-            <td><a class="table-link" href="">Malika</a></td>
-            <td><img src="Image/icon/package-check.png" width="25px" height="25px"></td>
-        </tr>
-        <tr>
-            <td>AA0234</td>
-            <td><a class="table-link" href="">Nikkari Aoe Nendoroid</a></td>
-            <td><img class="item-image" src="Image/nendo1.jpg" alt=""></td>
-            <td>USD $36</td>
-            <td>yyyy/mm/dd</td>
-            <td>Ongoing</td> 
-            <td><a class="table-link" href="">Malika</a></td>
-            <td><img src="Image/icon/package-x.png" width="25px" height="25px"></td>
-        </tr>
+        <tr th:each="auction : ${sellingAuctions}">
+            <td th:text="${auction.auctionID}"></td>
+            <td>
+                <a class="table-link" th:href="@{/itemList/{id}(id=${auction.item.itemID})}" th:text="${auction.item.itemName}"></a>
+            </td>
+            <td>
+                <img class="item-image" th:src="@{${auction.item.getThumbnail()}}" alt="Item Image">
+            </td>
+          <td>
+    <span th:if="${auction.getHighestBid() == null}">No Bids</span>
+    <span th:unless="${auction.getHighestBid() == null}" th:text="'USD $' + ${auction.getHighestBid()}"></span>
+</td>
 
-
+            <td th:text="${#temporals.format(auction.endTime, 'yyyy/MM/dd HH:mm')}"></td>
+            <td th:text="${auction.stat}"></td>
+            <td>
+                <a class="table-link" 
+       th:if="${not #lists.isEmpty(auction.auctionTracks)}"
+       th:href="@{/viewSeller/{id}(id=${auction.auctionTracks[auction.auctionTracks.size() - 1].user.userID})}"
+       th:text="${auction.auctionTracks[auction.auctionTracks.size() - 1].user.username}">
+    </a>
+                <span th:if="${auction.getHighestBid() == null}">None</span>
+            </td>
+        </tr>
     </table>
+
 </div>
 </div>
  <footer th:insert="~{fragments/footer :: footer}"></footer>

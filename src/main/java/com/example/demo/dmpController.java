@@ -145,11 +145,6 @@ public class dmpController {
 		return "changepassword";
 	}
 
-	@GetMapping("/auctionHistory")
-	public String auctionHistory() {
-		return "auctionHistory";
-	}
-
 	@GetMapping("/trackDelivery")
 	public String trackDelivery() {
 		return "deliverytrack";
