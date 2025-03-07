@@ -463,85 +463,42 @@
 
     <!--Admin Announcement-->
 
-    <section class="slideann-section">
-      <div class="slideann-container">
+<section class="slideann-section">
+    <div class="slideann-container">
         <h2>Admin Announcements</h2>
 
         <div class="slideann-slider">
-          <div class="slideann-slides">
-            <div class="slideann-slide" data-priority="high">
-              <div class="slideann-content">
-                <div class="slideann-header">
-                  <span class="slideann-priority">High Priority</span>
-                  <span class="slideann-date">2024-03-15</span>
+            <div class="slideann-slides">
+                <!-- ✅ Loop through announcements dynamically -->
+                <div class="slideann-slide" th:each="announcement : ${announcements}" th:data-priority="${announcement.priority.name().toLowerCase()}">
+                    <div class="slideann-content">
+                        <div class="slideann-header">
+                            <span class="slideann-priority" th:text="${announcement.priority.name() + ' Priority'}"></span>
+                            <span class="slideann-date" th:text="${#temporals.format(announcement.createdAt, 'yyyy-MM-dd')}"></span>
+                        </div>
+                        <h3 th:text="${announcement.title}"></h3>
+                        <p th:text="${announcement.content}"></p>
+                    </div>
                 </div>
-                <h3>Important System Update</h3>
-                <p>
-                  System maintenance scheduled for next weekend. Please save
-                  your work accordingly.
-                </p>
-              </div>
             </div>
 
-            <div class="slideann-slide" data-priority="medium">
-              <div class="slideann-content">
-                <div class="slideann-header">
-                  <span class="slideann-priority">Medium Priority</span>
-                  <span class="slideann-date">2024-03-14</span>
-                </div>
-                <h3>New Feature Release</h3>
-                <p>Check out our latest features in the dashboard section!</p>
-              </div>
-            </div>
+            <button class="slideann-arrow slideann-prev" aria-label="Previous announcement">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+            </button>
 
-            <div class="slideann-slide" data-priority="low">
-              <div class="slideann-content">
-                <div class="slideann-header">
-                  <span class="slideann-priority">Low Priority</span>
-                  <span class="slideann-date">2024-03-13</span>
-                </div>
-                <h3>Holiday Schedule</h3>
-                <p>Office will be closed during the upcoming holidays.</p>
-              </div>
-            </div>
-          </div>
+            <button class="slideann-arrow slideann-next" aria-label="Next announcement">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+            </button>
 
-          <button
-            class="slideann-arrow slideann-prev"
-            aria-label="Previous announcement"
-          >
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <polyline points="15 18 9 12 15 6"></polyline>
-            </svg>
-          </button>
-
-          <button
-            class="slideann-arrow slideann-next"
-            aria-label="Next announcement"
-          >
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <polyline points="9 18 15 12 9 6"></polyline>
-            </svg>
-          </button>
-
-          <div class="slideann-dots"></div>
+            <div class="slideann-dots"></div>
         </div>
-      </div>
-    </section>
+    </div>
+</section>
+
 
     <!--Journey Section -->
     <section class="js-journey-section">

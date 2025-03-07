@@ -2,86 +2,103 @@ package com.example.demo.entity;
 
 import java.time.LocalDateTime;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "announcement_tbl")
 public class Announcement {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long announcementID;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long announcementID;
 
-    @Column(nullable = false, length = 255)
-    private String title;
+	public void setCreatedAt(LocalDateTime createdAt) {
+		this.createdAt = createdAt;
+	}
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Priority priority = Priority.LOW; // Default to LOW
+	public void setUpdatedAt(LocalDateTime updatedAt) {
+		this.updatedAt = updatedAt;
+	}
 
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String content;
+	@Column(nullable = false, length = 255)
+	private String title;
 
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	private Priority priority = Priority.LOW; // Default to LOW
 
-    @Column(nullable = false)
-    private LocalDateTime updatedAt = LocalDateTime.now();
+	@Column(nullable = false, columnDefinition = "TEXT")
+	private String content;
 
-    // Priority Enum
-    public enum Priority {
-        HIGH, MEDIUM, LOW
-    }
+	@Column(nullable = false, updatable = false)
+	private LocalDateTime createdAt = LocalDateTime.now();
 
-    // Getters and Setters
-    public Long getAnnouncementID() {
-        return announcementID;
-    }
+	@Column(nullable = false)
+	private LocalDateTime updatedAt = LocalDateTime.now();
 
-    public void setAnnouncementID(Long announcementID) {
-        this.announcementID = announcementID;
-    }
+	// Priority Enum
+	public enum Priority {
+		HIGH, MEDIUM, LOW
+	}
 
-    public String getTitle() {
-        return title;
-    }
+	// Getters and Setters
+	public Long getAnnouncementID() {
+		return announcementID;
+	}
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+	public void setAnnouncementID(Long announcementID) {
+		this.announcementID = announcementID;
+	}
 
-    public Priority getPriority() {
-        return priority;
-    }
+	public String getTitle() {
+		return title;
+	}
 
-    public void setPriority(Priority priority) {
-        this.priority = priority;
-    }
+	public void setTitle(String title) {
+		this.title = title;
+	}
 
-    public String getContent() {
-        return content;
-    }
+	public Priority getPriority() {
+		return priority;
+	}
 
-    public void setContent(String content) {
-        this.content = content;
-    }
+	public void setPriority(Priority priority) {
+		this.priority = priority;
+	}
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
+	public String getContent() {
+		return content;
+	}
 
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
+	public void setContent(String content) {
+		this.content = content;
+	}
 
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-    }
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
+	}
 
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
+	public LocalDateTime getUpdatedAt() {
+		return updatedAt;
+	}
+
+	@PrePersist
+	protected void onCreate() {
+		this.createdAt = LocalDateTime.now();
+		this.updatedAt = LocalDateTime.now();
+	}
+
+	@PreUpdate
+	protected void onUpdate() {
+		this.updatedAt = LocalDateTime.now();
+	}
 }

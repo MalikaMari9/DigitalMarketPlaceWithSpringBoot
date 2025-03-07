@@ -74,7 +74,8 @@
         </td>
         
         <td th:text="${item.cond}"></td>
-        <td th:text="${item.seller.username}"></td>
+           <td> <a th:href="@{/admin/viewSeller/{sellerID}(sellerID=${item.seller.userID})}" th:text="${item.seller.username}"></a></td>
+        
         <td th:text="${item.category.name}"></td>
 
         <!-- Actions: Delete Button -->

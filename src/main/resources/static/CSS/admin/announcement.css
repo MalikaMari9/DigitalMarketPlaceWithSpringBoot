@@ -1,0 +1,104 @@
+/* Center the form */
+.container {
+    width: 50%;
+    margin: 50px auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Style the form title */
+h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* Style form labels */
+label {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+    color: #555;
+}
+
+/* Style text input and select */
+input[type="text"], 
+select, 
+textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+/* Style the textarea separately */
+textarea {
+    height: 100px;
+    resize: none;
+}
+
+/* Style the submit button */
+button {
+	background-color:  #333;
+		    color: white;
+		    border: none;
+		    padding: 10px 20px;
+
+		    font-size: 1rem;
+		    border-radius: 5px;
+		    cursor: pointer;
+		    transition: background-color 0.3s ease;
+}
+
+button:hover {
+	background-color:white;
+	    color: #333;
+}
+
+
+
+.icon-btn {
+    display: inline-block;
+    color: #007BFF;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.icon-btn:hover {
+    color: #0056b3;
+}
+
+/* Add spacing between icons */
+.icon-btn + .icon-btn {
+    margin-left: 15px; /* Adjust as needed */
+}
+
+/* Adjust icon size */
+.icon-btn i {
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+}
+
+/* Style for primary button */
+.btn-primary {
+	background-color:  #333;
+			    color: white;
+			    border: none;
+			    padding: 10px 20px;
+
+			    font-size: 1rem;
+			    border-radius: 5px;
+			    cursor: pointer;
+			    transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+	background-color:white;
+		    color: #333;
+}
+

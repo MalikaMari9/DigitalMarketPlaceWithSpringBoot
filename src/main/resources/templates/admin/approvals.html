@@ -48,8 +48,10 @@
     </thead>
     <tbody>
         <tr th:each="seller : ${pendingSellers}">
+        
             <td th:text="${seller.sellerID}"></td>
-            <td th:text="${seller.businessName}"></td>
+           
+            <td > <a th:href="@{/admin/viewSeller/{sellerID}(sellerID=${seller.user.userID})}" th:text="${seller.businessName}"></a></td>
             <td th:text="${seller.businessType}"></td>
             <td th:text="${seller.approval}"></td>
             <td th:text="${seller.name}"></td>
@@ -79,6 +81,23 @@
         </tr>
     </tbody>
 </table>
+<!-- ✅ Seller Approvals Pagination -->
+<div class="pagination">
+    <!-- Previous Button -->
+    <a th:if="${sellerCurrentPage > 0}" 
+       th:href="@{/admin/approvals(sellerPage=${sellerCurrentPage - 1}, sellerSize=6, itemPage=${itemCurrentPage}, itemSize=6)}">
+        Previous
+    </a>
+
+    <!-- Page Numbers -->
+    <span th:text="'Page ' + (${sellerCurrentPage + 1}) + ' of ' + ${sellerTotalPages}"></span>
+
+    <!-- Next Button -->
+    <a th:if="${sellerCurrentPage + 1 < sellerTotalPages}" 
+       th:href="@{/admin/approvals(sellerPage=${sellerCurrentPage + 1}, sellerSize=6, itemPage=${itemCurrentPage}, itemSize=6)}">
+        Next
+    </a>
+</div>
 
 
 
@@ -123,7 +142,7 @@
             <td th:text="${item.quality}"></td>
             <td th:text="${item.sellType}"></td>
    
-            <td th:text="${item.seller.username}"></td>
+            <td> <a th:href="@{/admin/viewSeller/{sellerID}(sellerID=${item.seller.userID})}" th:text="${item.seller.username}"></a></td>
             <td th:text="${item.category.name}"></td>
             <td th:text="${item.itemApproval.getApprovalDate() != null ? item.itemApproval.getApprovalDate() : 'Pending'}"></td>
             <td>
@@ -139,6 +158,24 @@
         </tr>
     </tbody>
 </table>
+<!-- ✅ Item Approvals Pagination -->
+<div class="pagination">
+    <!-- Previous Button -->
+    <a th:if="${itemCurrentPage > 0}" 
+       th:href="@{/admin/approvals(sellerPage=${sellerCurrentPage}, sellerSize=6, itemPage=${itemCurrentPage - 1}, itemSize=6)}">
+        Previous
+    </a>
+
+    <!-- Page Numbers -->
+    <span th:text="'Page ' + (${itemCurrentPage + 1}) + ' of ' + ${itemTotalPages}"></span>
+
+    <!-- Next Button -->
+    <a th:if="${itemCurrentPage + 1 < itemTotalPages}" 
+       th:href="@{/admin/approvals(sellerPage=${sellerCurrentPage}, sellerSize=6, itemPage=${itemCurrentPage + 1}, itemSize=6)}">
+        Next
+    </a>
+</div>
+
 
 <!-- Modal for Rejection Reason -->
 <div id="rejectionModal" class="modal">

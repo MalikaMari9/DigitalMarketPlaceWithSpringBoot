@@ -45,7 +45,7 @@
                   <tbody>
         <tr th:each="seller : ${sellerPage.content}">
             <td th:text="${seller.sellerID}"></td>
-            <td th:text="${#strings.isEmpty(seller.businessName) ? seller.user.username : seller.businessName}"></td>
+            <td> <a th:href="@{/admin/viewSeller/{sellerID}(sellerID=${seller.user.userID})}" th:text="${#strings.isEmpty(seller.businessName) ? seller.user.username : seller.businessName}"></a></td>
 
             <td th:text="${seller.businessType}"></td>
             <td>
@@ -59,6 +59,9 @@
 </td>
 
             <td th:text="${#temporals.format(seller.approvalDate, 'yyyy-MM-dd')}"></td>
+            
+           
+              
             <td th:text="${seller.user.userID}"></td>
             <td th:text="${seller.name}"></td>
             <td th:text="${seller.nrcNo}"></td>

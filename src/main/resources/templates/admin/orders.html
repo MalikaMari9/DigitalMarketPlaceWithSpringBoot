@@ -47,7 +47,8 @@
                                         <td th:text="${order.orderID}"></td>
                                         <td th:text="${#temporals.format(order.receipt.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
                                         <td>
-                                            <a th:href="@{/viewSeller/{buyerID}(buyerID=${order.buyer.userID})}" 
+                                       
+                                           <a th:href="@{/admin/viewSeller/{sellerID}(sellerID=${order.buyer.userID})}" 
                                                class="table-link" 
                                                th:text="${order.buyer.username}">
                                             </a>
@@ -66,6 +67,24 @@
                                     </tr>
                                 </tbody>
                             </table>
+                            <!-- ✅ Pagination Controls -->
+<div class="pagination">
+    <!-- Previous Button -->
+    <a th:if="${currentPage > 0}" 
+       th:href="@{/admin/orders(page=${currentPage - 1}, size=6)}">
+        Previous
+    </a>
+
+    <!-- Page Numbers -->
+    <span th:text="'Page ' + (${currentPage + 1}) + ' of ' + ${totalPages}"></span>
+
+    <!-- Next Button -->
+    <a th:if="${currentPage + 1 < totalPages}" 
+       th:href="@{/admin/orders(page=${currentPage + 1}, size=6)}">
+        Next
+    </a>
+</div>
+                            
                         </div>
                     </div>
                 </div>

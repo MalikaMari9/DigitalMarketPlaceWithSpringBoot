@@ -16,11 +16,13 @@ document.addEventListener("DOMContentLoaded", () => {
                     trackingData.innerHTML = "";
                     data.forEach((track) => {
                         trackingData.innerHTML += `
-                            <tr>
-                                <td>${track.bidderName}</td>
-                                <td>$${track.bidAmount}</td>
-                                <td>${track.time}</td>
-                            </tr>
+						<tr>
+						       <td> 
+						           <a href="/admin/viewSeller/${track.bidderID}">${track.bidderName}</a>
+						       </td>
+						       <td>${track.bidAmount}</td>
+						       <td>${track.time}</td>
+						   </tr>
                         `;
                     });
 

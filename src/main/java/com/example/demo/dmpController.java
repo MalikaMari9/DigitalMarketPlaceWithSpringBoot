@@ -13,11 +13,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
+import com.example.demo.entity.Announcement;
 import com.example.demo.entity.Cart;
 import com.example.demo.entity.Category;
 import com.example.demo.entity.Item;
 import com.example.demo.entity.User;
 import com.example.demo.entity.Wishlist;
+import com.example.demo.repository.AnnouncementRepository;
 import com.example.demo.repository.CartRepository;
 import com.example.demo.repository.CategoryRepository;
 import com.example.demo.repository.ItemRepository;
@@ -33,6 +35,8 @@ public class dmpController {
 	CartRepository cartRepo;
 	@Autowired
 	private WishlistRepository wishlistRepo;
+	@Autowired
+	private AnnouncementRepository announcementRepository;
 
 	@GetMapping("/viewItem")
 	public String viewItem() {
@@ -90,6 +94,8 @@ public class dmpController {
 			recommendedItems.addAll(latestItems);
 		}
 
+		List<Announcement> announcements = announcementRepository.findAllByOrderByPriorityDescCreatedAtDesc();
+		model.addAttribute("announcements", announcements);
 		model.addAttribute("recommendedItems", new ArrayList<>(recommendedItems)); // ✅ Convert Set back to List
 		model.addAttribute("wishlistedItemIds", wishlistedItemIds);
 		return "home";

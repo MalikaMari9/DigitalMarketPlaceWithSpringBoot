@@ -168,25 +168,38 @@ public class AdminController {
 
 	// Approval
 	@GetMapping("/admin/approvals")
-	public String viewApprovals(Model model, HttpSession session) {
-		if (session.getAttribute("admin") == null) { // ✅ Check if admin session exists
-			return "redirect:/loginPage?error=Session Expired"; // ✅ Redirect to login if session expired
+	public String viewApprovals(Model model, HttpSession session, @RequestParam(defaultValue = "0") int sellerPage,
+			@RequestParam(defaultValue = "6") int sellerSize, @RequestParam(defaultValue = "0") int itemPage,
+			@RequestParam(defaultValue = "6") int itemSize) { // ✅ Consistent page size
+
+		if (session.getAttribute("admin") == null) { // ✅ Ensure admin is logged in
+			return "redirect:/loginPage?error=Session Expired";
 		}
 
-		List<Item> pendingItems = itemRepo.findByApprove(ApprovalStatus.PENDING);
-		model.addAttribute("pendingItems", pendingItems);
+		Pageable sellerPageable = PageRequest.of(sellerPage, sellerSize);
+		Page<Seller> sellerPageData = sellerRepo.findByApproval("pending", sellerPageable); // ✅ Fetch paginated sellers
 
-		List<Seller> pendingSellers = sellerRepo.findByApproval("pending");
+		Pageable itemPageable = PageRequest.of(itemPage, itemSize);
+		Page<Item> itemPageData = itemRepo.findByApprove(Item.ApprovalStatus.PENDING, itemPageable); // ✅ Fetch
+																										// paginated
+																										// items
 
-		// ✅ Check if each seller has a main address and store in a Map
+		// ✅ Check if each seller has a main address
 		Map<Long, String> sellerHasMainAddress = new HashMap<>();
-		for (Seller seller : pendingSellers) {
+		for (Seller seller : sellerPageData.getContent()) {
 			boolean hasMainAddress = addressRepository.existsByUserAndIsMainAddressTrue(seller.getUser());
 			sellerHasMainAddress.put(seller.getSellerID(), hasMainAddress ? "Set" : "Not Set");
 		}
 
-		model.addAttribute("pendingSellers", pendingSellers);
-		model.addAttribute("sellerHasMainAddress", sellerHasMainAddress); // ✅ Pass the map to the template
+		model.addAttribute("pendingSellers", sellerPageData.getContent());
+		model.addAttribute("sellerCurrentPage", sellerPage);
+		model.addAttribute("sellerTotalPages", sellerPageData.getTotalPages());
+
+		model.addAttribute("pendingItems", itemPageData.getContent());
+		model.addAttribute("itemCurrentPage", itemPage);
+		model.addAttribute("itemTotalPages", itemPageData.getTotalPages());
+
+		model.addAttribute("sellerHasMainAddress", sellerHasMainAddress);
 
 		return "admin/approvals";
 	}
@@ -381,13 +394,21 @@ public class AdminController {
 	}
 
 	@GetMapping("/admin/auctions")
-	public String viewAuctions(Model model, HttpSession session) {
-		if (session.getAttribute("admin") == null) { // ✅ Check if admin session exists
-			return "redirect:/loginPage?error=Session Expired"; // ✅ Redirect to login if session expired
+	public String viewAuctions(Model model, HttpSession session, @RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "6") int size) { // ✅ Page size is consistent with other lists
+
+		if (session.getAttribute("admin") == null) { // ✅ Ensure admin is logged in
+			return "redirect:/loginPage?error=Session Expired";
 		}
-		List<Auction> auctions = auctionRepo.findAll();
-		model.addAttribute("auctions", auctions);
-		return "admin/auctions";
+
+		Pageable pageable = PageRequest.of(page, size);
+		Page<Auction> auctionPage = auctionRepo.findAll(pageable); // ✅ Fetch paginated auctions
+
+		model.addAttribute("auctions", auctionPage.getContent()); // ✅ List of auctions
+		model.addAttribute("currentPage", page); // ✅ Current page number
+		model.addAttribute("totalPages", auctionPage.getTotalPages()); // ✅ Total pages
+
+		return "admin/auctions"; // ✅ Render Thymeleaf template
 	}
 
 	@GetMapping("/admin/auction/getTrackings")
@@ -404,6 +425,7 @@ public class AdminController {
 		List<Map<String, Object>> trackList = new ArrayList<>();
 		for (AuctionTrack track : tracks) {
 			Map<String, Object> trackInfo = new HashMap<>();
+			trackInfo.put("bidderID", track.getUser().getUserID());
 			trackInfo.put("bidderName", track.getUser().getUsername());
 			trackInfo.put("bidAmount", track.getPrice());
 			trackInfo.put("time", track.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
@@ -415,16 +437,19 @@ public class AdminController {
 	}
 
 	@GetMapping("/admin/delivery")
-	public String viewDelivery(HttpSession session, Model model, @RequestParam(defaultValue = "0") int page) {
+	public String viewDelivery(HttpSession session, Model model, @RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "6") int size) { // ✅ Keep size consistent with other pages
+
 		if (session.getAttribute("admin") == null) { // ✅ Ensure only admins can access
 			return "redirect:/loginPage?error=Session Expired";
 		}
 
-		int pageSize = 10;
-		Page<Delivery> deliveryPage = deliRepo.findAll(PageRequest.of(page, pageSize));
+		Pageable pageable = PageRequest.of(page, size);
+		Page<Delivery> deliveryPage = deliRepo.findAll(pageable); // ✅ Fetch paginated deliveries
 
-		model.addAttribute("deliveries", deliveryPage.getContent());
-		model.addAttribute("deliveryPage", deliveryPage);
+		model.addAttribute("deliveries", deliveryPage.getContent()); // ✅ List of deliveries
+		model.addAttribute("currentPage", page); // ✅ Current page number
+		model.addAttribute("totalPages", deliveryPage.getTotalPages()); // ✅ Total pages
 
 		return "admin/delivery"; // ✅ Match the Thymeleaf template
 	}
@@ -513,16 +538,21 @@ public class AdminController {
 	}
 
 	@GetMapping("/admin/orders")
-	public String viewOrders(HttpSession session, Model model) {
-		if (session.getAttribute("admin") == null) { // ✅ Check if admin session exists
-			return "redirect:/loginPage?error=Session Expired"; // ✅ Redirect to login if session expired
+	public String viewOrders(HttpSession session, Model model, @RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "6") int size) { // ✅ Set default page size
+
+		if (session.getAttribute("admin") == null) { // ✅ Ensure admin is logged in
+			return "redirect:/loginPage?error=Session Expired";
 		}
 
-		// ✅ Fetch all orders for admin
-		List<Order> orders = orderRepo.findAll();
-		model.addAttribute("orders", orders);
+		Pageable pageable = PageRequest.of(page, size);
+		Page<Order> orderPage = orderRepo.findAll(pageable); // ✅ Fetch paginated orders
 
-		return "admin/orders";
+		model.addAttribute("orders", orderPage.getContent()); // ✅ List of orders
+		model.addAttribute("currentPage", page); // ✅ Current page number
+		model.addAttribute("totalPages", orderPage.getTotalPages()); // ✅ Total pages
+
+		return "admin/orders"; // ✅ Render Thymeleaf template
 	}
 
 	@GetMapping("/admin/sellers")

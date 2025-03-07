@@ -49,30 +49,34 @@
                                     <!-- Populate table dynamically -->
                                     <tr th:each="delivery : ${deliveries}">
                                         <td th:text="${delivery.deliID}"></td>
-                                       
                                         <td th:text="'#' + ${delivery.receipt.receiptID}"></td>
-                                        <td th:text="${delivery.receipt.seller.username}"></td>
-                                        <td th:text="${delivery.receipt.buyer.username}"></td>
+                                  <td> <a th:href="@{/admin/viewSeller/{sellerID}(sellerID=${delivery.receipt.seller.userID})}" th:text="${delivery.receipt.seller.username}"></a></td>
+                                          <td> <a th:href="@{/admin/viewSeller/{sellerID}(sellerID=${delivery.receipt.buyer.userID})}" th:text="${delivery.receipt.buyer.username}"></a></td>
+                                      
                                   <td th:text="${delivery.status}"></td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
 
-                        <!-- Pagination Controls -->
-                        <div class="pagination">
-                            <a th:if="${deliveryPage.hasPrevious()}" 
-                               th:href="@{/admin/delivery(page=${deliveryPage.number - 1})}" 
-                               class="pagination-button">
-                                Previous
-                            </a>
-                            <span>Page <span th:text="${deliveryPage.number + 1}"></span> of <span th:text="${deliveryPage.totalPages}"></span></span>
-                            <a th:if="${deliveryPage.hasNext()}" 
-                               th:href="@{/admin/delivery(page=${deliveryPage.number + 1})}" 
-                               class="pagination-button">
-                                Next
-                            </a>
-                        </div>
+<!-- ✅ Pagination Controls -->
+<div class="pagination">
+    <!-- Previous Button -->
+    <a th:if="${currentPage > 0}" 
+       th:href="@{/admin/delivery(page=${currentPage - 1}, size=6)}">
+        Previous
+    </a>
+
+    <!-- Page Numbers -->
+    <span th:text="'Page ' + (${currentPage + 1}) + ' of ' + ${totalPages}"></span>
+
+    <!-- Next Button -->
+    <a th:if="${currentPage + 1 < totalPages}" 
+       th:href="@{/admin/delivery(page=${currentPage + 1}, size=6)}">
+        Next
+    </a>
+</div>
+
                     </div>
                 </div>
             </div>
