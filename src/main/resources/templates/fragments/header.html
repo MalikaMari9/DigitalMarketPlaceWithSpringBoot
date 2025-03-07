@@ -315,11 +315,14 @@
                 <i data-lucide="key"></i>Change Password
               </button>
               </a>
-                <a th:href="@{/addressbook}">
-              <button class="sidebar-buttonyoon">
-                <i data-lucide="map-pin"></i>Address Book
-              </button>
-              </a>
+              <a th:href="@{/addressbook}">
+    <button class="sidebar-buttonyoon">
+        <i data-lucide="map-pin"></i> Address Book
+        <!-- ✅ Show Red Dot if Seller Has No Main Address -->
+        <span th:if="${!hasMainAddress}" class="red-dot"></span>
+    </button>
+</a>
+
               <th:block th:if="${session.user.seller.businessType=='C2C' and session.user.seller.approval!='accepted' }">
              <button class="sidebar-buttonyoon">
              <a th:href="@{/convert-to-buyer}">              

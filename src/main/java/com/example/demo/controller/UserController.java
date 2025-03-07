@@ -88,25 +88,44 @@ public class UserController {
 
 	@PostMapping("/login")
 	public String loginUser(@RequestParam String username, @RequestParam String password, HttpServletRequest request,
-			Model model) throws NoSuchAlgorithmException {
-		if (username.equals("ADMIN")) {
+			Model model, HttpSession session) throws NoSuchAlgorithmException {
+
+		// ✅ Handle Admin Login Separately
+		if ("ADMIN".equalsIgnoreCase(username)) {
+			session.setAttribute("admin", true);
 			return "redirect:/admin/viewDashboard";
 		}
-		Optional<User> userOptional = userRepository.findByUsername(username);
 
-		if (userOptional.isPresent()) {
-			User user = userOptional.get();
+		// ✅ Fetch user from the database
+		Optional<User> optionalUser = userRepository.findByUsername(username);
 
-			// Compare stored hash with newly hashed input password
-			if (user.getPassword().equals(hashPassword(password))) {
-				HttpSession session = request.getSession();
-				session.setAttribute("user", user);
-				return "redirect:/home";
+		if (optionalUser.isPresent()) {
+			User user = optionalUser.get();
+			System.out.println("User's role is: " + user.getRole()); // Debugging role
+			System.out.println("Session ID is: " + session.getId());
+
+			// ✅ Verify Password
+			if (!user.getPassword().equals(hashPassword(password))) {
+				model.addAttribute("loginError", "Invalid password");
+				return "login"; // Redirect back to login page with error
 			}
+
+			// ✅ Store user details in session
+			session.setAttribute("user", user); // Full user object
+			session.setAttribute("username", user.getUsername());
+			session.setAttribute("user_id", user.getUserID());
+
+			// ✅ Redirect based on Role
+			if ("BUYER".equalsIgnoreCase(user.getRole())) {
+				return "redirect:/home"; // Redirect Buyers to home page
+			} else if ("SELLER".equalsIgnoreCase(user.getRole())) {
+				return "redirect:/sellerDashboard"; // Redirect Sellers to their dashboard
+			}
+		} else {
+			model.addAttribute("loginError", "Invalid username");
 		}
 
-		model.addAttribute("loginError", "Invalid username or password");
-		return "login";
+		return "login"; // Redirect back to login page if authentication fails
 	}
 
 	@GetMapping("/addressbook")
@@ -211,7 +230,6 @@ public class UserController {
 		return townships;
 	}
 
-	// ✅ Save Address addName
 	@PostMapping("/save-address/{userID}")
 	public String saveAddress(@PathVariable("userID") Long userID, @RequestParam("custName") String custName,
 			@RequestParam("addressName") String addName, @RequestParam("postalCode") String postalCode,
@@ -238,6 +256,9 @@ public class UserController {
 		}
 		User registeredUser = userOptional.get();
 
+		// ✅ Check if the user already has a main address
+		boolean hasMainAddress = addressRepository.existsByUserAndIsMainAddressTrue(registeredUser);
+
 		// ✅ Create and save the new Address
 		Address address = new Address();
 		address.setCustName(custName);
@@ -249,10 +270,16 @@ public class UserController {
 		address.setAddres(addressDetail);
 		address.setDelinote(deliveryNote);
 		address.setAddressName(addName);
-		address.setUser(registeredUser); // Assign the user
+		address.setUser(registeredUser);
+
+		// ✅ If this is the first address, set it as main
+		if (!hasMainAddress) {
+			address.setIsMainAddress(true);
+		} else {
+			address.setIsMainAddress(false);
+		}
 
 		addressRepository.save(address);
-
 		System.out.println("✅ Address saved successfully!");
 
 		// ✅ Redirect to the address book

@@ -39,6 +39,7 @@ import com.example.demo.entity.Seller;
 import com.example.demo.entity.User;
 import com.example.demo.entity.Auction.Auction;
 import com.example.demo.entity.Auction.AuctionTrack;
+import com.example.demo.repository.AddressRepository;
 import com.example.demo.repository.CartRepository;
 import com.example.demo.repository.CategoryRepository;
 import com.example.demo.repository.DeliveryRepository;
@@ -98,6 +99,8 @@ public class AdminController {
 	OrderRepository orderRepo;
 	@Autowired
 	DeliveryRepository deliRepo;
+	@Autowired
+	AddressRepository addressRepository;
 
 	private final String BASE_DIR = "src/main/resources/static/Image/Item/";
 
@@ -116,10 +119,20 @@ public class AdminController {
 
 		List<Item> pendingItems = itemRepo.findByApprove(ApprovalStatus.PENDING);
 		model.addAttribute("pendingItems", pendingItems);
-		List<Seller> pendingSellers = sellerRepo.findByApproval("pending");
-		model.addAttribute("pendingSellers", pendingSellers);
-		return "admin/approvals"; // ✅ Thymeleaf template for approvals
 
+		List<Seller> pendingSellers = sellerRepo.findByApproval("pending");
+
+		// ✅ Check if each seller has a main address and store in a Map
+		Map<Long, String> sellerHasMainAddress = new HashMap<>();
+		for (Seller seller : pendingSellers) {
+			boolean hasMainAddress = addressRepository.existsByUserAndIsMainAddressTrue(seller.getUser());
+			sellerHasMainAddress.put(seller.getSellerID(), hasMainAddress ? "Set" : "Not Set");
+		}
+
+		model.addAttribute("pendingSellers", pendingSellers);
+		model.addAttribute("sellerHasMainAddress", sellerHasMainAddress); // ✅ Pass the map to the template
+
+		return "admin/approvals";
 	}
 
 	@ModelAttribute("approvalCount")

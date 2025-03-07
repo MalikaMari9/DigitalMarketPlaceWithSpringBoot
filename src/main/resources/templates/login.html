@@ -5,29 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Form</title>
     <link rel="stylesheet" th:href="@{/CSS/ckstyle1.css}">
-    <script src="@{/JS/login.js}" defer></script>
+    <script th:src="@{/JS/login.js}" defer></script>
 </head>
 <body>
 
 <div class="form-container">
-    <h2>Login</h2>
-    <form id="loginForm"  action="/login" method="POST">
-        <!-- Username Field -->
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required>
-        <span class="error" id="usernameError"></span>
-        
-        <!-- Password Field -->
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
-        <span class="error" id="passwordError"></span>
-        
-        <!-- Submit Button -->
-        <div style="display: flex; justify-content: center;">
-            <input type="submit" name="Register" value="Login">
-          </div>
-          
-    </form>
+    
+    <form id="loginForm" onsubmit="return validateLogin()" th:action="@{/login}" method="POST">
+            <h2>Login</h2>
+
+            <!-- Username Field -->
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+            <span class="error" id="usernameError" style="color: red;"></span>
+            
+            <!-- Password Field -->
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <span class="error" id="passwordError" style="color: red;"></span>
+
+            <!-- Display login error message -->
+            <p th:if="${loginError}" style="color: red;">[[${loginError}]]</p>
+
+            <!-- Submit Button -->
+            <div style="display: flex; justify-content: center;">
+                <input type="submit" value="Login">
+            </div>
+        </form>
 </div>
 
 </body>

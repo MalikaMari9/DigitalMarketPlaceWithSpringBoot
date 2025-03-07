@@ -1,6 +1,52 @@
 <html xmlns:th="http://www.thymeleaf.org">
+<head>
+<style>
+
+/* Apply greyscale theme */
+body {
+    background: #f0f0f0; /* Light grey background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+}
+
+/* Container to center buttons */
+.signup-container {
+    text-align: center;
+}
+
+/* Style for both buttons */
+.signup-container a {
+    display: block;
+    width: 250px;
+    padding: 15px 20px;
+    margin: 20px auto;
+    font-size: 20px;
+    text-align: center;
+    text-decoration: none;
+    color: #333; /* Dark grey text */
+    background: #ccc; /* Medium grey background */
+    border: 2px solid #999; /* Darker grey border */
+    border-radius: 8px;
+    transition: all 0.3s ease-in-out;
+}
+
+/* Hover effect */
+.signup-container a:hover {
+    background: #999; /* Darker grey */
+    color: white;
+    border-color: #666;
+    transform: scale(1.05);
+}
+
+</style>
+</head>
 <body>
-<a th:href="@{/register}">Sign up as Buyer</a>
-<a th:href="@{/SellerRegister}">Sign up as Seller</a>
+    <div class="signup-container">
+        <a th:href="@{/register}">Sign up as Buyer</a>
+        <a th:href="@{/SellerRegister}">Sign up as Seller</a>
+    </div>
 </body>
 </html>

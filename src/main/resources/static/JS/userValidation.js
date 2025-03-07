@@ -69,8 +69,8 @@ function validateForm(event) {
     const phone = document.getElementById("phone").value;
     const phoneMessage = document.getElementById("phoneMessage");
   
-    if (!/^\d{10}$/.test(phone)) {
-      phoneMessage.textContent = "Phone number must be 10 digits.";
+    if (!/^\d{9,12}$/.test(phone)) {
+      phoneMessage.textContent = "Phone number must be between 9 and 12 digits.";
       return false;
     }
   
@@ -176,8 +176,5 @@ function validateForm(event) {
                     infoBox.classList.toggle("visible");
                   }
                   
-                  function showAlert() {
-                    alert("Please enter your data according to your ID card for approval.");
-                  }
-                  
+				 
                   

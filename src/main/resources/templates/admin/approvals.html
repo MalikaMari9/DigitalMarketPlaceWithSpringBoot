@@ -42,6 +42,7 @@
             <th>NRC No</th>
             <th>NRC Front</th>
             <th>NRC Back</th>
+            <th>Main Address</th> <!-- ✅ New Column -->
             <th>Actions</th>
         </tr>
     </thead>
@@ -54,30 +55,31 @@
             <td th:text="${seller.name}"></td>
             <td th:text="${seller.nrcNo}"></td>
             <td>
-    <img th:src="@{'/Images/NRC/' + ${seller.nrcFront}}" 
-         alt="NRC Front" width="50" class="nrc-image" 
-         onclick="openImageModal(this)">
-</td>
-<td>
-    <img th:src="@{'/Images/NRC/' + ${seller.nrcBack}}" 
-         alt="NRC Back" width="50" class="nrc-image" 
-         onclick="openImageModal(this)">
-</td>
-
+                <img th:src="@{'/Images/NRC/' + ${seller.nrcFront}}" 
+                     alt="NRC Front" width="50" class="nrc-image" 
+                     onclick="openImageModal(this)">
+            </td>
             <td>
-            
-                            <button class="accept-btn"  th:onclick="|handleSellerApproval(${seller.sellerID}, true)|">
-    <i data-lucide="circle-check"></i>
-</button>
-
-<button class="decline-btn" th:onclick="|handleSellerApproval(${seller.sellerID}, false)|">
-    <i data-lucide="circle-x"></i>
-</button>
-
+                <img th:src="@{'/Images/NRC/' + ${seller.nrcBack}}" 
+                     alt="NRC Back" width="50" class="nrc-image" 
+                     onclick="openImageModal(this)">
+            </td>
+             <td class="centered">
+                <!-- ✅ Check if the seller has a main address -->
+                <span th:text="${sellerHasMainAddress[seller.sellerID]}"></span>
+            </td>
+            <td>
+                <button class="accept-btn" th:onclick="|handleSellerApproval(${seller.sellerID}, true)|">
+                    <i data-lucide="circle-check"></i>
+                </button>
+                <button class="decline-btn" th:onclick="|handleSellerApproval(${seller.sellerID}, false)|">
+                    <i data-lucide="circle-x"></i>
+                </button>
             </td>
         </tr>
     </tbody>
 </table>
+
 
 
 
