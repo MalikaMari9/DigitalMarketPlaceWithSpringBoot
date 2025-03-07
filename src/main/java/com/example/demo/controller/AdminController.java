@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,6 +36,7 @@ import com.example.demo.entity.ItemApproval;
 import com.example.demo.entity.ItemImage;
 import com.example.demo.entity.Notification;
 import com.example.demo.entity.Order;
+import com.example.demo.entity.Review;
 import com.example.demo.entity.Seller;
 import com.example.demo.entity.User;
 import com.example.demo.entity.Auction.Auction;
@@ -48,6 +50,7 @@ import com.example.demo.repository.ItemImageRepository;
 import com.example.demo.repository.ItemRepository;
 import com.example.demo.repository.NotificationRepository;
 import com.example.demo.repository.OrderRepository;
+import com.example.demo.repository.ReviewRepository;
 import com.example.demo.repository.SellerRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.repository.ViewRepository;
@@ -101,13 +104,66 @@ public class AdminController {
 	DeliveryRepository deliRepo;
 	@Autowired
 	AddressRepository addressRepository;
+	@Autowired
+	ViewRepository viewRepository;
+	@Autowired
+	private ReviewRepository reviewRepo;
 
 	private final String BASE_DIR = "src/main/resources/static/Image/Item/";
 
 	@GetMapping("/admin/viewDashboard")
-	public String viewDashboard() {
-		return "admin/dashboard";
+	public String viewDashboard(Model model) {
+		// ✅ Fetch Total Orders
+		Long totalOrders = orderRepo.countTotalOrders();
 
+		// ✅ Fetch Total Sales (Sum of all orders' price * quantity)
+		Double totalSales = orderRepo.sumTotalSales();
+		if (totalSales == null) {
+			totalSales = 0.0;
+		}
+
+		// ✅ Fetch Total Visits (Total item views)
+		Long totalVisits = viewRepository.countTotalViews();
+		if (totalVisits == null) {
+			totalVisits = 0L;
+		}
+
+		// ✅ Add values to model
+		model.addAttribute("totalOrders", totalOrders);
+		model.addAttribute("totalSales", totalSales);
+		model.addAttribute("totalVisits", totalVisits);
+
+		return "admin/dashboard"; // Returns the Thymeleaf template
+	}
+
+	@GetMapping("/admin/viewDashboard/data")
+	@ResponseBody
+	public List<Map<String, Object>> getMonthlySalesAndViews() {
+		List<Map<String, Object>> monthlyData = new ArrayList<>();
+
+		for (int i = 1; i <= 12; i++) {
+			Map<String, Object> monthlyStats = new HashMap<>();
+
+			// ✅ Get Monthly Sales
+			Double monthlySales = orderRepo.getMonthlySales(i);
+			if (monthlySales == null) {
+				monthlySales = 0.0;
+			}
+
+			// ✅ Get Monthly Views
+			Long monthlyViews = viewRepository.getMonthlyViews(i);
+			if (monthlyViews == null) {
+				monthlyViews = 0L;
+			}
+
+			// ✅ Add Data to List
+			monthlyStats.put("month", YearMonth.of(YearMonth.now().getYear(), i).getMonth().toString());
+			monthlyStats.put("sales", monthlySales);
+			monthlyStats.put("views", monthlyViews);
+			monthlyData.add(monthlyStats);
+		}
+
+		return monthlyData;
 	}
 
 	// Approval
@@ -133,6 +189,64 @@ public class AdminController {
 		model.addAttribute("sellerHasMainAddress", sellerHasMainAddress); // ✅ Pass the map to the template
 
 		return "admin/approvals";
+	}
+
+	@GetMapping("/admin/bestSeller")
+	@ResponseBody
+	public Map<String, Object> getBestSeller() {
+		Map<String, Object> response = new HashMap<>();
+
+		List<Object[]> bestSellers = orderRepo.findBestSellerOfMonth();
+
+		System.out.println("🔍 Debug: Best Seller Query Result: " + bestSellers);
+
+		if (!bestSellers.isEmpty()) {
+			Object[] bestSeller = bestSellers.get(0); // Get the first result
+			response.put("userID", bestSeller[0]); // Seller's userID
+			response.put("sellerName", bestSeller[1]); // Seller's username
+			response.put("totalSales", bestSeller[2]); // Total Sales
+			response.put("salesTarget", "58% of sales target"); // Example Target
+		} else {
+			response.put("userID", null);
+			response.put("sellerName", "No Best Seller");
+			response.put("totalSales", 0);
+			response.put("salesTarget", "N/A");
+		}
+
+		return response;
+	}
+
+	@GetMapping("/admin/progressData")
+	@ResponseBody
+	public Map<String, Double> getProgressData() {
+		Map<String, Double> progressData = new HashMap<>();
+		Double SALES_GOAL = 4000.0;
+		Double PRODUCTS_GOAL = 100.0;
+		Double REVENUE_GOAL = 10000.0;
+		// Fetching total sales
+		Double totalSales = orderRepo.getTotalSalesThisMonth();
+		if (totalSales == null)
+			totalSales = 0.0;
+		double salesProgress = (totalSales / SALES_GOAL) * 100;
+
+		// Fetching total products sold
+		Integer totalProducts = orderRepo.getTotalProductsSoldThisMonth();
+		if (totalProducts == null)
+			totalProducts = 0;
+		double productsProgress = (totalProducts.doubleValue() / PRODUCTS_GOAL) * 100;
+
+		// Fetching total revenue
+		Double totalRevenue = orderRepo.getTotalRevenueThisMonth();
+		if (totalRevenue == null)
+			totalRevenue = 0.0;
+		double incomeProgress = (totalRevenue / REVENUE_GOAL) * 100;
+
+		// Store progress values
+		progressData.put("salesProgress", Math.min(salesProgress, 100)); // Ensure max is 100%
+		progressData.put("productsProgress", Math.min(productsProgress, 100));
+		progressData.put("incomeProgress", Math.min(incomeProgress, 100));
+
+		return progressData;
 	}
 
 	@ModelAttribute("approvalCount")
@@ -490,4 +604,121 @@ public class AdminController {
 			itemImageRepo.deleteAll(images); // ✅ Delete from database
 		}
 	}
+
+	@GetMapping("/admin/viewSeller/{sellerID}")
+	public String viewSellerProfileAsAdmin(@PathVariable Long sellerID, Model model, HttpSession session) {
+		// ✅ Ensure Admin is Logged In
+		User admin = (User) session.getAttribute("user");
+
+		// ✅ Fetch the Seller's Profile
+		Optional<User> sellerOptional = userRepo.findById(sellerID);
+		if (sellerOptional.isEmpty()) {
+			return "redirect:/admin/dashboard?error=SellerNotFound";
+		}
+		User seller = sellerOptional.get();
+
+		// ✅ Fetch only APPROVED items sold by the seller
+		List<Item> itemList = itemRepo.findBySeller_UserIDAndApprove(seller.getUserID(), Item.ApprovalStatus.APPROVED);
+		int postCount = itemList.size();
+
+		// ✅ Separate auction items from normal items (only APPROVED ones)
+		List<Item> auctionItemList = itemList.stream().filter(item -> item.getSellType() == Item.SellType.AUCTION)
+				.toList();
+
+		// ✅ Fetch auctions related to the seller's auction items
+		List<Auction> auctionResults = auctionRepo.findAllByItemIn(auctionItemList);
+
+		// ✅ Fetch highest bids for filtered auctions
+		Map<Long, Double> auctionMaxBids = new HashMap<>();
+		for (Auction auction : auctionResults) {
+			Double maxBid = auctionTrackRepo.findMaxPriceByAuctionID(auction.getAuctionID());
+			auctionMaxBids.put(auction.getAuctionID(), maxBid != null ? maxBid : auction.getStartPrice());
+		}
+
+		// ✅ Determine Role: "BUYER", "SELLER", or "BOTH"
+		String businessType = "BUYER"; // Default
+		if (seller.getSeller() != null) {
+			businessType = seller.getSeller().getBusinessType(); // "C2C" or "B2C"
+		}
+
+		// ✅ Fetch Total Orders, Sales, Spending, and Visits
+		int totalOrdersPlaced = orderRepo.countDistinctOrdersByBuyer(seller.getUserID()); // Orders placed as a BUYER
+		int totalOrdersReceived = orderRepo.countOrdersBySeller(seller.getUserID()); // Orders received as a SELLER
+		double totalSpending = orderRepo.sumTotalSpentByBuyer(seller.getUserID()); // Money spent as BUYER
+		double totalSales = orderRepo.sumTotalSalesBySeller(seller.getUserID()); // Sales revenue as SELLER
+		int totalVisits = viewRepo.countVisitsBySeller(seller.getUserID()); // Seller profile visits
+
+		// ✅ Fetch reviews for the seller
+		List<Review> reviews = reviewRepo.findByReviewed_UserID(seller.getUserID());
+		int reviewCount = reviews.size();
+		Double averageRating = reviewRepo.getAverageRating(seller.getUserID());
+
+		// ✅ Add attributes to the model
+		model.addAttribute("businessType", businessType);
+		model.addAttribute("seller", seller);
+		model.addAttribute("postCount", postCount);
+		model.addAttribute("itemList", itemList);
+		model.addAttribute("auctionItemList", auctionItemList);
+		model.addAttribute("auctionResults", auctionResults);
+		model.addAttribute("auctionMaxBids", auctionMaxBids);
+		model.addAttribute("totalOrdersPlaced", totalOrdersPlaced);
+		model.addAttribute("totalOrdersReceived", totalOrdersReceived);
+		model.addAttribute("totalSpending", totalSpending);
+		model.addAttribute("totalSales", totalSales);
+		model.addAttribute("totalVisits", totalVisits);
+		model.addAttribute("reviewCount", reviewCount);
+		model.addAttribute("reviews", reviews);
+		model.addAttribute("averageRating", averageRating != null ? averageRating : 0.0);
+
+		return "admin/viewSellerProfile"; // ✅ Updated Admin Page
+	}
+
+	@GetMapping("/sellerStats")
+	public Map<String, Object> getSellerStats(@RequestParam Long sellerID) {
+		Map<String, Object> response = new HashMap<>();
+
+		// Get total orders, sales, visits
+		int totalOrders = orderRepo.countOrdersBySeller(sellerID);
+		double totalSales = orderRepo.sumSalesBySeller(sellerID);
+		int totalVisits = viewRepo.countVisitsBySeller(sellerID);
+
+		// Get monthly trends
+		List<Object[]> orders = orderRepo.findMonthlyOrdersBySeller(sellerID);
+		List<Object[]> sales = orderRepo.findMonthlySalesBySeller(sellerID);
+		List<Object[]> visits = viewRepo.findMonthlyViewsBySeller(sellerID);
+
+		response.put("totalOrders", totalOrders);
+		response.put("totalSales", totalSales);
+		response.put("totalVisits", totalVisits);
+		response.put("orders", formatStats(orders));
+		response.put("sales", formatStats(sales));
+		response.put("visits", formatStats(visits));
+
+		return response;
+	}
+
+	private List<Map<String, Object>> formatStats(List<Object[]> stats) {
+		return stats.stream().map(stat -> {
+			Map<String, Object> data = new HashMap<>();
+			data.put("month", stat[0]);
+			data.put("value", stat[1]);
+			return data;
+		}).toList();
+	}
+
+	@GetMapping("/api/sellerStats")
+	@ResponseBody
+	public ResponseEntity<?> getSellerStatsAdmin(@RequestParam Long sellerID) {
+		if (sellerID == null) {
+			return ResponseEntity.badRequest().body(Map.of("error", "Seller ID is required"));
+		}
+
+		int totalOrders = orderRepo.countOrdersBySeller(sellerID);
+		double totalSales = orderRepo.sumSalesBySeller(sellerID);
+		int totalVisits = viewRepo.countVisitsBySeller(sellerID);
+
+		return ResponseEntity
+				.ok(Map.of("totalOrders", totalOrders, "totalSales", totalSales, "totalVisits", totalVisits));
+	}
+
 }

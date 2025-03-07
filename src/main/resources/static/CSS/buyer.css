@@ -422,3 +422,518 @@ body{
     margin-right: 15px; /* Add some spacing between text and button */
 }
 
+
+
+/* Statistics Cards */
+.stats-cards-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin: 2rem 1.5rem;
+  justify-content: space-between;
+}
+
+.stats-card {
+  flex: 1;
+  min-width: 320px;
+  max-width: 380px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  transition: all 0.2s ease;
+}
+
+.stats-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.stats-card-header {
+  display: flex;
+  align-items: center;
+}
+
+.stats-icon-wrapper {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 1rem;
+}
+
+.stats-icon-wrapper svg {
+  width: 24px;
+  height: 24px;
+  stroke-width: 2px;
+}
+
+.orders-icon {
+  background-color: #e8f5ff;
+  color: #0ea5e9;
+}
+
+.sales-icon {
+  background-color: #e6f7ee;
+  color: #10b981;
+}
+
+.visits-icon {
+  background-color: #f3e8ff;
+  color: #8b5cf6;
+}
+
+.stats-info {
+  flex: 1;
+}
+
+.stats-title {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6b7280;
+  margin: 0 0 0.25rem;
+}
+
+.stats-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0;
+  color: #1f2937;
+}
+
+.stats-change {
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 0.25rem 0.75rem;
+  border-radius: 100px;
+  margin-left: 0.5rem;
+}
+
+.stats-change.positive {
+  color: #10b981;
+  background-color: rgba(16, 185, 129, 0.1);
+}
+
+.stats-change.negative {
+  color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+.stats-chart {
+  height: 80px;
+  width: 100%;
+  position: relative;
+}
+
+.chart-line {
+  fill: none;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.chart-point {
+  fill: white;
+  stroke-width: 2.5;
+  r: 4;
+  transition: r 0.2s ease;
+}
+
+.chart-point:hover {
+  r: 6;
+}
+
+.orders-card .chart-line,
+.orders-card .chart-point {
+  stroke: #0ea5e9;
+}
+
+.sales-card .chart-line,
+.sales-card .chart-point {
+  stroke: #10b981;
+}
+
+.visits-card .chart-line,
+.visits-card .chart-point {
+  stroke: #8b5cf6;
+}
+
+
+/* Tooltip styles */
+.chart-tooltip {
+  position: absolute;
+  z-index: 10;
+  background-color: #1f2937;
+  color: white;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  padding: 0.5rem;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  min-width: 80px;
+  text-align: center;
+}
+
+.chart-tooltip.visible {
+  opacity: 1;
+}
+
+.tooltip-month {
+  display: block;
+  text-transform: uppercase;
+  font-weight: 600;
+  font-size: 0.7rem;
+  margin-bottom: 0.25rem;
+}
+
+.tooltip-value {
+  display: block;
+  font-weight: 700;
+  font-size: 0.875rem;
+}
+
+.orders-card .tooltip-value {
+  color: #38bdf8;
+}
+
+.sales-card .tooltip-value {
+  color: #34d399;
+}
+
+.visits-card .tooltip-value {
+  color: #a78bfa;
+}
+
+
+
+.reviewer-link {
+    text-decoration: none;
+    font-weight: bold;
+    color: #007bff; /* Blue color */
+}
+
+.reviewer-link:hover {
+    text-decoration: underline;
+    color: #0056b3; /* Darker blue */
+}
+
+/* Rating Stars - Replacement for span[th\:utext] */
+.rating-stars {
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+    color: #F97316;
+    margin-left: 6px;
+}
+
+/* Add Review Button */
+.add-review-btn {
+    background-color: var(--background-color) !important; /* #f2f2f2 */
+    color: var(--primary-color) !important; /* #333 */
+    border: none !important;
+    padding: 15px 20px; /* Increases vertical and horizontal padding */
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: background-color 0.2s ease, transform 0.2s ease !important;
+    margin-top: 12px !important;
+    margin-bottom: 24px !important;
+    display: block;
+    margin-left: auto;
+    width: 125px; /* or whatever width you need */
+}
+
+.add-review-btn:hover {
+    background-color: var(--muted-color) !important; /* #8E9196 */
+    transform: translateY(-2px) !important;
+}
+
+/* Review Form Styling */
+#reviewForm {
+    background-color: var(--background-color); /* #f2f2f2 */
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 28px;
+    border: 1px solid var(--border-color); /* #e2e8f0 */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+#reviewForm label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--primary-color); /* #333 */
+}
+
+#reviewForm select,
+#reviewForm textarea {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color); /* #e2e8f0 */
+    margin-bottom: 16px;
+    font-family: inherit;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+#reviewForm select:focus,
+#reviewForm textarea:focus {
+    outline: none;
+    border-color: var(--muted-color); /* #8E9196 */
+    box-shadow: 0 0 0 2px rgba(142, 145, 150, 0.2); /* Adjusted for muted-color */
+}
+
+#reviewForm textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+#reviewForm .button-container {
+    text-align: right !important; /* Moves buttons to the right */
+    margin-top: 20px !important; /* Optional: Adds space above */
+    gap: 20px;
+}
+
+#reviewForm button[type="submit"] {
+	background-color: var(--secondary-color); /* #555 */
+	   color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    display: inline-block !important; /* Forces side-by-side */
+    width: 125px;
+    vertical-align: middle !important; /* Aligns vertically */
+}
+
+#reviewForm button[type="submit"]:hover {
+    background-color: var(--muted-color); /* #8E9196 */
+}
+
+.cancel-review-btn {
+	background-color: var(--secondary-color); /* #555 */
+	   color: white;
+    border: 1px solid var(--border-color); /* #e2e8f0 */
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    display: inline-block !important; /* Forces side-by-side */
+    width: 125px;
+    vertical-align: middle !important; /* Aligns vertically */
+}
+
+.cancel-review-btn:hover {
+    background-color: var(--muted-color); /* #8E9196 */
+}
+
+/* Reviews List Styling Improvements */
+#reviewsList {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    margin-top: 24px;
+}
+
+#reviewsList .review-card {
+    background-color: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid var(--border-color); /* #e2e8f0 */
+    position: relative;
+}
+
+#reviewsList .review-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+#reviewsList .reviewer-link {
+    text-decoration: none;
+    font-weight: 600;
+    color: var(--primary-color); /* #333 */
+    transition: color 0.2s ease;
+}
+
+#reviewsList .reviewer-link:hover {
+    color: var(--secondary-color); /* #555 */
+    text-decoration: underline;
+}
+
+#reviewsList .review-date {
+    font-size: 0.85rem;
+    color: var(--muted-color); /* #8E9196 */
+    margin-top: 12px;
+    text-align: right;
+}
+
+#reviewsList p {
+    margin: 12px 0;
+    line-height: 1.6;
+}
+
+/* Edit and Delete Buttons */
+.button-container1 {
+    text-align: right !important; /* Moves buttons to the right */
+    margin-top: 20px !important; /* Adds space above */
+    gap: 8px; /* Matches the existing margin-right for spacing between buttons */
+}
+
+.edit-review-btn,
+.delete-review-btn {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    margin-right: 8px;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none; /* Removed border from common styles to avoid conflicts */
+    width: auto; /* Allows natural width based on content */
+}
+
+.edit-review-btn {
+    background-color: var(--background-color); /* #f2f2f2 */
+    color: var(--primary-color); /* #333 */
+    border: 1px solid var(--border-color); /* #e2e8f0 */
+}
+
+.edit-review-btn:hover {
+    background-color: var(--muted-color); /* #8E9196 */
+    border-color: var(--border-color); /* #e2e8f0 */
+}
+
+.delete-review-btn {
+    background-color: var(--background-color); /* #f2f2f2 */
+    color: var(--primary-color); /* #333 */
+    border: 1px solid var(--border-color); /* #e2e8f0 */
+}
+
+.delete-review-btn:hover {
+    background-color: var(--muted-color); /* #8E9196 */
+    color: var(--secondary-color); /* #555 */
+    border-color: var(--border-color); /* #e2e8f0 */
+}
+
+/* Edit Review Form */
+[id^="editForm"] {
+    background-color: var(--background-color); /* #f2f2f2 */
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 16px;
+    border: 1px solid var(--border-color); /* #e2e8f0 */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+[id^="editForm"] label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--primary-color); /* #333 */
+}
+
+[id^="editForm"] select,
+[id^="editForm"] textarea {
+    width: 100%;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color); /* #e2e8f0 */
+    margin-bottom: 16px;
+    font-family: inherit;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+[id^="editForm"] select:focus,
+[id^="editForm"] textarea:focus {
+    outline: none;
+    border-color: var(--muted-color); /* #8E9196 */
+    box-shadow: 0 0 0 2px rgba(142, 145, 150, 0.2); /* Adjusted for muted-color */
+}
+
+[id^="editForm"] textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+[id^="editForm"] .button-container {
+    text-align: right !important; /* Moves buttons to the right */
+    margin-top: 20px !important; /* Adds space above */
+    gap: 20px; /* Adds space between buttons */
+}
+
+[id^="editForm"] button[type="submit"] {
+    background-color: var(--secondary-color); /* #555 */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    display: inline-block !important; /* Forces side-by-side */
+    width: 125px;
+    vertical-align: middle !important; /* Aligns vertically */
+}
+
+[id^="editForm"] button[type="submit"]:hover {
+    background-color: var(--muted-color); /* #8E9196 */
+}
+
+.cancel-edit-btn {
+    background-color: var(--secondary-color); /*#555 */
+    color: white;
+    border: 1px solid var(--border-color); /* #e2e8f0 */
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    display: inline-block !important; /* Forces side-by-side */
+    width: 125px;
+    vertical-align: middle !important; /* Aligns vertically */
+}
+
+.cancel-edit-btn:hover {
+    background-color: var(--muted-color); /* #8E9196 */
+}
+
+
+.star-rating {
+    display: flex;
+    font-size: 20px;
+    color: #FFD700; /* Gold */
+}
+
+.star {
+    color: lightgray;
+}
+
+.star.filled {
+    color: #FFD700;
+}
+
+.star.half-filled {
+    color: #FFD700;
+    position: relative;
+}
+
+.star.half-filled::after {
+    content: "★";
+    position: absolute;
+    width: 50%;
+    overflow: hidden;
+    color: lightgray;
+}

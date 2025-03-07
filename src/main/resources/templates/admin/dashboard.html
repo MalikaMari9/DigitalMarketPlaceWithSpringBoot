@@ -32,7 +32,7 @@
                   </div>
                   <div class="stat-info">
                     <p class="stat-label">Total Orders</p>
-                    <h3 class="stat-value">1,482</h3>
+                     <h3 class="stat-value" th:text="${totalOrders}">0</h3>
                   </div>
                 </div>
                 <span class="trend-up">+24%</span>
@@ -52,7 +52,7 @@
                   </div>
                   <div class="stat-info">
                     <p class="stat-label">Total Sales</p>
-                    <h3 class="stat-value">$28,947</h3>
+                   <h3 class="stat-value" th:text="'$' + ${totalSales}">0</h3>
                   </div>
                 </div>
                 <span class="trend-up">+14%</span>
@@ -72,7 +72,7 @@
                   </div>
                   <div class="stat-info">
                     <p class="stat-label">Total Visits</p>
-                    <h3 class="stat-value">142,593</h3>
+                    <h3 class="stat-value" th:text="${totalVisits}">0</h3>
                   </div>
                 </div>
                 <span class="trend-down">-35%</span>
@@ -96,26 +96,28 @@
             </div>
           </div>
 
-          <div class="card">
-            <div class="card-content congrats-card">
-              <div class="congrats-content">
-                <div class="congrats-header">
-                  <h3><span>Congratulations Jhon</span> 🎉</h3>
-                  <p>You are the best seller of this month</p>
-                </div>
-
-                <div class="congrats-stats">
-                  <div class="amount">$168.5K</div>
-                  <div class="target">58% of sales target</div>
-                  <button class="view-details">View Details</button>
-                </div>
-
-                <div class="gift-box">
-                  <i data-feather="gift"></i>
-                </div>
-              </div>
+<div class="card">
+    <div class="card-content congrats-card">
+        <div class="congrats-content">
+            <div class="congrats-header">
+                <h3><span id="bestSellerName">Loading...</span> 🎉</h3>
+                <p id="bestSellerMessage">Finding the best seller of this month...</p>
             </div>
-          </div>
+
+            <div class="congrats-stats">
+                <div class="amount" id="bestSellerSales">$0</div>
+                <div class="target" id="bestSellerTarget">N/A</div>
+                <button class="view-details" id="viewDetailsButton" style="display: none;">View Details</button>
+            </div>
+
+            <div class="gift-box">
+                <i data-feather="gift"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+          
         </div>
 
         <div class="progress-grid">
@@ -168,19 +170,7 @@
           </div>
         </div>
 
-        <!-- Auction Overview Section -->
-        <div class="auction-overview-grid">
-          <div class="card">
-            <div class="card-header">
-              <h2 class="card-title">Auction Overview</h2>
-            </div>
-            <div class="card-content">
-              <div class="large-chart-container" id="auctionChart">
-                <canvas></canvas>
-              </div>
-            </div>
-          </div>
-        </div>
+
       </div>
     </div>
 

@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+     <link rel="stylesheet" th:href="@{/CSS/buyer.css}">
+      <link rel="stylesheet" th:href="@{/CSS/itemList/itemListProfile.css}">
+      <link rel="stylesheet" th:href="@{/CSS/admin/dashboard.css}" />
+         <link th:href="@{/CSS/headerFooter.css}" rel="stylesheet">
+ 	<script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <link th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css}" rel="stylesheet">
+ 	<script th:src="@{/JS/sidebar.js}"></script>
+ 	 <script th:src="@{/JS/CategorySelect.js}"></script>
+ 	   <script th:src="@{/JS/previewWishlistToggle.js}"></script>
+ 	       <link th:href="@{/CSS/admin/admin-header.css}" rel="stylesheet">
+         <script th:src="@{/JS/admin/admin-header.js}"></script>
+
+
+     <!-- Cart -->
+     	<script th:src="@{/JS/cart/cartIcon.js}"></script>
+</head>
+<body >
+<header th:insert="fragments/admin-header :: header"></header>
+<div class="profile-body" th:data-seller-id="${seller.userID}">
+
+    <div class="profile-wrapper">
+       <div class="profile-header">
+         
+<div class="profile-picture">
+<img th:src="@{/Image/profile/{image}(image=${seller.profilePath != null ? seller.profilePath : 'default.png'})}"
+     alt="User Profile">
+
+</div>
+
+    <div class="profile-info">
+        <h2 th:text="${seller.username}"></h2>
+
+        <!-- Show 'Edit Profile' button only if the logged-in user is viewing their own profile -->
+        <th:block th:if="${isOwnProfile}">
+            <a th:href="@{/editProfile}" class="edit-profile-btn">Edit Profile</a>
+        </th:block>
+<th:block th:if="${session.user != null and !isOwnProfile}">
+   <a th:href="@{'/chat?receiverID=' + ${seller.userID} + '&receiverName=' + ${seller.username}}"
+   class="chat-button">Chat</a>
+
+</th:block>
+<div class="profile-info">
+    <!-- ⭐ Star Rating Section -->
+    <div class="star-rating" th:attr="data-rating=${averageRating}" id="starRatingContainer">
+        <!-- Stars will be dynamically added by JS -->
+    </div>
+    <span id="reviewCount" th:text="'(' + ${reviewCount} + ' Reviews)'"></span>
+    
+    <p class="identity-verified">
+        <i class="fas fa-user-check"></i> Identity Verified
+    </p>
+</div>
+
+
+      <div class="stats">
+    <span><strong th:text="${postCount}"></strong> Posts</span>
+</div>
+
+
+<div class="bio">
+    <p id="bioText" th:text="${seller.bio}"></p>
+    <button id="toggleBioButton" onclick="toggleBio()" style="display: none;">See More</button>
+</div>
+
+    </div>
+</div>
+
+
+<div class="profile-tabs">
+
+<th:block th:if="${businessType=='C2C'}">
+    <button class="tab active" onclick="showSection('all-posts')">Items & Auctions</button>
+    </th:block>
+    <th:block th:if="${businessType=='B2C'}">
+    <button class="tab active" onclick="showSection('all-posts')">Items</button>
+    </th:block>
+    <button class="tab" onclick="showSection('reviews')">Reviews</button>
+</div>
+
+     <div class="profile-content">
+    <!-- ✅ This will now contain both items and auctions -->
+    <div id="all-posts" class="tab-content active">
+    
+    
+    <th:block th:if="${businessType=='C2C'}">
+    
+        <h3>Items & Auctions</h3>    
+        </th:block>
+        <th:block th:if="${businessType=='B2C'}"> <h3>Items</h3>   </th:block>
+        
+         <div class="posts">
+                <h3>All Posts</h3>
+              </div>  
+                <div th:if="${#lists.isEmpty(itemList)}">
+    <p class="no-posts-message">This user has not listed any items for sale.</p>
+</div>
+                
+                    <div class="search-results-container">
+    <div class="pg-product-card" th:each="item : ${itemList}"
+            th:if="${item.sellType != null and item.sellType.name() != 'AUCTION'}">
+              <div class="pg-product-image">
+                <img th:src="@{${item.getThumbnail()}}" alt="Thumbnail" />
+               
+              <th:block th:if="${session.user != null and session.user.userID != item.seller.userID}">
+
+                <button class="pg-wishlist-btn"
+        th:classappend="${wishlistedItemIds.contains(item.itemID) ? 'wishlisted' : ''}"
+        th:data-item-id="${item.itemID}">
+    <span th:text="${wishlistedItemIds.contains(item.itemID) ? '♥' : '♡'}"></span>
+</button>
+</th:block>
+
+              </div>
+              <div class="pg-product-info">
+                <h3 class="pg-product-title" th:text="${item.itemName}"></h3>
+                <p class="pg-price" th:text="'$' +${item.price}"></p>
+                <p class="pg-seller" th:text="${item.seller.username}"></p>
+               
+               <div class="pg-buttons">
+
+
+    <!-- If the user is the seller, show "Edit" button -->
+    <th:block th:if="${session.user != null and session.user.userID == item.seller.userID}">
+        <a th:href="@{/edit-item/{itemID}(itemID=${item.itemID})}" th:text="'Edit'" class="pg-view-btn"></a>
+    </th:block>
+
+    <!-- View Item Button for Everyone -->
+    <a th:href="@{/itemList/{itemID}(itemID=${item.itemID})}" th:text="'👁'" class="pg-view-btn"></a>
+</div>
+
+              </div>
+            </div>
+</div>
+      <th:block th:if="${businessType=='C2C'}">
+      <div class="posts">
+    <h3>All Approved Auctions</h3>
+</div>
+<div th:if="${#lists.isEmpty(auctionItemList)}">
+    <p class="no-posts-message">This user has no approved auctions.</p>
+</div>
+<div class="search-results-container">
+    <div class="pg-product-card" th:each="item : ${auctionItemList}" th:if="${item.approve.name() == 'APPROVED'}">
+        
+        <th:block th:each="auction : ${auctionResults}" th:if="${auction.item.itemID == item.itemID}">
+            <div class="pg-product-image">
+                <img th:src="@{${item.getThumbnail()}}" alt="Thumbnail">
+                
+                <th:block th:if="${session.user != null and session.user.userID != item.seller.userID}">
+                    <button class="pg-wishlist-btn"
+                            th:classappend="${wishlistedItemIds.contains(item.itemID) ? 'wishlisted' : ''}"
+                            th:data-item-id="${item.itemID}">
+                        <span th:text="${wishlistedItemIds.contains(item.itemID) ? '♥' : '♡'}"></span>
+                    </button>
+                </th:block>
+            </div>
+
+            <div class="pg-product-info">
+                <h3 class="pg-product-title" th:text="${item.itemName}"></h3>
+
+                <p class="pg-price"
+                   th:text="'$' + ${auctionMaxBids[auction.auctionID] != null ? auctionMaxBids[auction.auctionID] : auction.startPrice}">
+                </p>
+
+                <p class="pg-seller" th:text="${item.seller.username}"></p>
+
+                <div class="pg-buttons">
+                    <!-- If the user is NOT the seller, show "Auction" button -->
+                    <th:block th:if="${session.user == null or session.user.userID != item.seller.userID}">
+                        <a th:href="@{/itemList/{itemID}(itemID=${item.itemID})}">
+                            <button class="pg-auction-btn">Auction</button>
+                        </a>
+                    </th:block>
+
+                    <!-- If the user is the seller, show "Edit" button -->
+                    <th:block th:if="${session.user != null and session.user.userID == item.seller.userID}">
+                        <a th:href="@{/edit-item/{itemID}(itemID=${item.itemID})}" th:text="'Edit'" class="pg-view-btn"></a>
+                    </th:block>
+                </div>
+            </div>
+        </th:block>
+    </div>
+</div>
+</th:block>
+<!-- ✅ Show seller stats if the user is a SELLER or BOTH -->
+<th:block th:if="${sellerRole == 'SELLER' or sellerRole == 'BOTH'}">
+    <div class="stats-cards-container">
+        <div class="stats-card orders-seller-card">
+            <div class="stats-card-header">
+                <div class="stats-icon-wrapper orders-icon">
+                    <i data-lucide="package"></i>
+                </div>
+                <div class="stats-info">
+                    <h3 class="stats-title">Orders Received</h3> <!-- ✅ Updated Name -->
+                    <p class="stats-value" th:text="${totalOrdersReceived}">0</p>
+                </div>
+                <div class="stats-change positive">+24%</div>
+            </div>
+            <div class="stats-chart" id="orders-seller-chart"></div>
+        </div>
+
+        <div class="stats-card sales-card">
+            <div class="stats-card-header">
+                <div class="stats-icon-wrapper sales-icon">
+                    <i data-lucide="dollar-sign"></i>
+                </div>
+                <div class="stats-info">
+                    <h3 class="stats-title">Total Sales</h3>
+                    <p class="stats-value" th:text="'$' + ${totalSales}">0</p>
+                </div>
+                <div class="stats-change positive">+14%</div>
+            </div>
+            <div class="stats-chart" id="sales-chart"></div>
+        </div>
+
+        <div class="stats-card visits-card">
+            <div class="stats-card-header">
+                <div class="stats-icon-wrapper visits-icon">
+                    <i data-lucide="users"></i>
+                </div>
+                <div class="stats-info">
+                    <h3 class="stats-title">Total Visits</h3>
+                    <p class="stats-value" th:text="${totalVisits}">0</p>
+                </div>
+                <div class="stats-change negative">-35%</div>
+            </div>
+            <div class="stats-chart" id="visits-chart"></div>
+        </div>
+    </div>
+</th:block>
+
+<!-- ✅ Show buyer stats if the user is a BUYER or BOTH -->
+<th:block th:if="${sellerRole == 'BUYER' or sellerRole == 'BOTH'}">
+    <div class="stats-cards-container">
+        <div class="stats-card orders-buyer-card">
+            <div class="stats-card-header">
+                <div class="stats-icon-wrapper orders-icon">
+                    <i data-lucide="shopping-cart"></i>
+                </div>
+                <div class="stats-info">
+                    <h3 class="stats-title">Orders Placed</h3> <!-- ✅ Updated Name -->
+                    <p class="stats-value" th:text="${totalOrdersPlaced}">0</p>
+                </div>
+                <div class="stats-change positive">+18%</div>
+            </div>
+            <div class="stats-chart" id="orders-buyer-chart"></div>
+        </div>
+
+        <div class="stats-card spending-card">
+            <div class="stats-card-header">
+                <div class="stats-icon-wrapper spending-icon">
+                    <i data-lucide="dollar-sign"></i>
+                </div>
+                <div class="stats-info">
+                    <h3 class="stats-title">Total Spending</h3>
+                    <p class="stats-value" th:text="'$' + ${totalSpending}">0</p>
+                </div>
+                <div class="stats-change positive">+24%</div>
+            </div>
+            <div class="stats-chart" id="spending-chart"></div>
+        </div>
+    </div>
+</th:block>
+
+              
+            </div>
+                    
+           <div id="reviews" class="tab-content">
+        <h3>Reviews</h3>
+
+        <!-- ✅ Display Seller Ratings -->
+        <div class="profile-info">
+            <div class="star-rating" th:attr="data-rating=${averageRating}" id="starRatingContainer">
+                <!-- Stars will be dynamically added by JS -->
+            </div>
+            <span id="reviewCount" th:text="'(' + ${reviewCount} + ' Reviews)'"></span>
+        </div>
+
+        <!-- ✅ Reviews List -->
+        <div id="reviewsList">
+            <p th:if="${#lists.isEmpty(reviews)}">No reviews yet.</p>
+
+            <div th:each="review : ${reviews}" class="review-card">
+                <p>
+                    <a th:href="@{/viewSeller/{reviewerID}(reviewerID=${review.reviewer.userID})}" th:text="${review.reviewer.username}" class="reviewer-link"></a> - 
+                    <span th:utext="${'★'.repeat(review.rating) + '☆'.repeat(5 - review.rating)}"></span> 
+                </p>
+                <p th:text="${review.comment}"></p>
+                <p class="review-date" th:text="${#temporals.format(review.createdAt, 'yyyy-MM-dd HH:mm')}"></p>
+            </div>
+        </div>
+    </div>
+            
+            </div>
+            
+            <!-- ✅ Show this only if the user is a Seller (SELLER or C2C) -->
+
+            
+        </div>
+        
+    </div>
+<footer th:insert="fragments/footer :: footer"></footer>
+
+ <script>
+ document.addEventListener('DOMContentLoaded', function () {
+     const profileContainer = document.querySelector('.profile-body');
+     const sellerID = profileContainer.dataset.sellerId; // ✅ Extract seller ID
+
+     if (!sellerID) {
+         console.error("❌ Seller ID not found!");
+         return;
+     }
+
+     console.log("🔍 Seller ID:", sellerID);
+
+     // Initialize Lucide icons
+     lucide.createIcons();
+
+     // ✅ Pass sellerID to the function
+     loadSellerStats(sellerID);
+ });
+
+ // ✅ Fetch and Display Seller Statistics
+ async function loadSellerStats(sellerID) { // ✅ Receive sellerID as argument
+     try {
+         const response = await fetch(`/api/sellerStats?sellerID=${sellerID}`);
+         const stats = await response.json();
+
+         document.querySelector('.orders-card .stats-value').textContent = stats.totalOrders.toLocaleString();
+         document.querySelector('.sales-card .stats-value').textContent = `$${stats.totalSales.toLocaleString()}`;
+         document.querySelector('.visits-card .stats-value').textContent = stats.totalVisits.toLocaleString();
+
+         // ✅ Pass stats to chart function
+         createCharts(stats);
+     } catch (error) {
+         console.error("❌ Error loading seller stats:", error);
+     }
+ }
+
+ // ✅ Create Charts Dynamically
+ function createCharts(stats) {
+     createLineChart('orders-chart', stats.orders, '#0ea5e9');
+     createLineChart('sales-chart', stats.sales, '#10b981');
+     createLineChart('visits-chart', stats.visits, '#8b5cf6');
+ }
+
+ // ✅ Create Line Chart Function
+ function createLineChart(containerId, dataPoints, color) {
+     const container = document.getElementById(containerId);
+     container.innerHTML = ''; // Clear existing content
+
+     const ctx = document.createElement('canvas');
+     container.appendChild(ctx);
+
+     new Chart(ctx, {
+         type: 'line',
+         data: {
+             labels: dataPoints.map(d => d.month),
+             datasets: [{
+                 label: containerId.includes('sales') ? 'Sales ($)' :
+                        containerId.includes('orders') ? 'Orders' : 'Visits',
+                 data: dataPoints.map(d => d.value),
+                 borderColor: color,
+                 backgroundColor: color,
+                 borderWidth: 2,
+                 tension: 0.4,
+                 fill: false
+             }]
+         },
+         options: {
+             responsive: true,
+             maintainAspectRatio: false,
+             plugins: {
+                 legend: { display: false }
+             },
+             scales: {
+                 y: { beginAtZero: true, display: false },
+                 x: { display: false }
+             }
+         }
+     });
+ }
+
+ // ✅ Tooltips for Charts
+ function setupTooltips() {
+     const tooltips = ['orders-tooltip', 'sales-tooltip', 'visits-tooltip'];
+     tooltips.forEach(tooltipId => {
+         const tooltip = document.createElement('div');
+         tooltip.className = 'chart-tooltip';
+         tooltip.id = tooltipId;
+         document.body.appendChild(tooltip);
+     });
+ }
+
+ // ✅ Show Tooltip
+ function showTooltip(event, month, value, tooltip) {
+     tooltip.innerHTML = `<span class="tooltip-month">${month}</span> <span class="tooltip-value">${value}</span>`;
+
+     const rect = event.target.getBoundingClientRect();
+     tooltip.style.left = `${rect.left + window.scrollX - (tooltip.offsetWidth / 2) + (rect.width / 2)}px`;
+     tooltip.style.top = `${rect.top + window.scrollY - tooltip.offsetHeight - 10}px`;
+     tooltip.classList.add('visible');
+ }
+
+ // ✅ Hide Tooltip
+ function hideTooltip(tooltip) {
+     tooltip.classList.remove('visible');
+ }
+
+ // ✅ Initialize tooltips
+ setupTooltips();
+ </script>
+ <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const starContainer = document.getElementById("starRatingContainer");
+        
+        if (starContainer) {
+            let averageRating = parseFloat(starContainer.getAttribute("data-rating")) || 0;
+            updateStarRating(averageRating);
+        }
+    });
+
+    // ✅ Unified Function to Display Star Rating
+    function updateStarRating(averageRating) {
+        const starContainer = document.getElementById("starRatingContainer");
+        if (!starContainer) return;
+
+        starContainer.innerHTML = ""; // Clear previous stars
+        const fullStars = Math.floor(averageRating);
+        const hasHalfStar = (averageRating % 1) >= 0.5;
+        const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+
+        // ✅ Add Full Stars
+        for (let i = 0; i < fullStars; i++) {
+            starContainer.innerHTML += '<span class="star filled">★</span>';
+        }
+
+        // ✅ Add Half Star
+        if (hasHalfStar) {
+            starContainer.innerHTML += '<span class="star half-filled">★</span>';
+        }
+
+        // ✅ Add Empty Stars
+        for (let i = 0; i < emptyStars; i++) {
+            starContainer.innerHTML += '<span class="star">★</span>';
+        }
+    }
+</script>
+
+
+     
+
+    <script th:src="@{/JS/profile.js}"></script>
+    
+</body>
+</html>

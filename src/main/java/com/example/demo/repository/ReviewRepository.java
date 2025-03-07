@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.example.demo.entity.Review;
@@ -25,4 +26,17 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 	// 🔹 Get the average rating of a user (rounded to 2 decimal places)
 	@Query("SELECT COALESCE(AVG(r.rating), 0) FROM Review r WHERE r.reviewed = :user")
 	double getAverageRating(User user);
+
+	List<Review> findByReviewed_UserID(Long sellerID);
+
+	// ✅ Calculate the average rating for a seller
+	@Query("SELECT AVG(r.rating) FROM Review r WHERE r.reviewed.userID = :sellerID")
+	Double getAverageRating(@Param("sellerID") Long sellerID);
+
+	@Query("SELECT r.reviewed.userID, AVG(r.rating), COUNT(r) FROM Review r GROUP BY r.reviewed.userID")
+	List<Object[]> findAllAverageRatings();
+
+	@Query("SELECT r FROM Review r WHERE r.reviewed.userID = :sellerID")
+	List<Review> findByReviewedUser(@Param("sellerID") Long sellerID);
+
 }

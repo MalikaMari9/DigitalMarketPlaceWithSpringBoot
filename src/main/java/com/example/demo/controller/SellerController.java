@@ -34,6 +34,8 @@ import com.example.demo.entity.AdminNotification;
 import com.example.demo.entity.Category;
 import com.example.demo.entity.Item;
 import com.example.demo.entity.ItemApproval;
+import com.example.demo.entity.Notification;
+import com.example.demo.entity.Review;
 import com.example.demo.entity.Seller;
 import com.example.demo.entity.User;
 import com.example.demo.entity.Auction.Auction;
@@ -41,6 +43,8 @@ import com.example.demo.repository.AdminNotificationRepository;
 import com.example.demo.repository.CategoryRepository;
 import com.example.demo.repository.ItemApprovalRepository;
 import com.example.demo.repository.ItemRepository;
+import com.example.demo.repository.NotificationRepository;
+import com.example.demo.repository.ReviewRepository;
 import com.example.demo.repository.SellerRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.repository.WishlistRepository;
@@ -72,6 +76,11 @@ public class SellerController {
 	AuctionTrackRepository auctionTrackRepo;
 	@Autowired
 	AuctionRepository auctionRepo;
+	@Autowired
+	private ReviewRepository reviewRepo;
+
+	@Autowired
+	private NotificationRepository notiRepo;
 
 	@ModelAttribute("categories")
 	public List<Category> loadCategories() {
@@ -211,18 +220,132 @@ public class SellerController {
 			wishlistedItemIds = wishlistRepo.findWishlistedItemIdsByUser(user);
 		}
 
+		String businessType = "BUYER"; // Default
+		if (seller.getSeller() != null) {
+			businessType = seller.getSeller().getBusinessType(); // "C2C" or "B2C"
+		}
+
+		// ✅ Fetch reviews for the seller
+		List<Review> reviews = new ArrayList<>();
+		int reviewCount = 0;
+		Double averageRating = 0.0;
+
+		if (seller != null) {
+			reviews = reviewRepo.findByReviewedUser(seller.getUserID());
+			reviewCount = reviews.size();
+			averageRating = reviewRepo.getAverageRating(seller.getUserID());
+		}
 		// ✅ Add attributes to the model
+		model.addAttribute("businessType", businessType);
 		model.addAttribute("itemList", itemList); // Normal + Auction items
 		model.addAttribute("auctionItemList", auctionItemList); // Auction items only (approved)
 		model.addAttribute("auctionResults", auctionResults); // Only auctions that have started
 		model.addAttribute("auctionMaxBids", auctionMaxBids);
 		model.addAttribute("seller", seller);
+		model.addAttribute("reviewCount", reviewCount);
+		model.addAttribute("reviews", reviews);
+		model.addAttribute("averageRating", averageRating);
 		model.addAttribute("wishlistedItemIds", wishlistedItemIds);
 		model.addAttribute("postCount", postCount);
 		model.addAttribute("isOwnProfile", sellerID == null || (session.getAttribute("user") != null
 				&& ((User) session.getAttribute("user")).getUserID().equals(seller.getUserID())));
 
 		return "viewprofile"; // ✅ Thymeleaf template for profile view
+	}
+
+	@PostMapping("/addReview/{sellerID}")
+	public String addReview(@PathVariable Long sellerID, @RequestParam int rating, @RequestParam String comment,
+			HttpSession session) {
+		User reviewer = (User) session.getAttribute("user");
+
+		if (reviewer == null) {
+			return "redirect:/loginPage?error=notLoggedIn";
+		}
+
+		Optional<User> reviewedUserOpt = userRepo.findById(sellerID);
+		if (reviewedUserOpt.isEmpty()) {
+			return "redirect:/?error=SellerNotFound";
+		}
+
+		User reviewedUser = reviewedUserOpt.get();
+
+		// ✅ Prevent users from reviewing themselves
+		if (reviewer.getUserID().equals(reviewedUser.getUserID())) {
+			return "redirect:/viewSeller/" + sellerID + "?error=CannotReviewYourself";
+		}
+
+		// ✅ Check if user already reviewed this seller
+		Optional<Review> existingReview = reviewRepo.findByReviewerAndReviewed(reviewer, reviewedUser);
+		if (existingReview.isPresent()) {
+			return "redirect:/viewSeller/" + sellerID + "?error=AlreadyReviewed";
+		}
+
+		// ✅ Create new review
+		Review newReview = new Review();
+		newReview.setReviewer(reviewer);
+		newReview.setReviewed(reviewedUser);
+		newReview.setRating(rating);
+		newReview.setComment(comment);
+		reviewRepo.save(newReview);
+
+		String notiText = reviewer.getUsername() + " has left you a review: \"" + comment + "\"";
+		Notification reviewNotification = new Notification(reviewedUser, reviewer, notiText, "NEW_REVIEW");
+		notiRepo.save(reviewNotification);
+
+		return "redirect:/viewSeller/" + sellerID;
+	}
+
+	@PostMapping("/editReview/{reviewID}")
+	public String editReview(@PathVariable Long reviewID, @RequestParam int rating, @RequestParam String comment,
+			HttpSession session) {
+		User reviewer = (User) session.getAttribute("user");
+
+		if (reviewer == null) {
+			return "redirect:/loginPage?error=notLoggedIn";
+		}
+
+		Optional<Review> reviewOpt = reviewRepo.findById(reviewID);
+		if (reviewOpt.isEmpty()) {
+			return "redirect:/?error=ReviewNotFound";
+		}
+
+		Review review = reviewOpt.get();
+
+		// ✅ Ensure only the review owner can edit
+		if (!review.getReviewer().getUserID().equals(reviewer.getUserID())) {
+			return "redirect:/viewSeller/" + review.getReviewed().getUserID() + "?error=UnauthorizedEdit";
+		}
+
+		review.setRating(rating);
+		review.setComment(comment);
+		reviewRepo.save(review);
+
+		return "redirect:/viewSeller/" + review.getReviewed().getUserID();
+	}
+
+	@PostMapping("/deleteReview/{reviewID}")
+	public String deleteReview(@PathVariable Long reviewID, HttpSession session) {
+		User reviewer = (User) session.getAttribute("user");
+
+		if (reviewer == null) {
+			return "redirect:/loginPage?error=notLoggedIn";
+		}
+
+		Optional<Review> reviewOpt = reviewRepo.findById(reviewID);
+		if (reviewOpt.isEmpty()) {
+			return "redirect:/?error=ReviewNotFound";
+		}
+
+		Review review = reviewOpt.get();
+
+		// ✅ Ensure only the review owner can delete
+		if (!review.getReviewer().getUserID().equals(reviewer.getUserID())) {
+			return "redirect:/viewSeller/" + review.getReviewed().getUserID() + "?error=UnauthorizedDelete";
+		}
+
+		reviewRepo.delete(review);
+
+		return "redirect:/viewSeller/" + review.getReviewed().getUserID();
 	}
 
 	// Warehouse

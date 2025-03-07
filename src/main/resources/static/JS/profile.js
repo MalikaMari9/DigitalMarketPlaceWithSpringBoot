@@ -1,3 +1,6 @@
+
+
+// Function to switch between profile sections
 function showSection(sectionId) {
     // Hide all tab contents
     document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
@@ -10,11 +13,18 @@ function showSection(sectionId) {
 
     // Highlight the active tab
     document.querySelectorAll('.tab').forEach(tab => {
-        if (tab.textContent.trim().toLowerCase() === sectionId.replace('-', ' ')) {
+        if (tab.textContent.toLowerCase() === sectionId.replace('-', ' ')) {
             tab.classList.add('active');
         }
     });
 }
+
+document.addEventListener('DOMContentLoaded', function () {
+    if (window.location.hash === "#reviews") {
+        showSection("reviews");
+    }
+});
+
 
 // Toggle between truncated and full bio
 function toggleBio() {
@@ -69,3 +79,27 @@ document.querySelectorAll('.see-more').forEach(button => {
         // Implement logic for expanding/collapsing additional details
     });
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+    const reviewForm = document.getElementById("reviewForm");
+    const showReviewButton = document.getElementById("showReviewForm");
+
+    if (showReviewButton) {
+        showReviewButton.addEventListener("click", function () {
+            reviewForm.style.display = (reviewForm.style.display === "none" || reviewForm.style.display === "") 
+                ? "block" 
+                : "none";
+        });
+    }
+});
+function showEditForm(reviewID) {
+    let editForm = document.getElementById("editForm" + reviewID);
+    editForm.style.display = (editForm.style.display === "none" || editForm.style.display === "") ? "block" : "none";
+}
+function cancelReview() {
+    document.getElementById("reviewForm").style.display = "none"; // Hide the Add Review form
+}
+
+function cancelEdit(reviewID) {
+    document.getElementById("editForm" + reviewID).style.display = "none"; // Hide the Edit Review form
+}

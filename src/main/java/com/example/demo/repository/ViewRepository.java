@@ -61,4 +61,26 @@ public interface ViewRepository extends JpaRepository<View, Long> {
 	@Query("SELECT COUNT(v) > 0 FROM View v WHERE v.item = :item AND v.user = :user")
 	boolean existsByItemAndUser(@Param("item") Item item, @Param("user") User user);
 
+	@Query("SELECT COUNT(v) FROM View v WHERE v.item.seller = :seller")
+	Long countViewsBySeller(@Param("seller") User seller);
+
+	@Query("SELECT COUNT(v) FROM View v WHERE v.item.seller = :seller AND MONTH(v.viewedAt) = :month")
+	Long getMonthlyViews(@Param("seller") User seller, @Param("month") int month);
+
+	@Query("SELECT COUNT(v) FROM View v")
+	Long countTotalViews();
+
+	@Query("SELECT COUNT(v) FROM View v WHERE MONTH(v.viewedAt) = :month")
+	Long getMonthlyViews(int month);
+
+	@Query("SELECT COUNT(v) FROM View v WHERE v.item.seller.userID = :sellerID")
+	int countVisitsBySeller(@Param("sellerID") Long sellerID);
+
+	// ✅ Monthly Views for Seller's Items
+	@Query("SELECT MONTH(v.viewedAt), COUNT(v) FROM View v WHERE v.item.seller.userID = :sellerID "
+			+ "GROUP BY MONTH(v.viewedAt) ORDER BY MONTH(v.viewedAt)")
+	List<Object[]> findMonthlyViewsBySeller(@Param("sellerID") Long sellerID);
+
+	// ✅ Count total visits for a seller's profile
+
 }

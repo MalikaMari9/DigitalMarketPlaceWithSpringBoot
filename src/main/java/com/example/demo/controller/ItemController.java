@@ -40,6 +40,7 @@ import com.example.demo.entity.Item;
 import com.example.demo.entity.Item.ApprovalStatus;
 import com.example.demo.entity.ItemApproval;
 import com.example.demo.entity.ItemImage;
+import com.example.demo.entity.Review;
 import com.example.demo.entity.User;
 import com.example.demo.entity.Auction.Auction;
 import com.example.demo.entity.tag.ItemTag;
@@ -51,6 +52,7 @@ import com.example.demo.repository.ItemApprovalRepository;
 import com.example.demo.repository.ItemImageRepository;
 import com.example.demo.repository.ItemRepository;
 import com.example.demo.repository.NotificationRepository;
+import com.example.demo.repository.ReviewRepository;
 import com.example.demo.repository.SellerRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.repository.ViewRepository;
@@ -95,6 +97,8 @@ public class ItemController {
 	AdminNotificationRepository adminNotificationRepo;
 	@Autowired
 	SellerRepository sellerRepo;
+	@Autowired
+	private ReviewRepository reviewRepo;
 
 	@Autowired
 	CartRepository cartRepo;
@@ -136,8 +140,8 @@ public class ItemController {
 		Auction auction = auctionRepo.findByItem_ItemID(itemID);
 
 		Long auctionID = (auction != null) ? auction.getAuctionID() : null;
-		int AuctionCount = auctionTrackRepo.countByAuction_AuctionID(auctionID);
-		Double maxBid = auctionTrackRepo.findMaxPriceByAuctionID(auctionID);
+		int AuctionCount = auctionID != null ? auctionTrackRepo.countByAuction_AuctionID(auctionID) : 0;
+		Double maxBid = auctionID != null ? auctionTrackRepo.findMaxPriceByAuctionID(auctionID) : null;
 
 		// Ensure tagOutput is always a valid String (avoid null pointer issues)
 		List<String> tagNames = itemRepo.findTagNamesByItemId(itemID);
@@ -148,9 +152,21 @@ public class ItemController {
 		// ✅ Retrieve user from session
 		User user = (User) session.getAttribute("user");
 
+		// ✅ Get seller information
+		User seller = item.getSeller();
+		List<Review> reviews = new ArrayList<>();
+		int reviewCount = 0;
+		Double averageRating = 0.0;
+
+		if (seller != null) {
+			reviews = reviewRepo.findByReviewedUser(seller.getUserID());
+			reviewCount = reviews.size();
+			averageRating = reviewRepo.getAverageRating(seller.getUserID());
+		}
+
 		// ✅ Check if user is an admin or seller
 		Boolean isAdmin = (Boolean) session.getAttribute("admin");
-		boolean isSeller = (user != null && "SELLER".equals(user.getRole()));
+		boolean isSeller = (user != null && user.getSeller() != null); // Use `getSeller()` instead of role
 
 		model.addAttribute("isAdmin", isAdmin != null && isAdmin);
 		model.addAttribute("isSeller", isSeller);
@@ -190,6 +206,11 @@ public class ItemController {
 		model.addAttribute("auction", auction);
 		model.addAttribute("auctionCount", AuctionCount);
 		model.addAttribute("maxBid", maxBid);
+
+		// ✅ Fix review data (for the item's seller)
+		model.addAttribute("reviewCount", reviewCount);
+		model.addAttribute("averageRating", averageRating != null ? averageRating : 0.0);
+		model.addAttribute("reviews", reviews);
 
 		return "viewSale";
 	}

@@ -44,6 +44,17 @@
 
 </th:block>
 
+<div class="profile-info">
+    <!-- ⭐ Star Rating Section -->
+    <div class="star-rating" th:attr="data-rating=${averageRating}" id="starRatingContainer">
+        <!-- Stars will be dynamically added by JS -->
+    </div>
+    <span id="reviewCount" th:text="'(' + ${reviewCount} + ' Reviews)'"></span>
+    
+    <p class="identity-verified">
+        <i class="fas fa-user-check"></i> Identity Verified
+    </p>
+</div>
 
       <div class="stats">
     <span><strong th:text="${postCount}"></strong> Posts</span>
@@ -60,14 +71,20 @@
 
 
 <div class="profile-tabs">
+<th:block th:if="${businessType=='C2C'}">
     <button class="tab active" onclick="showSection('all-posts')">Items & Auctions</button>
+    </th:block>
+    <th:block th:if="${businessType=='B2C'}"><button class="tab active" onclick="showSection('all-posts')">Items</button></th:block>
     <button class="tab" onclick="showSection('reviews')">Reviews</button>
 </div>
 
      <div class="profile-content">
     <!-- ✅ This will now contain both items and auctions -->
     <div id="all-posts" class="tab-content active">
+    <th:block th:if="${businessType=='C2C'}">
         <h3>Items & Auctions</h3>    
+     </th:block>
+         <th:block th:if="${businessType=='B2C'}"> <h3>Items </h3>  </th:block>
         
         
          <div class="posts">
@@ -118,7 +135,7 @@
               </div>
             </div>
 </div>
-     
+     <th:block th:if="${businessType=='C2C' }">    
       <div class="posts">
     <h3>All Approved Auctions</h3>
 </div>
@@ -169,13 +186,85 @@
 </div>
 
      
-              
+  </th:block>            
             </div>
                     
-            <div id="reviews" class="tab-content">
-                <h3>Reviews</h3>
-                <p>You have no reviews yet.</p>
-            </div>
+			<div id="reviews" class="tab-content">
+			    <h3>Reviews</h3>
+
+			    <!-- Add Review Button -->
+			    <th:block th:if="${session.user != null and session.user.userID != seller.userID}">
+			        <button id="showReviewForm" class="add-review-btn"
+			                th:if="${not #lists.contains(reviews.![reviewer.userID], session.user.userID)}">Add Review</button>
+			    </th:block>
+
+			    <!-- Review Form (Hidden by Default) -->
+			    <form id="reviewForm" th:action="@{/addReview/{sellerID}(sellerID=${seller.userID})}" method="post" style="display: none;">
+			        <label for="rating">Rating:</label>
+			        <select id="rating" name="rating">
+			            <option value="5">★★★★★ (5)</option>
+			            <option value="4">★★★★☆ (4)</option>
+			            <option value="3">★★★☆☆ (3)</option>
+			            <option value="2">★★☆☆☆ (2)</option>
+			            <option value="1">★☆☆☆☆ (1)</option>
+			        </select>
+
+			        <label for="comment">Comment:</label>
+			        <textarea id="comment" name="comment" rows="3" required></textarea>
+
+					<div class="button-container">
+						<button type="submit">Submit</button>
+						<button type="button" onclick="cancelReview()" class="cancel-review-btn">Cancel</button>
+					  </div>
+			    </form>
+
+			    <!-- Reviews List -->
+			    <div id="reviewsList">
+			        <p th:if="${#lists.isEmpty(reviews)}">No reviews yet.</p>
+
+			        <div th:each="review : ${reviews}" class="review-card">
+						<p>
+						    <a th:href="@{/viewSeller/{reviewerID}(reviewerID=${review.reviewer.userID})}" th:text="${review.reviewer.username}" class="reviewer-link"></a> - 
+						    <span th:utext="${'★'.repeat(review.rating) + '☆'.repeat(5 - review.rating)}"></span> 
+						</p>
+
+
+			            <p th:text="${review.comment}"></p>
+			            <p class="review-date" th:text="${#temporals.format(review.createdAt, 'yyyy-MM-dd HH:mm')}"></p>
+
+			            <!-- Edit and Delete Buttons (Only for Review Owner) -->
+			            <th:block th:if="${session.user != null and session.user.userID == review.reviewer.userID}">
+							<div class="button-container1">
+			                <button class="edit-review-btn" th:onclick="'showEditForm(' + ${review.reviewID} + ')'">Edit</button>
+			                <form th:action="@{/deleteReview/{reviewID}(reviewID=${review.reviewID})}" method="post" style="display:inline;">
+			                    <button type="submit" class="delete-review-btn">Delete</button>
+			                </form>
+							</div>
+							
+			                <!-- Edit Review Form (Initially Hidden) -->
+			                <form th:id="'editForm' + ${review.reviewID}" th:action="@{/editReview/{reviewID}(reviewID=${review.reviewID})}" method="post" style="display: none;">
+			                    <label for="editRating">Rating:</label>
+			                    <select name="rating">
+			                        <option value="5" th:selected="${review.rating == 5}">★★★★★ (5)</option>
+			                        <option value="4" th:selected="${review.rating == 4}">★★★★☆ (4)</option>
+			                        <option value="3" th:selected="${review.rating == 3}">★★★☆☆ (3)</option>
+			                        <option value="2" th:selected="${review.rating == 2}">★★☆☆☆ (2)</option>
+			                        <option value="1" th:selected="${review.rating == 1}">★☆☆☆☆ (1)</option>
+			                    </select>
+
+			                    <label for="editComment">Comment:</label>
+			                    <textarea name="comment" rows="3" required th:text="${review.comment}"></textarea>
+									
+									<div class="button-container">
+										<button type="submit">Update</button>
+										 <button type="button" th:onclick="'cancelEdit(' + ${review.reviewID} + ')'" class="cancel-edit-btn">Cancel</button>
+									    </div>
+						
+			                </form>
+			            </th:block>
+			        </div>
+			    </div>
+			</div>
             
             </div>
         </div>
@@ -184,6 +273,42 @@
  <script>
         lucide.createIcons();
       </script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const starContainer = document.getElementById("starRatingContainer");
+        
+        if (starContainer) {
+            let averageRating = parseFloat(starContainer.getAttribute("data-rating")) || 0;
+            updateStarRating(averageRating);
+        }
+    });
+
+    // ✅ Unified Function to Display Star Rating
+    function updateStarRating(averageRating) {
+        const starContainer = document.getElementById("starRatingContainer");
+        if (!starContainer) return;
+
+        starContainer.innerHTML = ""; // Clear previous stars
+        const fullStars = Math.floor(averageRating);
+        const hasHalfStar = (averageRating % 1) >= 0.5;
+        const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+
+        // ✅ Add Full Stars
+        for (let i = 0; i < fullStars; i++) {
+            starContainer.innerHTML += '<span class="star filled">★</span>';
+        }
+
+        // ✅ Add Half Star
+        if (hasHalfStar) {
+            starContainer.innerHTML += '<span class="star half-filled">★</span>';
+        }
+
+        // ✅ Add Empty Stars
+        for (let i = 0; i < emptyStars; i++) {
+            starContainer.innerHTML += '<span class="star">★</span>';
+        }
+    }
+</script>
 
     <script th:src="@{/JS/profile.js}"></script>
 </body>

@@ -1,176 +1,45 @@
-// Initialize Feather icons
-document.addEventListener('DOMContentLoaded', () => {
-    // Initialize Feather icons
-    feather.replace();
+document.addEventListener("DOMContentLoaded", async () => {
+    async function fetchData() {
+        try {
+            const response = await fetch("/admin/viewDashboard/data");
+            return await response.json();
+        } catch (error) {
+            console.error("❌ Error fetching dashboard data:", error);
+            return [];
+        }
+    }
 
-    // Chart data
-    const data = [
-        { name: "Jan", sales: 4000, views: 2400, orders: 3200 },
-        { name: "Feb", sales: 3000, views: 1398, orders: 2800 },
-        { name: "Mar", sales: 2000, views: 9800, orders: 3400 },
-        { name: "Apr", sales: 2780, views: 3908, orders: 2900 },
-        { name: "May", sales: 1890, views: 4800, orders: 3100 },
-        { name: "Jun", sales: 2390, views: 3800, orders: 3500 },
-    ];
+    async function renderOverviewChart() {
+        const data = await fetchData();
 
-    // Auction data
-    const auctionData = [
-        { month: "Jan", bidItems: 45, winningBids: 32 },
-        { month: "Feb", bidItems: 55, winningBids: 41 },
-        { month: "Mar", bidItems: 65, winningBids: 48 },
-        { month: "Apr", bidItems: 75, winningBids: 58 },
-        { month: "May", bidItems: 85, winningBids: 62 },
-        { month: "Jun", bidItems: 95, winningBids: 78 },
-    ];
+        if (data.length === 0) {
+            console.warn("⚠️ No data available.");
+            return;
+        }
 
-    // Initialize progress circles
-    const initializeProgressCircles = () => {
-        const circles = document.querySelectorAll('.progress-circle');
-        const circumference = 2 * Math.PI * 44; // 2πr where r=44
+        const labels = data.map(d => d.month);
+        const salesData = data.map(d => d.sales);
+        const viewsData = data.map(d => d.views);
 
-        circles.forEach(circle => {
-            const progress = circle.dataset.progress;
-            const progressBar = circle.querySelector('.progress-bar');
-            const offset = circumference - (progress / 100) * circumference;
-            
-            progressBar.style.strokeDasharray = `${circumference} ${circumference}`;
-            progressBar.style.strokeDashoffset = offset;
-            
-            // Set color based on the parent's icon color
-            const parentCard = circle.closest('.card');
-            const icon = parentCard.querySelector('.progress-icon');
-            if (icon.classList.contains('blue')) {
-                progressBar.style.stroke = '#0EA5E9';
-            } else if (icon.classList.contains('green')) {
-                progressBar.style.stroke = '#10B981';
-            } else if (icon.classList.contains('purple')) {
-                progressBar.style.stroke = '#8B5CF6';
-            }
-        });
-    };
+        const ctx = document.querySelector("#overviewChart canvas").getContext("2d");
 
-    // Initialize all charts using Chart.js
-    const initializeCharts = () => {
-        // Orders Chart
-        new Chart(document.querySelector('#ordersChart canvas'), {
-            type: 'line',
+        new Chart(ctx, {
+            type: "bar",
             data: {
-                labels: data.map(d => d.name),
-                datasets: [{
-                    data: data.map(d => d.orders),
-                    backgroundColor: '#0EA5E9',
-                    borderColor: '#0EA5E9',
-                    borderWidth: 2,
-                    tension: 0.4,
-                    fill: false
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        display: false
-                    },
-                    x: {
-                        display: false
-                    }
-                }
-            }
-        });
-        
-        // Sales Chart
-        new Chart(document.querySelector('#salesChart canvas'), {
-            type: 'line',
-            data: {
-                labels: data.map(d => d.name),
-                datasets: [{
-                    data: data.map(d => d.sales),
-                    backgroundColor: '#10B981',
-                    borderColor: '#10B981',
-                    borderWidth: 2,
-                    tension: 0.4,
-                    fill: false
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        display: false
-                    },
-                    x: {
-                        display: false
-                    }
-                }
-            }
-        });
-        
-        // Visits Chart
-        new Chart(document.querySelector('#visitsChart canvas'), {
-            type: 'line',
-            data: {
-                labels: data.map(d => d.name),
-                datasets: [{
-                    data: data.map(d => d.views),
-                    backgroundColor: '#8B5CF6',
-                    borderColor: '#8B5CF6',
-                    borderWidth: 2,
-                    tension: 0.4,
-                    fill: false
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        display: false
-                    },
-                    x: {
-                        display: false
-                    }
-                }
-            }
-        });
-        
-        // Overview Chart
-        new Chart(document.querySelector('#overviewChart canvas'), {
-            type: 'bar',
-            data: {
-                labels: data.map(d => d.name),
+                labels: labels,
                 datasets: [
                     {
-                        label: 'Sales',
-                        data: data.map(d => d.sales),
-                        backgroundColor: '#10B981',
-                        borderColor: '#10B981',
+                        label: "Sales ($)",
+                        data: salesData,
+                        backgroundColor: "#10B981",
+                        borderColor: "#10B981",
                         borderWidth: 1
                     },
                     {
-                        label: 'Views',
-                        data: data.map(d => d.views),
-                        backgroundColor: '#8B5CF6',
-                        borderColor: '#8B5CF6',
+                        label: "Views",
+                        data: viewsData,
+                        backgroundColor: "#8B5CF6",
+                        borderColor: "#8B5CF6",
                         borderWidth: 1
                     }
                 ]
@@ -181,96 +50,92 @@ document.addEventListener('DOMContentLoaded', () => {
                 plugins: {
                     legend: {
                         display: true,
-                        position: 'top',
+                        position: "top",
                         labels: {
-                            color: '#718096'
+                            color: "#718096"
                         }
                     }
                 },
                 scales: {
                     y: {
                         beginAtZero: true,
-                        grid: {
-                            color: '#2D3748'
-                        },
-                        ticks: {
-                            color: '#718096'
-                        }
+                        grid: { color: "#2D3748" },
+                        ticks: { color: "#718096" }
                     },
                     x: {
-                        grid: {
-                            color: '#2D3748'
-                        },
-                        ticks: {
-                            color: '#718096'
-                        }
+                        grid: { color: "#2D3748" },
+                        ticks: { color: "#718096" }
                     }
                 }
             }
         });
+    }
+	
+	async function fetchBestSeller() {
+	        try {
+	            const response = await fetch("/admin/bestSeller");
+	            return await response.json();
+	        } catch (error) {
+	            console.error("❌ Error fetching best seller:", error);
+	            return { userID: null, sellerName: "No Best Seller", totalSales: 0, salesTarget: "N/A" };
+	        }
+	    }
 
-        // Auction Overview Chart
-        new Chart(document.querySelector('#auctionChart canvas'), {
-            type: 'line',
-            data: {
-                labels: auctionData.map(d => d.month),
-                datasets: [
-                    {
-                        label: 'Bid Items',
-                        data: auctionData.map(d => d.bidItems),
-                        backgroundColor: '#9b87f5',
-                        borderColor: '#9b87f5',
-                        borderWidth: 2,
-                        tension: 0.4,
-                        fill: false
-                    },
-                    {
-                        label: 'Winning Bids',
-                        data: auctionData.map(d => d.winningBids),
-                        backgroundColor: '#D946EF',
-                        borderColor: '#D946EF',
-                        borderWidth: 2,
-                        tension: 0.4,
-                        fill: false
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: true,
-                        position: 'top',
-                        labels: {
-                            color: '#718096'
-                        }
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: {
-                            color: '#2D3748'
-                        },
-                        ticks: {
-                            color: '#718096'
-                        }
-                    },
-                    x: {
-                        grid: {
-                            color: '#2D3748'
-                        },
-                        ticks: {
-                            color: '#718096'
-                        }
-                    }
-                }
-            }
-        });
-    };
+	    async function renderBestSeller() {
+	        const data = await fetchBestSeller();
+	        document.querySelector(".congrats-header h3 span").textContent = data.sellerName;
+	        document.querySelector(".congrats-stats .amount").textContent = `$${data.totalSales}`;
+	        document.querySelector(".congrats-stats .target").textContent = data.salesTarget;
 
-    // Initialize everything
-    initializeProgressCircles();
-    initializeCharts();
+	        const detailsButton = document.querySelector(".view-details");
+	        if (data.userID) {
+	            detailsButton.style.display = "block"; // Show button if seller exists
+	            detailsButton.setAttribute("onclick", `window.location.href='/admin/sellerDetails?userID=${data.userID}'`);
+	        } else {
+	            detailsButton.style.display = "none"; // Hide button if no seller
+	        }
+	    }
+		async function fetchProgressData() {
+		       try {
+		           const response = await fetch("/admin/progressData");
+		           return await response.json();
+		       } catch (error) {
+		           console.error("❌ Error fetching progress data:", error);
+		           return { salesProgress: 0, productsProgress: 0, incomeProgress: 0 };
+		       }
+		   }
+
+		   async function updateProgressCircles() {
+		       const data = await fetchProgressData();
+
+		       // Update progress values
+		       document.querySelectorAll(".progress-circle").forEach(circle => {
+		           let progressType = circle.closest('.card').querySelector("h4").textContent;
+		           let progressValue = 0;
+
+		           if (progressType.includes("Sales")) {
+		               progressValue = data.salesProgress;
+		           } else if (progressType.includes("Products")) {
+		               progressValue = data.productsProgress;
+		           } else if (progressType.includes("Income")) {
+		               progressValue = data.incomeProgress;
+		           }
+
+		           // Update circle animation
+		           const progressBar = circle.querySelector('.progress-bar');
+		           const progressText = circle.querySelector('.progress-value');
+		           const circumference = 2 * Math.PI * 44; // 2πr where r=44
+		           const offset = circumference - (progressValue / 100) * circumference;
+
+		           progressBar.style.strokeDasharray = `${circumference} ${circumference}`;
+		           progressBar.style.strokeDashoffset = offset;
+		           progressText.textContent = `${Math.round(progressValue)}%`;
+		       });
+		   }
+
+		   updateProgressCircles();
+
+	    renderBestSeller();
+
+    renderOverviewChart();
 });

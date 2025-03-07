@@ -730,6 +730,32 @@ button:disabled {
     transform: scale(1.05); /* Slightly enlarge on hover */
 }
 
+.star-rating {
+    display: flex;
+    font-size: 20px;
+    color: #FFD700; /* Gold */
+}
+
+.star {
+    color: lightgray;
+}
+
+.star.filled {
+    color: #FFD700;
+}
+
+.star.half-filled {
+    color: #FFD700;
+    position: relative;
+}
+
+.star.half-filled::after {
+    content: "★";
+    position: absolute;
+    width: 50%;
+    overflow: hidden;
+    color: lightgray;
+}
 
 
 

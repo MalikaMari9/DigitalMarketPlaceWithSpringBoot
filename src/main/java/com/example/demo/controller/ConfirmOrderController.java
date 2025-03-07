@@ -70,7 +70,8 @@ public class ConfirmOrderController {
 		}
 
 		List<Receipt> pendingReceipts = receiptRepository.findBySeller(seller).stream()
-				.filter(receipt -> receipt.getDelivery().getStatus() == Delivery.DeliveryStatus.PENDING)
+				.filter(receipt -> receipt.getDelivery() != null
+						&& receipt.getDelivery().getStatus() == Delivery.DeliveryStatus.PENDING)
 				.collect(Collectors.toList());
 
 		model.addAttribute("pendingReceipts", pendingReceipts);

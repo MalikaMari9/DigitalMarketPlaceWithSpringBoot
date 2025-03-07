@@ -1,5 +1,9 @@
 package com.example.demo.controller;
 
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,14 +13,20 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.example.demo.entity.Item;
+import com.example.demo.entity.Seller;
 import com.example.demo.entity.User;
+import com.example.demo.repository.OrderRepository;
+import com.example.demo.repository.SellerRepository;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.repository.ViewRepository;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -25,19 +35,131 @@ public class TBDLoginController {
 
 	@Autowired
 	private UserRepository userRepository;
+	@Autowired
+	private OrderRepository orderRepository;
+	@Autowired
+	private ViewRepository viewRepository;
+	@Autowired
+	private SellerRepository sellerRepository;
 
 	@GetMapping("/loginPage")
 	public String goLogin() {
 		return "TBDLogin";
 	}
 
+	// Seller Dashboard
 	@GetMapping("/sellerDashboard")
-	public String sellerLogin(HttpSession session) {
+	public String sellerDashboard(HttpSession session, Model model) {
 		User seller = (User) session.getAttribute("user");
 		if (seller == null) {
 			return "redirect:/loginPage";
 		}
+
+		// ✅ Fetch Total Orders for the seller
+		Long totalOrders = orderRepository.countBySeller(seller);
+
+		// ✅ Fetch Total Sales (sum of all orders' price * quantity)
+		Double totalSales = orderRepository.sumTotalSalesBySeller(seller);
+		if (totalSales == null) {
+			totalSales = 0.0;
+		}
+
+		// ✅ Fetch Total Visits (number of times items from this seller were viewed)
+		Long totalVisits = viewRepository.countViewsBySeller(seller);
+		if (totalVisits == null) {
+			totalVisits = 0L;
+		}
+
+		model.addAttribute("totalOrders", totalOrders);
+		model.addAttribute("totalSales", totalSales);
+		model.addAttribute("totalVisits", totalVisits);
+
 		return "sellerDashboard";
+	}
+
+	@GetMapping("/sellerDashboard/data")
+	@ResponseBody
+	public List<Map<String, Object>> getSellerDashboardData(HttpSession session) {
+		User seller = (User) session.getAttribute("user");
+		if (seller == null) {
+			return Collections.emptyList();
+		}
+
+		List<Map<String, Object>> monthlyData = new ArrayList<>();
+
+		for (int i = 1; i <= 12; i++) {
+			Map<String, Object> monthlyStats = new HashMap<>();
+
+			// ✅ Get Monthly Sales
+			Double monthlySales = orderRepository.getMonthlySales(seller, i);
+			if (monthlySales == null) {
+				monthlySales = 0.0;
+			}
+
+			// ✅ Get Monthly Views
+			Long monthlyViews = viewRepository.getMonthlyViews(seller, i);
+			if (monthlyViews == null) {
+				monthlyViews = 0L;
+			}
+
+			// ✅ Add Data to List
+			monthlyStats.put("month", YearMonth.of(LocalDate.now().getYear(), i).getMonth().toString());
+			monthlyStats.put("sales", monthlySales);
+			monthlyStats.put("views", monthlyViews);
+			monthlyData.add(monthlyStats);
+		}
+
+		return monthlyData;
+	}
+
+	@GetMapping("/sellerDashboard/topProducts")
+	@ResponseBody
+	public Map<String, Object> getTopProducts(HttpSession session) {
+		User sellerUser = (User) session.getAttribute("user");
+		if (sellerUser == null) {
+			return Collections.singletonMap("error", "User not logged in.");
+		}
+
+		Seller seller = sellerRepository.findByUser(sellerUser);
+		if (seller == null) {
+			return Collections.singletonMap("error", "Seller profile not found.");
+		}
+
+		Map<String, Object> response = new HashMap<>();
+		List<Map<String, Object>> productList = new ArrayList<>();
+
+		if ("B2C".equals(seller.getBusinessType())) {
+			response.put("type", "B2C");
+
+			List<Object[]> topProducts = orderRepository.findTopSellingProducts(sellerUser);
+			for (Object[] product : topProducts) {
+				Item item = (Item) product[0];
+				Map<String, Object> productData = new HashMap<>();
+				productData.put("itemID", item.getItemID());
+				productData.put("itemName", item.getItemName());
+				productData.put("thumbnail", item.getThumbnail());
+				productData.put("totalSales", product[1]);
+				productData.put("stock", item.getQuality());
+				productList.add(productData);
+			}
+		} else {
+			response.put("type", "C2C");
+
+			List<Object[]> recentSales = orderRepository.findRecentlySoldProducts(sellerUser);
+			for (Object[] product : recentSales) {
+				Item item = (Item) product[0];
+				Map<String, Object> productData = new HashMap<>();
+				productData.put("itemID", item.getItemID());
+				productData.put("itemName", item.getItemName());
+				productData.put("thumbnail", item.getThumbnail());
+				productData.put("soldDate", product[1]);
+				productData.put("quantity", product[2]);
+				productList.add(productData);
+			}
+		}
+
+		response.put("products", productList);
+		return response;
 	}
 
 	@PostMapping("/loginPage")
@@ -143,4 +265,5 @@ public class TBDLoginController {
 			return ResponseEntity.status(401).body(Map.of("error", "User not found"));
 		}
 	}
+
 }

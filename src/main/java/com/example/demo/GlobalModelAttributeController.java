@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 
 import com.example.demo.entity.User;
 import com.example.demo.repository.AddressRepository;
+import com.example.demo.repository.ReviewRepository;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -14,6 +15,8 @@ public class GlobalModelAttributeController {
 
 	@Autowired
 	private AddressRepository addressRepository;
+	@Autowired
+	private ReviewRepository reviewRepo;
 
 	@ModelAttribute("hasMainAddress")
 	public boolean checkSellerMainAddress(HttpSession session) {
@@ -26,4 +29,5 @@ public class GlobalModelAttributeController {
 
 		return true; // Default to true for non-sellers
 	}
+
 }
