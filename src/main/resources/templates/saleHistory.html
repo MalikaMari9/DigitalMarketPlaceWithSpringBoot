@@ -71,7 +71,7 @@
         <td th:text="${#temporals.format(receipt.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
 
         <td>
-            <a class="table-link" th:href="@{/viewBuyer/{buyerID}(buyerID=${receipt.buyer.userID})}"
+            <a class="table-link" th:href="@{/viewSeller/{buyerID}(buyerID=${receipt.buyer.userID})}"
                th:text="${receipt.buyer.username}"></a>
         </td>
 

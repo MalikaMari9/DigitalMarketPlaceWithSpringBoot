@@ -192,8 +192,9 @@ public class SellerController {
 			}
 		}
 
-		// ✅ Fetch only APPROVED items sold by the seller
-		List<Item> itemList = itemRepo.findBySeller_UserIDAndApprove(seller.getUserID(), Item.ApprovalStatus.APPROVED);
+		// ✅ Fetch only APPROVED items, sort AVAILABLE first, then SOLD OUT
+		List<Item> itemList = itemRepo.findApprovedItemsBySeller(seller.getUserID());
+
 		int postCount = itemList.size();
 
 		// ✅ Separate auction items from normal items (only APPROVED ones)
@@ -201,8 +202,8 @@ public class SellerController {
 				.toList();
 
 		// ✅ Fetch auctions related to the seller's auction items
-		List<Auction> auctionResults = auctionRepo.findAllByItemIn(auctionItemList);
-
+//		List<Auction> auctionResults = auctionRepo.findAllByItemIn(auctionItemList);
+		List<Auction> auctionResults = auctionRepo.findAllSortedByItemIn(itemList);
 		// ✅ Filter out auctions that haven't started yet
 
 		// ✅ Fetch highest bids for filtered auctions

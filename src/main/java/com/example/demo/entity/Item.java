@@ -274,4 +274,9 @@ public class Item {
 		long years = months / 12;
 		return years + " years ago";
 	}
+
+	public boolean isSoldOut() {
+		return this.quality == 0;
+	}
+
 }

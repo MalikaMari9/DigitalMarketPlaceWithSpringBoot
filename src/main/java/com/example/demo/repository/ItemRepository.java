@@ -144,4 +144,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
 	Page<Item> findByApprove(ApprovalStatus pending, Pageable itemPageable);
 
+	@Query("SELECT i FROM Item i WHERE i.seller.userID = :sellerID AND i.approve = 'APPROVED' ORDER BY i.quality DESC")
+	List<Item> findApprovedItemsBySeller(@Param("sellerID") Long sellerID);
+
 }

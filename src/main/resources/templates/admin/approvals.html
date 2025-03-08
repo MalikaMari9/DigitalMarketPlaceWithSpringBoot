@@ -79,6 +79,9 @@
                 </button>
             </td>
         </tr>
+          <tr th:if="${#lists.isEmpty(pendingSellers)}">
+        <td colspan="10" class="no-data-message">No pending sellers found.</td>
+    </tr>
     </tbody>
 </table>
 <!-- ✅ Seller Approvals Pagination -->
@@ -156,6 +159,9 @@
 
             </td>
         </tr>
+         <tr th:if="${#lists.isEmpty(pendingItems)}">
+        <td colspan="10" class="no-data-message">No pending items found.</td>
+    </tr>
     </tbody>
 </table>
 <!-- ✅ Item Approvals Pagination -->
@@ -178,15 +184,25 @@
 
 
 <!-- Modal for Rejection Reason -->
-<div id="rejectionModal" class="modal">
-    <div class="modal-content">
-        <h3>Reject Item</h3>
-        <textarea id="rejectionReason" placeholder="Enter rejection reason..."></textarea>
-        <button onclick="confirmRejection()">Submit</button>
-        <button onclick="closeModal()">Cancel</button>
+    <!-- Updated Modal for Rejection Reason -->
+    <div id="rejectionModal" class="modal">
+      <div class="rejection-modal">
+        <div class="modal-header">
+          <h3>Reject Item</h3>
+          <button class="close-modal" onclick="closeModal()">
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p class="modal-label">Please provide a reason for rejection:</p>
+          <textarea id="rejectionReason" placeholder="Enter rejection reason..." class="resizable"></textarea>
+        </div>
+        <div class="modal-footer">
+          <button class="cancel-btn" onclick="closeModal()">Cancel</button>
+          <button class="submit-btn" onclick="confirmRejection()">Submit</button>
+        </div>
+      </div>
     </div>
-</div>
-
               </div>
             </div>
           </div>

@@ -159,6 +159,140 @@
     border-radius: 0.375rem;
 }
 
+/* Rejection Modal styles - New Design */
+.rejection-modal {
+    position: relative;
+    background-color: #FFFFFF;
+    margin: 10% auto;
+    width: 90%;
+    max-width: 500px;
+    border-radius: 10px;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    animation: scale-in 0.3s ease-out;
+    overflow: hidden;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    background-color: #F1F1F1;
+    color: #9F9EA1;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+	color: black;
+}
+
+.close-modal {
+    background: none;
+    border: none;
+    color: #9F9EA1;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+
+.close-modal:hover {
+    background-color: rgba(159, 158, 161, 0.1);
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.modal-label {
+    font-size: 0.95rem;
+    color: black;
+    margin-bottom: 10px;
+}
+
+#rejectionReason {
+    width: 100%;
+    min-height: 120px;
+    padding: 12px;
+    border: 1px solid #C8C8C9;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    color: black;
+    resize: vertical; /* Make the textarea vertically resizable */
+}
+
+#rejectionReason:focus {
+    outline: none;
+    border-color: #9F9EA1;
+    box-shadow: 0 0 0 3px rgba(159, 158, 161, 0.2);
+}
+
+.resizable {
+    resize: both; /* Allow both vertical and horizontal resizing */
+    overflow: auto; /* Add scrollbars when content overflows */
+    min-height: 120px;
+    max-height: 300px;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 16px 20px;
+    background-color: #F6F6F7;
+    border-top: 1px solid #F1F0FB;
+}
+
+.cancel-btn {
+    padding: 8px 16px;
+    background-color: #F1F1F1;
+    color: #9F9EA1;
+    border: 1px solid #F1F0FB;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.cancel-btn:hover {
+    background-color: #7e7e7e;
+}
+
+.submit-btn {
+    padding: 8px 16px;
+    background-color: #7e7e7e;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.submit-btn:hover {
+    background-color: #BEBEBE;
+}
+
+/* Animation keyframes */
+@keyframes scale-in {
+    from {
+        transform: scale(0.95);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
@@ -181,4 +315,10 @@
         padding: 0.125rem 0.375rem;
         font-size: 0.75rem;
     }
+    
+    .rejection-modal {
+        width: 95%;
+        margin: 5% auto;
+    }
 }
+
