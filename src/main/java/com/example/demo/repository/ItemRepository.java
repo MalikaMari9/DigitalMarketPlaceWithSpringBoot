@@ -31,6 +31,10 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 			        OR LOWER(c.name) LIKE LOWER(CONCAT('%', :query, '%'))
 			        OR LOWER(t.name) LIKE LOWER(CONCAT('%', :query, '%'))
 			    )
+			    ORDER BY
+			        CASE
+			            WHEN i.quality > 0 THEN 1
+			        END
 			""")
 	List<Item> searchItems(@Param("query") String query);
 

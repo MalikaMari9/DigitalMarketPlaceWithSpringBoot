@@ -9,7 +9,23 @@
    <script th:src="@{/JS/CategorySelect.js}"></script>
   <script th:src="@{/JS/sidebar.js}"></script>
   <script th:src="@{/JS/previewWishlistToggle.js}"></script>
+<style>
 
+.sold-out-badge {
+   position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: rgba(51, 51, 51, 0.8);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    z-index: 10;
+    pointer-events: none;
+}
+
+</style>
 </head>
 <body>
 <header th:insert="fragments/header :: header"></header>
@@ -40,7 +56,9 @@
                 th:if="${item.sellType != null and item.sellType.name() != 'AUCTION'}">
                   
                 <div class="pg-product-image">
+                
                     <img th:src="@{${item.getThumbnail()}}" alt="Thumbnail">
+                      <span class="sold-out-badge" th:if="${item.isSoldOut()}">SOLD OUT</span>
                     <button class="pg-wishlist-btn"
         th:classappend="${wishlistedItemIds.contains(item.itemID) ? 'wishlisted' : ''}"
         th:data-item-id="${item.itemID}">
@@ -77,13 +95,24 @@
                   
                 <div class="pg-product-image">
                     <img th:src="@{${item.getThumbnail()}}" alt="Thumbnail">
+                     <span class="sold-out-badge" th:if="${item.isSoldOut()}">SOLD OUT</span>
+
+            <!-- ⏳ EXPIRED Badge -->
+           <span class="sold-out-badge" 
+    th:each="auction : ${auctionResults}" 
+    th:if="${auction != null and auction.item.itemID == item.itemID and !item.isSoldOut() 
+            and auction.endTime != null and auction.endTime.isBefore(T(java.time.LocalDateTime).now())}">
+    EXPIRED
+</span>
                    <button class="pg-wishlist-btn"
         th:classappend="${wishlistedItemIds.contains(item.itemID) ? 'wishlisted' : ''}"
         th:data-item-id="${item.itemID}">
     <span th:text="${wishlistedItemIds.contains(item.itemID) ? '♥' : '♡'}"></span>
                 </div>
 
+
                 <div class="pg-product-info">
+                
                     <h3 class="pg-product-title" th:text="${item.itemName}"></h3>
                     
                

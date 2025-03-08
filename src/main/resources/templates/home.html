@@ -360,10 +360,7 @@
                 <h3 class="pg-product-title" th:text="${item.itemName}"></h3>
                 <p class="pg-price" th:text="'$' + ${item.price}"></p>
                 <p class="pg-seller" th:text="${item.seller.username}"></p>
-                <div class="pg-rating">
-                  <div class="pg-stars">★★★★☆</div>
-                  <span>4.5</span>
-                </div>
+                
                 <div class="pg-buttons">
                                     <button class="pg-cart-btn"  
 				  th:data-item-id="${item.itemID}"
@@ -427,10 +424,7 @@
             <h3 class="pg-product-title" th:text="${item.itemName}"></h3>
             <p class="pg-price" th:text="'$' + ${item.price}"></p>
             <p class="pg-seller" th:text="${item.seller.username}"></p>
-            <div class="pg-rating">
-                <div class="pg-stars">★★★★☆</div>
-                <span>4.5</span>
-            </div>
+            
             <div class="pg-buttons">
                                <button class="pg-cart-btn"  
 				  th:data-item-id="${item.itemID}"

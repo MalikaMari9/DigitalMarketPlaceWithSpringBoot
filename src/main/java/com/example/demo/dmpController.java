@@ -1,7 +1,9 @@
 package com.example.demo;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -23,6 +25,7 @@ import com.example.demo.repository.AnnouncementRepository;
 import com.example.demo.repository.CartRepository;
 import com.example.demo.repository.CategoryRepository;
 import com.example.demo.repository.ItemRepository;
+import com.example.demo.repository.ViewRepository;
 import com.example.demo.repository.WishlistRepository;
 
 import jakarta.servlet.http.HttpSession;
@@ -37,6 +40,8 @@ public class dmpController {
 	private WishlistRepository wishlistRepo;
 	@Autowired
 	private AnnouncementRepository announcementRepository;
+	@Autowired
+	private ViewRepository viewRepo;
 
 	@GetMapping("/viewItem")
 	public String viewItem() {
@@ -182,12 +187,26 @@ public class dmpController {
 
 	@ModelAttribute("placeholderitems")
 	public List<Item> loadItems() {
-		List<Item> items = itemRepo.findAll();
+		List<Item> mostViewed = viewRepo.findMostViewedItems(PageRequest.of(0, 8)).getContent();
+		List<Item> latest = itemRepo.findLatestItems(PageRequest.of(0, 8)).getContent();
 
-		// Debugging: Print items to the console
-		System.out.println("Loaded Items from DB: " + items);
+		// Merge lists while maintaining priority
+		LinkedHashSet<Item> sortedItems = new LinkedHashSet<>();
+		sortedItems.addAll(mostViewed); // Prioritize most viewed
+		sortedItems.addAll(latest); // Then add latest
 
-		return items;
+		List<Item> result = new ArrayList<>(sortedItems);
+
+		// Reverse the order before returning
+		Collections.reverse(result);
+
+		// Ensure only 8 items are returned
+		if (result.size() > 8) {
+			result = result.subList(0, 8);
+		}
+
+		System.out.println("Loaded Items (Reversed Most Viewed + Latest, Limited to 8): " + result.size());
+		return result;
 	}
 
 }

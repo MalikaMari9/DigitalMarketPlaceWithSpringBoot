@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -456,11 +457,14 @@ public class ItemController {
 
 		// ✅ Filter out non-approved items
 		searchResults = searchResults.stream().filter(item -> item.getApprove() == Item.ApprovalStatus.APPROVED)
+				.sorted(Comparator.comparing(Item::isSoldOut)) // ✅ Sold-out items go last
 				.toList();
 
 		// ✅ Fetch auctions related to the approved search results
 		List<Auction> auctionResults = auctionRepo.findAllByItemIn(searchResults);
-
+		List<Auction> sortedAuctions = auctionResults.stream()
+				.sorted(Comparator.comparing(a -> a.getEndTime().isBefore(LocalDateTime.now()))) // ✅ Expired goes last
+				.toList();
 		// ✅ Filter out auctions that haven't started yet
 
 		// ✅ Fetch highest bids for auction items
@@ -487,6 +491,7 @@ public class ItemController {
 
 		// ✅ Add data to the model
 		model.addAttribute("searchResults", searchResults);
+		model.addAttribute("auctionResults", sortedAuctions);
 		model.addAttribute("auctionResults", auctionResults);
 		model.addAttribute("auctionMaxBids", auctionMaxBids);
 		model.addAttribute("query", query);
@@ -554,6 +559,9 @@ public class ItemController {
 
 			System.out.println("Category-based recommendations: " + byCategory.size());
 			System.out.println("Tag-based recommendations: " + byTag.size());
+
+			byCategory = byCategory.stream().filter(item -> item.getQuality() > 0).toList();
+			byTag = byTag.stream().filter(item -> item.getQuality() > 0).toList();
 
 			recommendedItems.addAll(byCategory);
 			recommendedItems.addAll(byTag);

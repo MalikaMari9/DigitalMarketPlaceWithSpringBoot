@@ -48,8 +48,7 @@ public interface AuctionRepository extends JpaRepository<Auction, Long> {
 	Page<Auction> findBySellerAndSearch(@Param("seller") User seller, @Param("searchfield") String searchfield,
 			Pageable pageable);
 
-	@Query("SELECT a FROM Auction a WHERE a.item IN:items ORDER	BY CASE	WHEN a.endTime>	CURRENT_TIMESTAMP AND a.item.quality>0 THEN 1	WHEN a.endTime<=CURRENT_TIMESTAMP AND a.item.quality>0 THEN 2 END,a.endTime DESC")
-
+	@Query("SELECT a FROM Auction a WHERE a.item IN :items  ORDER BY  CASE WHEN a.endTime > CURRENT_TIMESTAMP AND a.item.quality > 0 THEN 1  WHEN a.endTime <= CURRENT_TIMESTAMP AND a.item.quality > 0 THEN 2  ELSE 3  END,   a.endTime DESC")
 	List<Auction> findAllSortedByItemIn(@Param("items") List<Item> items);
 
 }

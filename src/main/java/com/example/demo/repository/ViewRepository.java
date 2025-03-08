@@ -2,6 +2,8 @@ package com.example.demo.repository;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -81,6 +83,12 @@ public interface ViewRepository extends JpaRepository<View, Long> {
 			+ "GROUP BY MONTH(v.viewedAt) ORDER BY MONTH(v.viewedAt)")
 	List<Object[]> findMonthlyViewsBySeller(@Param("sellerID") Long sellerID);
 
-	// ✅ Count total visits for a seller's profile
+	@Query("""
+			    SELECT v.item FROM View v
+			    WHERE v.item.quality > 0
+			    GROUP BY v.item
+			    ORDER BY COUNT(v.item) DESC
+			""")
+	Page<Item> findMostViewedItems(Pageable pageable);
 
 }
