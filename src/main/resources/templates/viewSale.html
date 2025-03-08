@@ -109,7 +109,9 @@
 
         <!-- Edit & Delete Buttons (Only for the Seller) -->
         <th:block th:if="${session.user != null and session.user.userID == item.seller.userID}">
-        <th:block th:if="${auction.stat.name() == 'FAILED' }">
+     <th:block th:if="${auction != null and auction.stat != null and auction.stat.name() == 'FAILED'}">
+
+
     <button class="reactivate-btn"
             th:data-auction-id="${auction.auctionID}"
             onclick="reactivateAuction(this)">
@@ -410,38 +412,7 @@
         lucide.createIcons(); // ✅ Initialize Lucide icons
 
         // ✅ Delete Item Function
-        function deleteItem(button) {
-            const itemId = button.getAttribute("data-item-id");
 
-            if (!itemId) {
-                alert("⚠️ Error: Item ID is missing.");
-                return;
-            }
-
-            // ✅ Confirmation Prompt
-            const confirmDelete = confirm("Are you sure you want to delete this item? This action cannot be undone.");
-            if (!confirmDelete) return;
-
-            // ✅ Preserve search & sort parameters
-            const urlParams = new URLSearchParams(window.location.search);
-            const searchText = urlParams.get("searchText") || "";
-            const sortBy = urlParams.get("sortBy") || "";
-
-            fetch(`/delete/${itemId}`, { method: "DELETE" })
-                .then(response => {
-                    if (response.ok) return response.text();
-                    throw new Error("Failed to delete item");
-                })
-                .then(message => {
-                    alert("✅ " + message);
-
-                    // ✅ Redirect back to pending-sale while preserving search & sort parameters
-                    window.location.href = `/pending-sale?searchText=${encodeURIComponent(searchText)}&sortBy=${encodeURIComponent(sortBy)}`;
-                })
-                .catch(error => {
-                    alert("❌ Failed to delete item: " + error.message);
-                });
-        }
 
         // ✅ Process Expired Auctions on Page Load
         fetch("/auction/processExpiredAuctions", { method: "POST" })
@@ -499,6 +470,38 @@
         for (let i = 0; i < emptyStars; i++) {
             starContainer.innerHTML += '<span class="star">★</span>';
         }
+    }
+    function deleteItem(button) {
+        const itemId = button.getAttribute("data-item-id");
+
+        if (!itemId) {
+            alert("⚠️ Error: Item ID is missing.");
+            return;
+        }
+
+        // ✅ Confirmation Prompt
+        const confirmDelete = confirm("Are you sure you want to delete this item? This action cannot be undone.");
+        if (!confirmDelete) return;
+
+        // ✅ Preserve search & sort parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const searchText = urlParams.get("searchText") || "";
+        const sortBy = urlParams.get("sortBy") || "";
+
+        fetch(`/delete/${itemId}`, { method: "DELETE" })
+            .then(response => {
+                if (response.ok) return response.text();
+                throw new Error("Failed to delete item");
+            })
+            .then(message => {
+                alert("✅ " + message);
+
+                // ✅ Redirect back to pending-sale while preserving search & sort parameters
+                window.location.href = `/pending-sale?searchText=${encodeURIComponent(searchText)}&sortBy=${encodeURIComponent(sortBy)}`;
+            })
+            .catch(error => {
+                alert("❌ Failed to delete item: " + error.message);
+            });
     }
 </script>
 

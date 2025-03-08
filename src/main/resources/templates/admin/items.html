@@ -79,11 +79,13 @@
         <td th:text="${item.category.name}"></td>
 
         <!-- Actions: Delete Button -->
-        <td>
+   
+ <td>
             <button class="delete-btn" th:data-item-id="${item.itemID}" onclick="deleteItem(this)">
                 <i data-lucide="trash-2"></i>
             </button>
         </td>
+     
     </tr>
 </tbody>
 
@@ -123,32 +125,36 @@
     <script>
       lucide.createIcons();
       
-      async function deleteItem(button) {
-    	    const itemId = button.getAttribute("data-item-id");
+		async function deleteItem(button) {
+		    const itemId = button.getAttribute("data-item-id");
 
-    	    if (!itemId) {
-    	        alert("⚠️ Error: Item ID is missing.");
-    	        return;
-    	    }
+		    if (!itemId) {
+		        alert("⚠️ Error: Item ID is missing.");
+		        return;
+		    }
 
-    	    const confirmDelete = confirm("Are you sure you want to delete this item?");
-    	    if (!confirmDelete) return;
+		    const confirmDelete = confirm("Are you sure you want to delete this item?");
+		    if (!confirmDelete) return;
 
-    	    try {
-    	        const response = await fetch(`/admin/delete-item/${itemId}`, { method: "DELETE" });
-    	        const data = await response.json();
+		    try {
+		        const response = await fetch(`/admin/item-management/delete/${itemId}`, { 
+		            method: "DELETE",
+		            headers: { "Content-Type": "application/json" }
+		        });
+		        const data = await response.json();
 
-    	        if (data.success) {
-    	            alert("✅ Item deleted successfully!");
-    	            location.reload(); // Refresh page after deletion
-    	        } else {
-    	            alert("⚠️ Error: " + data.message);
-    	        }
-    	    } catch (error) {
-    	        console.error("❌ Deletion failed:", error);
-    	        alert("❌ Failed to delete item.");
-    	    }
-    	}
+		        if (data.success) {
+		            alert("✅ Item deleted successfully!");
+		            location.reload(); // Refresh page after deletion
+		        } else {
+		            alert("⚠️ Error: " + data.message);
+		        }
+		    } catch (error) {
+		        console.error("❌ Deletion failed:", error);
+		        alert("❌ Failed to delete item.");
+		    }
+		}
+
       
       function toggleDescription(link) {
     	    const row = link.closest("td");
