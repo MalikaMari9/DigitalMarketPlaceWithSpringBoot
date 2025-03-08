@@ -48,6 +48,17 @@ public class Address {
 		return isMainAddress;
 	}
 
+	@Column(columnDefinition = "TINYINT(1) DEFAULT 0")
+	private boolean isDeleted = false;
+
+	public boolean isDeleted() {
+		return isDeleted;
+	}
+
+	public void setDeleted(boolean isDeleted) {
+		this.isDeleted = isDeleted;
+	}
+
 	public void setIsMainAddress(Boolean isMainAddress) {
 		this.isMainAddress = isMainAddress;
 	}

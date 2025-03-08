@@ -475,14 +475,23 @@ public class UserController {
 	}
 
 	@GetMapping("/gmail")
-	public String gmail() {
+	public String gmail(HttpSession session) {
+		User user = (User) session.getAttribute("user");
+		if (user == null)
+			return "redirect:/loginPage";
 		return "gmail";
 	}
 
 	@PostMapping("/gmail")
-	public String handleForgetPassword(@RequestParam String email, Model model) {
+	public String handleForgetPassword(@RequestParam String email, Model model, HttpSession session) {
+		User user = (User) session.getAttribute("user");
+		if (user == null)
+			return "redirect:/loginPage";
+
+		String username = user.getUsername();
+
 		System.out.println("This function should work");
-		Optional<User> userOptional = userRepository.findByEmail(email);
+		Optional<User> userOptional = userRepository.findByEmailandUsername(email, username);
 
 		if (userOptional.isPresent()) {
 			String token = generateResetToken();
@@ -521,8 +530,14 @@ public class UserController {
 	}
 
 	@PostMapping("/verify-reset-code")
-	public String verifyResetCode(@RequestParam String email, @RequestParam String token, Model model) {
-		Optional<User> userOptional = userRepository.findByEmail(email);
+	public String verifyResetCode(@RequestParam String email, @RequestParam String token, Model model,
+			HttpSession session) {
+		User user1 = (User) session.getAttribute("user");
+		if (user1 == null)
+			return "redirect:/loginPage";
+
+		String username = user1.getUsername();
+		Optional<User> userOptional = userRepository.findByEmailandUsername(email, username);
 
 		if (userOptional.isPresent()) {
 			User user = userOptional.get();
@@ -553,9 +568,14 @@ public class UserController {
 
 	@PostMapping("/reset-password")
 	@Transactional
-	public String handlePasswordReset(@RequestParam String email, @RequestParam String token,
+	public String handlePasswordReset(@RequestParam String email, @RequestParam String token, HttpSession session,
 			@RequestParam String newPassword, Model model) throws NoSuchAlgorithmException {
-		Optional<User> userOptional = userRepository.findByEmail(email);
+		User user1 = (User) session.getAttribute("user");
+		if (user1 == null)
+			return "redirect:/loginPage";
+
+		String username = user1.getUsername();
+		Optional<User> userOptional = userRepository.findByEmailandUsername(email, username);
 
 		if (userOptional.isPresent()) {
 			User user = userOptional.get();

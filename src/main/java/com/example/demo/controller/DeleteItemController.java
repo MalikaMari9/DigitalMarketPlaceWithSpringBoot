@@ -21,6 +21,9 @@ public class DeleteItemController {
 	@DeleteMapping("/delete/{itemId}")
 	public ResponseEntity<?> deleteItem(@PathVariable Long itemId) {
 		try {
+
+			itemRepo.deleteAuctionTracksByItemId(itemId); // ✅ Delete auction tracks first
+			itemRepo.deleteAuctionsByItemId(itemId); // ✅ Then delete the auction
 			// **Delete related records first**
 			itemRepo.deleteOrdersByItemId(itemId);
 			itemRepo.deleteAuctionsByItemId(itemId);

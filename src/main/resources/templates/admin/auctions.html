@@ -40,8 +40,9 @@
                                        
                      
                       <th>End Time</th>
-                      <th>Remaining Time</th>
+                     
                       <th>Auctioner</th>
+                       <th>Remaining Time</th>
                       <th>Actions</th>
                     </tr>
                   </thead>
@@ -67,10 +68,7 @@
             th:data-auction-id="${auction.auctionID}">
         Track
     </button>
-    <a th:href="@{/admin/auction/delete/{id}(id=${auction.auctionID})}" 
-       onclick="return confirm('Are you sure?')">
-        Delete
-    </a>
+
 </td>
 
             </tr>
