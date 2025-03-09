@@ -9,6 +9,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const deliveryFeeText = document.getElementById("deliveryFeeText");
     const totalPriceText = document.getElementById("totalPriceText");
     const subtotalText = document.getElementById("subtotalText");
+	
+	//For Payment
+	const paymentRadios = document.querySelectorAll('input[name="paymentMethod"]');
+	   const creditCardSection = document.querySelector(".credit-card-selection");
+	   const selectedCardDropdown = document.getElementById("selectedCard");
+	
 
     function updateDeliveryFee() {
         let subtotal = parseFloat(subtotalText.innerText.replace('$', '').trim()) || 0;
@@ -63,6 +69,13 @@ document.addEventListener("DOMContentLoaded", () => {
     if (deliveryAddress) deliveryAddress.addEventListener("change", updateDeliveryFee);
     window.addEventListener("load", updateDeliveryFee);
 
+	// ✅ Toggle Credit Card Selection Visibility
+	    paymentRadios.forEach((radio) => {
+	        radio.addEventListener("change", () => {
+	            creditCardSection.style.display = radio.value === "online" ? "block" : "none";
+	        });
+	    });
+	
     // ✅ Order Placement Logic
     document.querySelectorAll(".btn-place-order").forEach((btn) => {
         btn.addEventListener("click", async (event) => {
@@ -108,10 +121,44 @@ document.addEventListener("DOMContentLoaded", () => {
             console.log("✅ Data ready for backend request!");
 
             // ✅ Redirect for online payment
-            if (paymentMethod === "online") {
-                window.location.href = `/credit-card-payment?amount=${totalAmount}&sellerID=${sellerID}`;
-                return;
-            }
+			if (paymentMethod === "online") {
+			               const selectedCardID = selectedCardDropdown?.value;
+
+			               if (!selectedCardID) {
+			                   alert("❌ Please select a credit card.");
+			                   return;
+			               }
+
+			               try {
+			                   const response = await fetch("/place-order", {
+			                       method: "POST",
+			                       headers: { "Content-Type": "application/json" },
+			                       body: JSON.stringify({
+			                           paymentMethod,
+			                           deliveryOption: deliveryOptionValue,
+			                           addressID: parseInt(addressID),
+			                           deliveryFee: totalDeliveryFee,
+			                           sellerID: parseInt(sellerID),
+			                           totalAmount,
+			                           selectedCardID // ✅ Include selected credit card ID
+			                       })
+			                   });
+
+			                   const data = await response.json();
+			                   console.log("🔍 Response:", data);
+
+			                   if (response.ok && data.success) {
+			                       alert("✅ Order placed successfully!");
+			                       window.location.href = "/orderHistory"; // Redirect to confirmation page
+			                   } else {
+			                       alert("❌ Failed to place order: " + (data.message || "Unknown error"));
+			                   }
+			               } catch (error) {
+			                   console.error("❌ Fetch error:", error);
+			                   alert("❌ An error occurred while placing the order.");
+			               }
+			               return;
+			           }
 
             // ✅ Otherwise, process the order (COD)
             try {

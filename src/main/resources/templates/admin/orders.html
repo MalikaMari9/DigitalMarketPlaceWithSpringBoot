@@ -39,6 +39,7 @@
                                         <th>Price</th>
                                         <th>Sell Type</th>
                                         <th>Receipt ID</th>
+                                        <th>Payment Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -64,6 +65,12 @@
                                         <td th:text="'USD ' + ${order.price}"></td>
                                         <td th:text="${order.item.sellType}"></td>
                                         <td th:text="'#' + ${order.receipt.receiptID}"></td>
+                                         <td>
+         <span th:text="${order.receipt.payment != null ? order.receipt.payment.paymentStatus : 'PENDING'}" 
+                  th:class="${order.receipt.payment != null and order.receipt.payment.paymentStatus == 'PAID' ? 'paid-status' : 'pending-status'}">
+            </span> <!-- ✅ Display Payment Status -->
+        </td>
+                                        
                                     </tr>
                                 </tbody>
                             </table>

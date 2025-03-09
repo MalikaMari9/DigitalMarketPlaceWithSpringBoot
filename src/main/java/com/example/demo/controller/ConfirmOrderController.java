@@ -2,22 +2,26 @@ package com.example.demo.controller;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.demo.entity.DeliTrack;
 import com.example.demo.entity.Delivery;
 import com.example.demo.entity.Notification;
+import com.example.demo.entity.Payment;
 import com.example.demo.entity.Receipt;
 import com.example.demo.entity.User;
 import com.example.demo.repository.AddressRepository;
@@ -63,19 +67,38 @@ public class ConfirmOrderController {
 	private DeliTrackRepository deliTrackRepository; // ✅ Added repository for tracking deliveries
 
 	@GetMapping("/confirmDelivery")
-	public String confirmDeliveryPage(ModelMap model, HttpSession session) {
+	public String confirmDeliveryPage(@RequestParam(value = "page", defaultValue = "1") int page, // ✅ Default to page 1
+			@RequestParam(value = "size", defaultValue = "5") int size, // ✅ Show 5 receipts per page
+			Model model, HttpSession session) {
+
 		User seller = (User) session.getAttribute("user");
 		if (seller == null) {
-			return "redirect:/loginPage";
+			return "redirect:/loginPage"; // Redirect if not logged in
 		}
 
-		List<Receipt> pendingReceipts = receiptRepository.findBySeller(seller).stream()
-				.filter(receipt -> receipt.getDelivery() != null
-						&& receipt.getDelivery().getStatus() == Delivery.DeliveryStatus.PENDING)
-				.collect(Collectors.toList());
+		// ✅ Ensure Repository Supports Pagination
+		Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
+		Page<Receipt> receiptPage = receiptRepository.findBySellerAndDeliveryStatus(seller,
+				Delivery.DeliveryStatus.PENDING, pageable);
 
-		model.addAttribute("pendingReceipts", pendingReceipts);
-		return "confirmDelivery";
+		// ✅ Ensure `receiptPage` is Not Null Before Using `getContent()`
+		if (receiptPage == null || receiptPage.isEmpty()) {
+			model.addAttribute("receiptPage", Page.empty());
+			model.addAttribute("paymentStatusMap", new HashMap<Long, String>());
+			return "confirmDelivery"; // ✅ Return empty page instead of null
+		}
+
+		// ✅ Fetch Payment Status for Each Receipt
+		Map<Long, String> paymentStatusMap = new HashMap<>();
+		for (Receipt receipt : receiptPage.getContent()) {
+			Payment payment = paymentRepository.findByReceipt(receipt);
+			paymentStatusMap.put(receipt.getReceiptID(), (payment != null) ? payment.getPaymentStatus() : "UNKNOWN");
+		}
+
+		// ✅ Pass Data to Thymeleaf
+		model.addAttribute("receiptPage", receiptPage);
+		model.addAttribute("paymentStatusMap", paymentStatusMap); // ✅ Pass payment status
+		return "confirmDelivery"; // ✅ Ensure the template name matches the Thymeleaf file
 	}
 
 	@PostMapping("/confirmDelivery")

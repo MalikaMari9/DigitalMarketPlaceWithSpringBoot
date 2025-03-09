@@ -29,6 +29,7 @@
         <option value="price" th:selected="${selectedSortBy == 'price'}">Price</option>
         <option value="buyer" th:selected="${selectedSortBy == 'buyer'}">Buyer</option>
         <option value="status" th:selected="${selectedSortBy == 'status'}">Delivery Status</option>
+         <option value="PENDING" th:selected="${selectedPaymentStatus == 'PENDING'}">Payment</option>
     </select>
 
     <input type="submit" id="search-button" value="Search">
@@ -47,6 +48,7 @@
         <th>Sale Date</th>
         <th>Buyer</th>
         <th>Delivery Status</th>
+         <th>Payment Status</th>
     </tr>
 
     <tr th:each="receipt : ${salesReceipts}">
@@ -78,6 +80,10 @@
         <td>
             <img th:src="@{${receipt.delivery.status == 'DELIVERED' ? '/Image/icon/package-check.png' : '/Image/icon/package-x.png'}}"
                  width="25px" height="25px">
+        </td>
+         <td class="payment-status"
+            th:text="${paymentStatusMap[receipt.receiptID]}"
+            th:classappend="${paymentStatusMap[receipt.receiptID] == 'PAID' ? 'status-paid' : 'status-pending'}">
         </td>
     </tr>
 </table>

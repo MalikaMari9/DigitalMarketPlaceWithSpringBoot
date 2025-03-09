@@ -174,7 +174,7 @@ public class CreditCardController {
 		String lastFourDigits = cardNumber.substring(cardNumber.length() - 4);
 
 		// ✅ Fetch Default Address (Modify if users can select their address)
-		Long addressID = 1L;
+		Long addressID = Long.parseLong(requestData.get("addressID"));
 		Optional<Address> addressOptional = addressRepository.findById(addressID);
 		if (!addressOptional.isPresent()) {
 			response.put("success", false);

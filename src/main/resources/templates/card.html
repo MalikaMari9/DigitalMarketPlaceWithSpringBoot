@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Save Credit Card</title>
+
+  <!-- CSS Files -->
+  <link rel="stylesheet" th:href="@{/CSS/ckstyle1.css}">
+
+  <!-- JavaScript -->
+  <script th:src="@{/JS/card.js}" defer></script>
+</head>
+<body>
+  <div class="payment-container">
+    <h2>Save Credit Card</h2>
+    
+    <div class="payment-box">
+      <h2>Card Details</h2>
+
+      <div class="card-icons"> 
+        <img th:src="@{/Image/icon/card.png}" alt="Credit Card">
+      </div>
+
+      <form id="payment-form">
+        <label for="card-number">Card Number</label>
+        <input type="text" id="card-number" name="cardNumber" placeholder="Valid Card Number" required>
+        <span class="error-message" id="card-number-error"></span>
+
+        <div class="row">
+          <div>
+            <label for="expiration-date">Expiration Date</label>
+            <input type="text" id="expiration-date" name="expirationDate" placeholder="MM / YYYY" required>
+            <span class="error-message" id="expiration-date-error"></span>
+          </div>
+          <div>
+            <label for="cv-code">Security Code</label>
+            <input type="text" id="cv-code" name="cvCode" placeholder="Visa" required>
+            <span class="error-message" id="cv-code-error"></span>
+          </div>
+        </div>
+
+        <label for="card-owner">Card Owner</label>
+        <input type="text" id="card-owner" name="cardOwner" placeholder="Card Owner Name" required>
+        <span class="error-message" id="card-owner-error"></span>
+
+        <label for="postal-code">Postal Code</label>
+        <input type="text" id="postal-code" name="postalCode" placeholder="Postal Code" required>
+        <span class="error-message" id="postal-code-error"></span>
+
+        <button type="button" id="save-payment">Save Card</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+	document.addEventListener("DOMContentLoaded", () => {
+	  // ✅ Restrict input to numbers & forward-slash for expiration date
+	  document.getElementById("expiration-date").addEventListener("input", function() {
+	    this.value = this.value.replace(/[^0-9\/]/g, ''); // Allow only numbers & "/"
+	  });
+
+	  // ✅ Expiration Date Validation (Must be at least 1 full month in the future)
+	  function isValidExpirationDate(expirationDate) {
+	      const [month, year] = expirationDate.split("/").map(str => parseInt(str.trim(), 10));
+	      if (!month || !year || month < 1 || month > 12) return false;
+
+	      const now = new Date();
+	      const currentMonth = now.getMonth() + 1;
+	      const currentYear = now.getFullYear(); // Full YYYY format
+
+	      const expiryYearFull = year; // Already in YYYY format
+	      const expiryDate = new Date(expiryYearFull, month - 1); // Expiry date (Month is 0-based)
+
+	      // ✅ Expiry must be **at least one full month ahead**
+	      const minValidDate = new Date(now.getFullYear(), now.getMonth() + 2); // Next month + 1
+
+	      return expiryDate >= minValidDate;
+	  }
+
+	  // ✅ Handle Save Button Click
+	  document.getElementById("save-payment").addEventListener("click", async (event) => {
+	      event.preventDefault();
+
+	      const expirationDate = document.getElementById("expiration-date").value.trim();
+
+	      // ✅ Expiration Date Validation (Must be at least 1 month in the future)
+	      if (!isValidExpirationDate(expirationDate)) {
+	          alert("❌ Invalid expiration date! Must be at least 1 full month ahead.");
+	          return;
+	      }
+
+	      // ✅ Send Data to Backend
+	      try {
+	          const response = await fetch("/card-details", {
+	              method: "POST",
+	              headers: { "Content-Type": "application/json" },
+	              body: JSON.stringify({
+	                  cardNumber: document.getElementById("card-number").value.trim(),
+	                  expirationDate,
+	                  cvCode: document.getElementById("cv-code").value.trim(),
+	                  cardOwner: document.getElementById("card-owner").value.trim(),
+	                  postalCode: document.getElementById("postal-code").value.trim()
+	              })
+	          });
+
+	          const data = await response.json();
+
+	          if (response.ok && data.success) {
+	              alert("✅ Credit card saved successfully!");
+	              window.location.href = "/payment-book";
+	          } else {
+	              alert("❌ Failed to save card: " + (data.message || "Unknown error"));
+	          }
+	      } catch (error) {
+	          alert("❌ An error occurred while saving the card.");
+	      }
+	  });
+
+	});
+
+  </script>
+</body>
+</html>

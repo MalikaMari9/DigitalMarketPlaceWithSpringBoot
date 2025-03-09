@@ -1,7 +1,6 @@
 package com.example.demo.controller;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +15,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.demo.entity.Delivery;
+import com.example.demo.entity.Payment;
 import com.example.demo.entity.Receipt;
 import com.example.demo.entity.User;
+import com.example.demo.repository.PaymentRepository;
 import com.example.demo.repository.ReceiptRepository;
 
 import jakarta.servlet.http.HttpSession;
@@ -27,10 +28,13 @@ public class OrderController {
 
 	@Autowired
 	private ReceiptRepository receiptRepository;
+	@Autowired
+	private PaymentRepository paymentRepository;
 
 	@GetMapping("/orderHistory")
-	public String viewOrderHistory(@RequestParam(value = "receiptID", required = false) Long receiptID, Model model,
-			HttpSession session) {
+	public String viewOrderHistory(@RequestParam(value = "page", defaultValue = "1") int page, // ✅ Default to page 1
+			@RequestParam(value = "size", defaultValue = "5") int size, // ✅ Show 5 orders per page
+			@RequestParam(value = "receiptID", required = false) Long receiptID, Model model, HttpSession session) {
 		User user = (User) session.getAttribute("user");
 
 		if (user == null) {
@@ -38,9 +42,18 @@ public class OrderController {
 		}
 
 		// ✅ Fetch all completed orders of the user
-		List<Receipt> receipts = receiptRepository.findByBuyer(user);
+		Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
+		Page<Receipt> receiptPage = receiptRepository.findByBuyer(user, pageable);
 
-		model.addAttribute("receipts", receipts);
+		// ✅ Fetch payment status for each receipt
+		Map<Long, String> paymentStatusMap = new HashMap<>();
+		for (Receipt receipt : receiptPage.getContent()) {
+			Payment payment = paymentRepository.findByReceipt(receipt);
+			paymentStatusMap.put(receipt.getReceiptID(), (payment != null) ? payment.getPaymentStatus() : "UNKNOWN");
+		}
+
+		model.addAttribute("receiptPage", receiptPage);
+		model.addAttribute("paymentStatusMap", paymentStatusMap); // ✅ Pass payment status to the template
 		model.addAttribute("highlightReceiptID", receiptID); // ✅ Pass receiptID for scrolling
 
 		return "orderHistory"; // ✅ Ensure the template name matches the Thymeleaf file
@@ -73,6 +86,9 @@ public class OrderController {
 		case "status":
 			sort = Sort.by("delivery.status").ascending();
 			break;
+		case "payment_status":
+			sort = Sort.by("payment.paymentStatus").ascending(); // ✅ Added Payment Status Sorting
+			break;
 		default:
 			sort = Sort.by("createdAt").descending(); // Default: Sort by date
 			break;
@@ -84,12 +100,22 @@ public class OrderController {
 		// ✅ Fetch Paginated Sale History
 		Page<Receipt> salesPage = receiptRepository.findBySellerAndSearch(seller, searchQuery, pageable);
 
+		Map<Long, String> paymentStatusMap = new HashMap<>();
+		for (Receipt receipt : salesPage.getContent()) {
+			Payment payment = paymentRepository.findByReceipt(receipt);
+			if (payment != null) {
+				paymentStatusMap.put(receipt.getReceiptID(), payment.getPaymentStatus());
+			} else {
+				paymentStatusMap.put(receipt.getReceiptID(), "UNKNOWN");
+			}
+		}
+
 		// ✅ Pass data to Thymeleaf
 		model.addAttribute("salesPage", salesPage);
 		model.addAttribute("salesReceipts", salesPage.getContent()); // ✅ Ensure the frontend can iterate correctly
 		model.addAttribute("selectedSortBy", sortBy);
 		model.addAttribute("searchQuery", searchQuery);
-
+		model.addAttribute("paymentStatusMap", paymentStatusMap);
 		return "saleHistory";
 	}
 

@@ -46,6 +46,22 @@ public class Receipt {
 	@OneToOne(mappedBy = "receipt", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Delivery delivery;
 
+	@OneToOne(mappedBy = "receipt", cascade = CascadeType.ALL, orphanRemoval = true)
+	private Payment payment; // ✅ Directly link to Payment
+
+	public Payment getPayment() {
+		return payment;
+	}
+
+	public void setPayment(Payment payment) {
+		this.payment = payment;
+	}
+
+	// ✅ Helper Method to Fetch Payment Status
+	public String getPaymentStatus() {
+		return payment != null ? payment.getPaymentStatus() : "PENDING";
+	}
+
 	public Receipt() {
 		this.createdAt = LocalDateTime.now();
 	}

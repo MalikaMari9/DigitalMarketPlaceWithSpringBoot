@@ -47,6 +47,17 @@
                     </label>
                 </div>
             </div>
+            <div class="form-group credit-card-selection" style="display: none;">
+    <label for="selectedCard">Select a Credit Card</label>
+    <select id="selectedCard" name="selectedCard">
+        <option value="">Choose a card</option>
+        <option th:each="card : ${creditCards}" 
+                th:value="${card.cardID}"
+                th:text="|**** **** **** ${card.lastFourDigits} (Exp: ${card.expirationDate})|">
+        </option>
+    </select>
+  
+</div>
 
             <!-- Delivery Option -->
             <div class="form-group">
@@ -90,7 +101,7 @@
                                     <a th:href="@{/itemList/{itemID}(itemID=${cartItem.item.itemID})}" th:text="${cartItem.item.itemName}"></a>
                                 </h4>
 <!-- Debugging Log -->
-<p th:text="'🔍 Debug: auctionMaxBids=' + ${auctionMaxBids}"></p>
+
 <p>
     <strong>Price:</strong> 
     <span th:text="${cartItem.quantity}"></span> x $ 

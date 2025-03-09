@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.example.demo.entity.Delivery;
 import com.example.demo.entity.Receipt;
 import com.example.demo.entity.User;
 
@@ -29,4 +30,9 @@ public interface ReceiptRepository extends JpaRepository<Receipt, Long> {
 	Page<Receipt> findBySeller(User seller, Pageable pageable);
 
 	Page<Receipt> findByBuyer(User buyer, Pageable pageable);
+
+	@Query("SELECT r FROM Receipt r WHERE r.seller = :seller AND r.delivery.status = :status")
+	Page<Receipt> findBySellerAndDeliveryStatus(@Param("seller") User seller,
+			@Param("status") Delivery.DeliveryStatus status, Pageable pageable);
+
 }

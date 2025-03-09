@@ -1,0 +1,125 @@
+/* ✅ General Page Styling */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f2f2f2;
+    margin: 0;
+    padding: 0;
+}
+
+/* ✅ Main Container */
+.payment-book-container {
+    max-width: 700px;
+    margin: 30px auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* ✅ Page Title */
+.payment-title {
+    text-align: center;
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* ✅ Payment Item (Card Box) */
+.payment-item {
+    background: #ffffff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
+    margin-bottom: 15px;
+    position: relative;
+    transition: transform 0.2s ease-in-out;
+}
+
+.payment-item:hover {
+    transform: scale(1.02);
+}
+
+/* ✅ Payment Icon */
+.payment-icon {
+    font-size: 20px;
+    color: #007bff;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+/* ✅ Payment Details */
+.payment-details {
+    font-size: 16px;
+    color: #444;
+    line-height: 1.5;
+    padding-left: 10px;
+}
+
+.payment-details strong {
+    color: #000;
+}
+
+/* ✅ Last 4 Digits */
+.card-last4 {
+    font-size: 18px;
+    font-weight: bold;
+    color: #000;
+}
+
+/* ✅ Actions (Edit & Delete Buttons) */
+.payment-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+}
+
+.payment-actions a {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px 12px;
+    font-size: 16px;
+    margin: 0 5px;
+    transition: 0.3s;
+}
+
+.edit-button {
+    color: #28a745;
+}
+
+.delete-button {
+    color: #dc3545;
+}
+
+.edit-button:hover {
+    color: #218838;
+}
+
+.delete-button:hover {
+    color: #c82333;
+}
+
+/* ✅ Add Payment Button */
+.profile-button {
+	background-color:  #333;
+		    color: white;
+		    border: none;
+		    padding: 10px 20px;
+			
+		    font-size: 1rem;
+		    border-radius: 5px;
+		    cursor: pointer;
+		    transition: background-color 0.3s ease;
+}
+
+.profile-button:hover {
+	background-color:white;
+	    color: #333;
+}
+
+/* ✅ Mobile Responsive */
+@media (max-width: 600px) {
+    .payment-book-container {
+        max-width: 90%;
+    }
+}

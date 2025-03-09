@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.demo.entity.Address;
 import com.example.demo.entity.Cart;
+import com.example.demo.entity.CreditCard;
 import com.example.demo.entity.DeliTrack;
 import com.example.demo.entity.Delivery;
 import com.example.demo.entity.Item;
@@ -31,6 +32,7 @@ import com.example.demo.entity.User;
 import com.example.demo.entity.Auction.Auction;
 import com.example.demo.repository.AddressRepository;
 import com.example.demo.repository.CartRepository;
+import com.example.demo.repository.CreditCardRepository;
 import com.example.demo.repository.DeliTrackRepository;
 import com.example.demo.repository.DeliveryRepository;
 import com.example.demo.repository.ItemRepository;
@@ -77,6 +79,8 @@ public class CheckoutController {
 	private AuctionTrackRepository auctionTrackRepository;
 	@Autowired
 	private AuctionRepository auctionRepo;
+	@Autowired
+	private CreditCardRepository creditCardRepository;
 
 	@GetMapping("/checkout")
 	public String checkoutPage(@RequestParam("sellerID") Long sellerID, ModelMap model, HttpSession session) {
@@ -86,6 +90,9 @@ public class CheckoutController {
 		if (user == null) {
 			return "redirect:/loginPage"; // Redirect if not logged in
 		}
+
+		// GetCardInfo
+		List<CreditCard> creditCards = creditCardRepository.findByUser(user);
 
 		// ✅ Fetch user's saved addresses
 		List<Address> userAddresses = addressRepository.findByUser(user);
@@ -152,7 +159,7 @@ public class CheckoutController {
 		model.addAttribute("subtotal", auctionAdjustedSubtotal);
 		model.addAttribute("cartCount", cartItems.size());
 		model.addAttribute("userAddresses", userAddresses); // ✅ Pass addresses to the view
-
+		model.addAttribute("creditCards", creditCards);
 		return "proceedCheckout"; // ✅ Ensure this Thymeleaf file exists
 	}
 
@@ -302,7 +309,19 @@ public class CheckoutController {
 			payment.setUser(buyer);
 			payment.setAmount(BigDecimal.valueOf(totalAmount));
 			payment.setPaymentMethod(paymentMethod);
-			payment.setPaymentStatus("PENDING");
+
+			if ("online".equalsIgnoreCase(paymentMethod)) {
+				// ✅ Credit Card Payment: Must include selectedCardID
+				Long selectedCardID = Long.parseLong(requestData.get("selectedCardID"));
+				CreditCard creditCard = creditCardRepository.findById(selectedCardID)
+						.orElseThrow(() -> new IllegalArgumentException("Invalid credit card selection."));
+
+				payment.setCreditCard(creditCard);
+				payment.setPaymentStatus("PAID"); // ✅ Credit Card = PAID
+			} else {
+				payment.setPaymentStatus("PENDING"); // ✅ COD = PENDING
+			}
+
 			paymentRepository.save(payment);
 
 			// ✅ Create Notification for the Seller

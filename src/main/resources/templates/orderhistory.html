@@ -13,6 +13,10 @@
     <script th:src="@{/JS/sidebar.js}"></script>
     <script th:src="@{/JS/CategorySelect.js}"></script>
         <script th:src="@{/JS/buyAgain.js}"></script>
+        <style>
+        
+        
+        </style>
 </head>
 <body>
 <header th:insert="fragments/header :: header"></header>
@@ -20,16 +24,30 @@
     <div class="checkout-body">
      <div class="completed-orders-wrapper" 
      th:if="${receipt.receiptID != null}" 
-     th:id="'receipt-' + ${receipt.receiptID}" 
-     th:each="receipt : ${receipts}">
+      th:each="receipt : ${receiptPage.content}" 
+         th:id="'receipt-' + ${receipt.receiptID}">
+            <button class="delete-order-btn" 
+                th:attr="data-receipt-id=${receipt.receiptID}" 
+                title="Delete Order">
+            ❌
+        </button>
+         
 
             
             <!-- Order Header -->
             <div class="order-history-header">
+          
             
                 <h2>Order from <a th:href="@{/viewSeller/{sellerID}(sellerID=${receipt.seller.userID})}" class="shop-name" th:text="${receipt.seller.username}"></a></h2> 
                 <p class="receipt-id">Receipt ID: <span th:text="${receipt.receiptID}"></span></p>
                 <p><strong>Total:</strong> <span class="order-price" th:text="'USD ' + ${receipt.totalPrice}"></span></p>
+                
+                <p class="payment-status">
+                <strong>Payment Status:</strong> 
+                <span th:text="${paymentStatusMap[receipt.receiptID]}" 
+                      th:classappend="${paymentStatusMap[receipt.receiptID] == 'PAID' ? 'status-paid' : 'status-pending'}">
+                </span>
+            </p>
             </div>
 
             <!-- Order Items -->
@@ -67,6 +85,17 @@
             </div>
 
         </div>
+         <div class="pagination">
+        <a th:if="${receiptPage.hasPrevious()}" 
+           th:href="@{/orderHistory(page=${receiptPage.number}, size=${receiptPage.size})}" 
+           class="pagination-button">Previous</a>
+
+        <span class="current-page">Page <span th:text="${receiptPage.number + 1}"></span> of <span th:text="${receiptPage.totalPages}"></span></span>
+
+        <a th:if="${receiptPage.hasNext()}" 
+           th:href="@{/orderHistory(page=${receiptPage.number + 2}, size=${receiptPage.size})}" 
+           class="pagination-button">Next</a>
+    </div>
     </div>
 
 <footer th:insert="fragments/footer :: footer"></footer>
