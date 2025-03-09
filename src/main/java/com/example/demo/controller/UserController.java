@@ -130,31 +130,17 @@ public class UserController {
 
 	@GetMapping("/addressbook")
 	public String showAddressBook(HttpSession session, Model model) {
-		// ✅ Retrieve User object from session
 		User user = (User) session.getAttribute("user");
 		if (user == null) {
-			System.out.println("❌ No user in session! Redirecting to login.");
 			return "redirect:/login";
 		}
 
 		Long userID = user.getUserID();
-		System.out.println("✅ Logged-in User ID: " + userID);
+		List<Address> addresses = addressRepository.findByUserUserIDAndIsDeletedFalse(userID); // ✅ Fetch only active
+																								// addresses
 
-		// ✅ Fetch addresses for the logged-in user
-		List<Address> addresses = addressRepository.findByUserUserID(userID);
-		System.out.println("📌 Retrieved " + addresses.size() + " addresses for user ID: " + userID);
-
-		if (addresses.isEmpty()) {
-			System.out.println("⚠️ No addresses found for user ID: " + userID);
-		} else {
-			for (Address address : addresses) {
-				System.out.println("📍 Address: " + address.getCustName() + ", " + address.getAddres());
-			}
-		}
-
-		// ✅ Add data to model
 		model.addAttribute("addresses", addresses);
-		return "addressbook"; // ✅ Thymeleaf template
+		return "addressbook";
 	}
 
 	// ✅ Show Address Form
@@ -297,6 +283,26 @@ public class UserController {
 		}
 
 		return "redirect:/addressbook?error=AddressNotFound"; // If not found
+	}
+
+	@PostMapping("/delete-address")
+	@ResponseBody
+	public String deleteAddress(@RequestParam Long addressID, HttpSession session) {
+		Address address = addressRepository.findById(addressID).orElse(null);
+		if (address != null) {
+			User user = (User) session.getAttribute("user");
+
+			// ✅ If the user is a seller and the address is the main address, prevent
+			// deletion
+			if (user != null && "SELLER".equals(user.getRole()) && address.getIsMainAddress()) {
+				return "You cannot delete your main address.";
+			}
+
+			address.setDeleted(true); // ✅ Soft delete (set isDeleted to true)
+			addressRepository.save(address);
+			return "Address deleted successfully.";
+		}
+		return "Address not found.";
 	}
 
 	// ✅ Show Edit Address Form

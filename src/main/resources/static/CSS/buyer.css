@@ -274,7 +274,7 @@ body{
     transform: scale(1.05); /* Slightly enlarge on hover */
 }
 
-.edit-profile-btn {
+.edit-profile-btn, .chat-button  {
     display: inline-block;
     background-color: var(--primary-color); /* Muted Gray */
     color: white;
@@ -289,7 +289,7 @@ body{
     top: 20px; /* Aligns it with the top padding */
 }
 
-.edit-profile-btn:hover {
+.edit-profile-btn:hover, .chat-button:hover {
     background-color: var(--secondary-color); /* Medium Gray */
     filter: grayscale(0%);
 }
@@ -936,4 +936,4 @@ body{
     width: 50%;
     overflow: hidden;
     color: lightgray;
-}
+}            

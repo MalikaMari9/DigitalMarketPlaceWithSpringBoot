@@ -61,48 +61,57 @@
 
                     <button type="submit">Update</button>
                 </form>
+				<!-- ✅ Back Button -->
+			 <button onclick="goBack()" class="back-button">Go Back</button>
             </div>
         </div>
     </div>
+	<script>
+	        function goBack() {
+	            window.history.back();
+	        }
+	  </script>
+	  
+	  <script src="/JS/addressvalidation.js"></script>
+	  <script th:src="@{/JS/addressvalidation.js}"></script>
+
+	  <!-- ✅ JavaScript for City & Township Persistence -->
+	  <script>
+	      function fetchTownships() {
+	          let cityName = document.getElementById("city").value;
+	          let townshipSelect = document.getElementById("township");
+
+	          // Reset township dropdown
+	          townshipSelect.innerHTML = '<option value="">Select Township</option>';
+
+	          if (cityName) {
+	              fetch(`/townships?cityName=${encodeURIComponent(cityName)}`)
+	                  .then(response => response.json())
+	                  .then(data => {
+	                      data.forEach(townshipName => {
+	                          let option = document.createElement("option");
+	                          option.value = townshipName;
+	                          option.textContent = townshipName;
+	                          townshipSelect.appendChild(option);
+	                      });
+
+	                      // ✅ Automatically select the saved township
+	                      let savedTownship = "[[${address.township}]]"; // Thymeleaf replaces with actual value
+	                      if (savedTownship) {
+	                          townshipSelect.value = savedTownship;
+	                      }
+	                  })
+	                  .catch(error => console.error("Error fetching townships:", error));
+	          }
+	      }
+
+	      // ✅ Auto-load townships on page load
+	      document.addEventListener("DOMContentLoaded", function() {
+	          if (document.getElementById("city").value) {
+	              fetchTownships();
+	          }
+	      });
+	  </script>
+	  
 </body>
-<script src="/JS/addressvalidation.js"></script>
-<script th:src="@{/JS/addressvalidation.js}"></script>
-
-<!-- ✅ JavaScript for City & Township Persistence -->
-<script>
-    function fetchTownships() {
-        let cityName = document.getElementById("city").value;
-        let townshipSelect = document.getElementById("township");
-
-        // Reset township dropdown
-        townshipSelect.innerHTML = '<option value="">Select Township</option>';
-
-        if (cityName) {
-            fetch(`/townships?cityName=${encodeURIComponent(cityName)}`)
-                .then(response => response.json())
-                .then(data => {
-                    data.forEach(townshipName => {
-                        let option = document.createElement("option");
-                        option.value = townshipName;
-                        option.textContent = townshipName;
-                        townshipSelect.appendChild(option);
-                    });
-
-                    // ✅ Automatically select the saved township
-                    let savedTownship = "[[${address.township}]]"; // Thymeleaf replaces with actual value
-                    if (savedTownship) {
-                        townshipSelect.value = savedTownship;
-                    }
-                })
-                .catch(error => console.error("Error fetching townships:", error));
-        }
-    }
-
-    // ✅ Auto-load townships on page load
-    document.addEventListener("DOMContentLoaded", function() {
-        if (document.getElementById("city").value) {
-            fetchTownships();
-        }
-    });
-</script>
 </html>

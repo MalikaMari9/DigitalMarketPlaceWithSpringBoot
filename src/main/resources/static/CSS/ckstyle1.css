@@ -72,7 +72,7 @@ body {
   
 
 .container {
-	margin-top: 100px;
+	margin: 100px auto;
     background: #fff;
     padding: 2rem;
     border-radius: 10px;

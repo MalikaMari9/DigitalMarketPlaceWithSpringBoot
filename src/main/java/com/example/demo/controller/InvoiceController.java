@@ -65,21 +65,40 @@ public class InvoiceController {
 
 			// Buyer Address
 			Optional<Address> buyerAddress = receipt.getBuyer().getAddresses().stream().findFirst();
+			double locationFee = 0.0;
 			if (buyerAddress.isPresent()) {
-				Address address = buyerAddress.get();
+				Address buyer = buyerAddress.get();
 				document.add(new Paragraph(
-						"Address: " + address.getAddres() + ", " + address.getCity() + ", " + address.getTownship()));
-				document.add(new Paragraph("Phone: " + address.getPhone()));
+						"Address: " + buyer.getAddres() + ", " + buyer.getCity() + ", " + buyer.getTownship()));
+				document.add(new Paragraph("Phone: " + buyer.getPhone()));
+
+				// Fetch the seller's first available address
+				Optional<Address> sellerAddress = receipt.getSeller().getAddresses().stream().findFirst();
+				if (sellerAddress.isPresent()) {
+					Address sellerAddr = sellerAddress.get();
+					if (buyer.getCity().equalsIgnoreCase(sellerAddr.getCity())) {
+						if (buyer.getTownship().equalsIgnoreCase(sellerAddr.getTownship())) {
+							locationFee = 2.0; // Same town
+						} else {
+							locationFee = 5.0; // Same city, different town
+						}
+					} else {
+						locationFee = 10.0; // Different city
+					}
+				}
 			} else {
 				document.add(new Paragraph("Address: Not provided"));
 			}
 
-			// Seller Info
+			// Seller Info (WITHOUT Address)
 			document.add(new Paragraph("Seller: " + receipt.getSeller().getUsername()));
 
-			// Total Price & Delivery Fee
+			double totalDeliveryFee = receipt.getDeliFee() + locationFee;
 
-			document.add(new Paragraph("Delivery Fee: USD " + receipt.getDeliFee()));
+			// Delivery Fees Breakdown
+			document.add(new Paragraph("Delivery Service Fee: USD " + receipt.getDeliFee()));
+			document.add(new Paragraph("Location-Based Fee: USD " + locationFee));
+			document.add(new Paragraph("Total Delivery Fee: USD " + totalDeliveryFee));
 
 			// Table for Order Details
 			Table table = new Table(4);
@@ -95,8 +114,7 @@ public class InvoiceController {
 				table.addCell(new Cell().add(new Paragraph("USD " + (order.getPrice() * order.getQuantity()))));
 			}
 
-			// Add empty cells to span the first three columns (aligning Total Price to the
-			// right)
+			// Total Price Row
 			table.addCell(new Cell(1, 3).add(new Paragraph("Total Price:").setBold())
 					.setTextAlignment(TextAlignment.RIGHT).setBorder(null));
 

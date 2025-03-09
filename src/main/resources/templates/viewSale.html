@@ -32,14 +32,15 @@
 </head>
 <body th:attr="data-user-id=${session.user != null ? session.user.userID : ''}">
 <!-- Show Admin Header if User is an Admin -->
+<th:block th:if="${!isAdmin}">
+    <header th:insert="~{fragments/header :: header}"></header>
+</th:block>
 <th:block th:if="${isAdmin}">
     <header th:insert="~{fragments/admin-header :: header}"></header>
 </th:block>
 
 <!-- Show Regular Header if User is NOT an Admin -->
-<th:block th:if="${!isAdmin}">
-    <header th:insert="~{fragments/header :: header}"></header>
-</th:block>
+
 
 
 <!-- Normal Sale -->
@@ -317,11 +318,15 @@
 
 
 </div>
+
 <!-- ✅ Show recommendations ONLY if the user is NOT admin and NOT a seller -->
-<!-- ✅ Show recommendations ONLY if the user is NOT admin and NOT a seller -->
-<th:block th:if="${not isAdmin and not isSeller and not #lists.isEmpty(recommendedItems)}">
-    <div class="pg-container pg-mt-16">
+<th:block th:if="${not isAdmin and (session.user != null and session.user.role != 'SELLER')}">
+
+
+
+    <div class="pg-container pg-mt-16" style="margin:4rem">
         <div class="pg-header">
+        
             <h2>More Recommendations</h2>
             <p>Discover more amazing products</p>
         </div>

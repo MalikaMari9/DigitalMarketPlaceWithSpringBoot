@@ -187,25 +187,39 @@ public class dmpController {
 
 	@ModelAttribute("placeholderitems")
 	public List<Item> loadItems() {
+		// Fetch most viewed and latest items
 		List<Item> mostViewed = viewRepo.findMostViewedItems(PageRequest.of(0, 8)).getContent();
 		List<Item> latest = itemRepo.findLatestItems(PageRequest.of(0, 8)).getContent();
 
-		// Merge lists while maintaining priority
+		// Debugging: Print list sizes
+		System.out.println("Most Viewed Count: " + mostViewed.size());
+		System.out.println("Latest Count: " + latest.size());
+
+		// Merge lists while maintaining priority (most viewed first)
 		LinkedHashSet<Item> sortedItems = new LinkedHashSet<>();
-		sortedItems.addAll(mostViewed); // Prioritize most viewed
-		sortedItems.addAll(latest); // Then add latest
+		sortedItems.addAll(mostViewed);
+		sortedItems.addAll(latest);
 
 		List<Item> result = new ArrayList<>(sortedItems);
+
+		// If we still don't have 8 items, fetch additional latest items
+		if (result.size() < 8) {
+			int missing = 8 - result.size();
+			List<Item> extraLatest = itemRepo.findLatestItems(PageRequest.of(1, missing)).getContent();
+			result.addAll(extraLatest);
+		}
 
 		// Reverse the order before returning
 		Collections.reverse(result);
 
-		// Ensure only 8 items are returned
+		// Ensure exactly 8 items are returned
 		if (result.size() > 8) {
 			result = result.subList(0, 8);
 		}
 
-		System.out.println("Loaded Items (Reversed Most Viewed + Latest, Limited to 8): " + result.size());
+		// Debugging: Print final result size
+		System.out.println("Final Loaded Items Count: " + result.size());
+
 		return result;
 	}
 

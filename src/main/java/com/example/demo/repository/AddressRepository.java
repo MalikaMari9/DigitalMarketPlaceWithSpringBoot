@@ -28,4 +28,6 @@ public interface AddressRepository extends JpaRepository<Address, Long> {
 
 	boolean existsByUserAndIsMainAddressTrue(User seller);
 
+	List<Address> findByUserUserIDAndIsDeletedFalse(Long userID);
+
 }

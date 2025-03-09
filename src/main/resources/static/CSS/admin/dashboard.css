@@ -1,3 +1,4 @@
+
 /* Base styles */
 * {
     margin: 0;
@@ -29,7 +30,6 @@ body {
     position: relative;
     top: -5px;
 }
-
 
 /* Grid layouts */
 .grid {
@@ -65,15 +65,14 @@ body {
     border-radius: 20px; /*make it rounder*/
     overflow: hidden;
     box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2); /* Adds shadow */
-  margin-top: 2px; /* Moves the box up */
-  position: relative; /* Ensure it moves properly */
+    margin-top: 2px; /* Moves the box up */
+    position: relative; /* Ensure it moves properly */
 }
 
 .card:hover{
     transform: translateY(-5px);
-  transition: all 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
 }
-
 
 .card-content {
     padding: 1.5rem;
@@ -161,6 +160,63 @@ body {
     height: 300px;
     width: 100%;
     position: relative;
+}
+
+/* Category distribution chart */
+.category-chart-container {
+    display: flex;
+    gap: 1.5rem;
+    height: 300px;
+}
+
+.chart-side {
+    flex: 1;
+    max-width: 60%;
+}
+
+.category-list {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.category-item {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    background-color: rgba(139, 92, 246, 0.05);
+    transition: all 0.2s;
+}
+
+.category-item:hover {
+    background-color: rgba(139, 92, 246, 0.1);
+}
+
+.category-color {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    margin-right: 0.75rem;
+}
+
+.category-info {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+}
+
+.category-name {
+    font-weight: 500;
+    color: black;
+}
+
+.category-count {
+    color: rgba(0, 0, 0, 0.5);
+    font-size: 0.875rem;
 }
 
 /* Congratulations card */
@@ -314,5 +370,19 @@ body {
     .charts-grid,
     .progress-grid {
         grid-template-columns: 1fr;
+    }
+    
+    .category-chart-container {
+        flex-direction: column;
+        height: auto;
+    }
+    
+    .chart-side {
+        max-width: 100%;
+        height: 250px;
+    }
+    
+    .category-list {
+        max-height: 200px;
     }
 }

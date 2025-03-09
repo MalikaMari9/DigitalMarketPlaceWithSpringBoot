@@ -151,4 +151,19 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 	@Query("SELECT i FROM Item i WHERE i.seller.userID = :sellerID AND i.approve = 'APPROVED' ORDER BY i.quality DESC")
 	List<Item> findApprovedItemsBySeller(@Param("sellerID") Long sellerID);
 
+	@Query("""
+			    SELECT c.name, COUNT(i.itemID)
+			    FROM Item i
+			    JOIN i.category c
+			    WHERE i.approve = 'APPROVED'
+			    GROUP BY c.name
+			    ORDER BY COUNT(i.itemID) DESC
+			""")
+	List<Object[]> countItemsPerCategory();
+
+	@Query("SELECT c.name, COUNT(i.itemID) AS itemCount, SUM(i.price) AS totalSales " + "FROM Item i JOIN i.category c "
+			+ "WHERE i.stat = 'SOLD' " + // Only count sold items
+			"GROUP BY c.name ORDER BY itemCount DESC")
+	List<Object[]> countSalesByCategory();
+
 }

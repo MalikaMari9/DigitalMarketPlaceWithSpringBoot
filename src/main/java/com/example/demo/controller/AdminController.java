@@ -128,12 +128,57 @@ public class AdminController {
 			totalVisits = 0L;
 		}
 
+		// ✅ Fetch Category Distribution
+		List<Object[]> categoryData = itemRepo.countItemsPerCategory();
+		List<Map<String, Object>> categoryStats = new ArrayList<>();
+
+		for (Object[] row : categoryData) {
+			Map<String, Object> categoryMap = new HashMap<>();
+			categoryMap.put("name", row[0]); // Category name
+			categoryMap.put("count", row[1]); // Number of items
+			categoryStats.add(categoryMap);
+		}
+
 		// ✅ Add values to model
 		model.addAttribute("totalOrders", totalOrders);
 		model.addAttribute("totalSales", totalSales);
 		model.addAttribute("totalVisits", totalVisits);
+		model.addAttribute("categoryStats", categoryStats);
 
 		return "admin/dashboard"; // Returns the Thymeleaf template
+	}
+
+	@GetMapping("/admin/viewDashboard/Catdata")
+	@ResponseBody
+	public List<Map<String, Object>> getCategoryStats() {
+		List<Object[]> categoryData = itemRepo.countItemsPerCategory();
+		List<Map<String, Object>> categoryStats = new ArrayList<>();
+
+		for (Object[] row : categoryData) {
+			Map<String, Object> categoryMap = new HashMap<>();
+			categoryMap.put("name", row[0]); // Category name
+			categoryMap.put("count", row[1]); // Number of items
+			categoryStats.add(categoryMap);
+		}
+
+		return categoryStats;
+	}
+
+	@GetMapping("/admin/viewDashboard/categoryData")
+	@ResponseBody
+	public List<Map<String, Object>> getCategorySalesData() {
+		List<Object[]> results = itemRepo.countItemsPerCategory(); // Fetch aggregated category data
+		List<Map<String, Object>> categoryData = new ArrayList<>();
+
+		for (Object[] result : results) {
+			Map<String, Object> data = new HashMap<>();
+			data.put("name", result[0]); // Category Name
+			data.put("value", result[1]); // Percentage or count
+			// data.put("count", result[2]); // Number of items sold
+			categoryData.add(data);
+		}
+
+		return categoryData;
 	}
 
 	@GetMapping("/admin/viewDashboard/data")

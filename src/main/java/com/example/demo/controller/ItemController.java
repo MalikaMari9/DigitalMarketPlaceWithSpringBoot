@@ -147,7 +147,6 @@ public class ItemController {
 		// Ensure tagOutput is always a valid String (avoid null pointer issues)
 		List<String> tagNames = itemRepo.findTagNamesByItemId(itemID);
 		String tagOutput = (tagNames != null && !tagNames.isEmpty()) ? String.join(",", tagNames) : "";
-
 		model.addAttribute("tagOutput", tagOutput);
 
 		// ✅ Retrieve user from session
@@ -165,9 +164,9 @@ public class ItemController {
 			averageRating = reviewRepo.getAverageRating(seller.getUserID());
 		}
 
-		// ✅ Check if user is an admin or seller
+		// ✅ Check if user is an admin or logged-in as a seller
 		Boolean isAdmin = (Boolean) session.getAttribute("admin");
-		boolean isSeller = (user != null && user.getSeller() != null); // Use `getSeller()` instead of role
+		boolean isSeller = (user != null && "SELLER".equalsIgnoreCase(user.getRole())); // ✅ FIXED
 
 		model.addAttribute("isAdmin", isAdmin != null && isAdmin);
 		model.addAttribute("isSeller", isSeller);
@@ -202,7 +201,6 @@ public class ItemController {
 
 		model.addAttribute("recommendedItems", recommendedItems);
 		model.addAttribute("wishlistedItemIds", wishlistedItemIds);
-
 		model.addAttribute("item", item);
 		model.addAttribute("auction", auction);
 		model.addAttribute("auctionCount", AuctionCount);
