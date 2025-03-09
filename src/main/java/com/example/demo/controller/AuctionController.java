@@ -54,7 +54,7 @@ public class AuctionController {
 	public String viewWatchlist(Model model, HttpSession session) {
 		User user = (User) session.getAttribute("user");
 		if (user == null) {
-			return "redirect:/loginPage";
+			return "redirect:/login";
 		}
 
 		// ✅ Get all wishlisted items (including auctions)
@@ -96,7 +96,7 @@ public class AuctionController {
 	public String viewCurrentBidding(Model model, HttpSession session) {
 		User user = (User) session.getAttribute("user");
 		if (user == null) {
-			return "redirect:/loginPage";
+			return "redirect:/login";
 		}
 
 		// ✅ Find all auctions where the user has placed bids
@@ -139,7 +139,7 @@ public class AuctionController {
 	public String viewWinningBids(Model model, HttpSession session) {
 		User user = (User) session.getAttribute("user");
 		if (user == null) {
-			return "redirect:/loginPage";
+			return "redirect:/login";
 		}
 
 		// ✅ Find auctions where the user had the highest final bid
@@ -191,7 +191,7 @@ public class AuctionController {
 
 		User seller = (User) session.getAttribute("user");
 		if (seller == null) {
-			return "redirect:/loginPage";
+			return "redirect:/login";
 		}
 
 		Sort sort = Sort.by(Sort.Direction.ASC, "item.itemName"); // Default sorting

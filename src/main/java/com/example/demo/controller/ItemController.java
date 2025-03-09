@@ -108,7 +108,7 @@ public class ItemController {
 	public String showSellItemForm(Model model, HttpSession session) {
 		User seller = (User) session.getAttribute("user");
 		if (seller == null) {
-			return "redirect:/loginPage"; // Redirect if not logged in
+			return "redirect:/login"; // Redirect if not logged in
 		}
 		List<Category> categories = categoryRepo.findByParentCategoryIsNull();
 		model.addAttribute("categories", categories);
@@ -231,7 +231,7 @@ public class ItemController {
 		User seller = (User) session.getAttribute("user");
 
 		if (seller == null) {
-			return "redirect:/loginPage"; // Redirect if not logged in
+			return "redirect:/login"; // Redirect if not logged in
 		}
 
 		// ✅ Ensure the user is a seller
@@ -304,7 +304,7 @@ public class ItemController {
 		User seller = (User) session.getAttribute("user");
 
 		if (seller == null) {
-			return "redirect:/loginPage"; // Redirect if not logged in
+			return "redirect:/login"; // Redirect if not logged in
 		}
 
 		// Fetch all top-level categories (where parentCategory is NULL)
@@ -337,7 +337,7 @@ public class ItemController {
 		// ✅ Get logged-in user
 		User seller = (User) session.getAttribute("user");
 		if (seller == null) {
-			return "redirect:/loginPage";
+			return "redirect:/login";
 		}
 
 		// ✅ Ensure the user is a seller

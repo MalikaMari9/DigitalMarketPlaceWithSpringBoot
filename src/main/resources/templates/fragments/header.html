@@ -112,7 +112,7 @@
               </th:block>
               </th:block>
     <th:block th:if="${session.user == null}">
-    <a th:href="@{/loginPage}">
+    <a th:href="@{/login}">
               <button class="login-buttonyoon">Login </button>
               </a>
     </th:block>
@@ -270,9 +270,11 @@
                   <i data-lucide="store"></i>Sell with Us
                 </button>
            </a>
+             <a th:href="@{/logout}">
                 <button class="sidebar-buttonyoon">
                   <i data-lucide="log-out"></i>Log Out
                 </button>
+                </a>
               </div>
             </div>
           </div>
@@ -429,9 +431,11 @@
               </button>
               </a>
               </th:block>
+                <a th:href="@{/logout}">
               <button class="sidebar-buttonyoon">
                 <i data-lucide="log-out"></i>Log Out
               </button>
+              </a>
             </div>
           </div>
           </th:block>

@@ -1,8 +1,13 @@
+:root {
+	--primary: #555555;
+	--secondary: #666666;
+}
 * {
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
 }
+
 body {
 	font-family: Arial, sans-serif;
 	background-color: #f4f4f9;
@@ -14,7 +19,7 @@ body {
 	height: 100%;
 }
 .user-list {
-	background-color: #2c3e50;
+	background-color: var(--primary);
 	color: white;
 	width: 25%;
 	overflow-y: auto;
@@ -26,13 +31,13 @@ body {
 	gap: 1px;
 }
 .user-list > .chat-header {
-	background-color: #1f2937;
+	background-color: var(--secondary);
 }
 
 .user-list h2 {
 	text-align: center;
 	padding: 15px;
-	background-color: #1f2937;
+	background-color: var(--secondary);
 }
 .chat-header {
 	display: flex;
@@ -66,14 +71,14 @@ body {
 	top: 50%;
 	left: 50%;
 	padding: 10px;
-	background-color: #1f293780;
+	background-color: var(--secondary) 80;
 	color: white;
 	border: none;
 	width: 40vw;
 	min-height: 40vh;
 	position: absolute;
 	border-radius: 5px;
-	box-shadow: 0 0 10px #1f293760;
+	box-shadow: 0 0 10px var(--secondary) 60;
 	transform: translate(-50%, -50%);
 }
 ::backdrop {
@@ -107,7 +112,7 @@ body {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	border: 1px solid #1f2937;
+	border: 1px solid var(--secondary);
 	border-radius: 5px;
 	margin-block: 4px;
 	padding: 8px;
@@ -142,13 +147,13 @@ body {
 	position: relative;
 	padding: 10px;
 	cursor: pointer;
-	border-bottom: 1px solid #1f2937;
+	border-bottom: 1px solid var(--secondary);
 	border-radius: 10px;
 	display: flex;
 	align-items: center;
 }
 .user-list li:hover {
-	background-color: #1f2937;
+	background-color: var(--secondary);
 }
 .red-dot {
 	position: absolute;
@@ -168,7 +173,7 @@ body {
 	flex: 1;
 	display: flex;
 	flex-direction: column;
-	background-color: #1f2937;
+	background-color: var(--secondary);
 }
 
 .chat-area > * {
@@ -181,7 +186,7 @@ body {
 	align-items: center;
 }
 .chat-header-without-selected-user > .select-a-user {
-	background-color: #2c3e50;
+	background-color: var(--primary);
 	color: whitesmoke;
 	padding-inline: 1rem;
 	padding-block: 0.3rem;
@@ -189,10 +194,11 @@ body {
 }
 .chat-header {
 	min-height: 70px;
-	background-color: #1f2937;
+	background-color: var(--secondary);
 	color: white;
 	padding: 15px;
 	text-align: center;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 .selected-user-profile {
 	display: flex;
@@ -207,13 +213,16 @@ body {
 	display: flex;
 	flex-direction: column;
 }
+.chat-messages::-webkit-scrollbar {
+	width: 10px;
+}
 
 .chat-input {
 	display: flex;
 	opacity: 0;
 	align-items: center;
 	padding: 10px;
-	background-color: #2c3e50;
+	background-color: var(--primary);
 }
 .chat-input input {
 	flex: 1;
@@ -275,14 +284,14 @@ body {
 
 .message-container.sent {
 	align-self: flex-end;
-	background-color: #d4f8d4;
+	background-color: #eeeeee;
 	border-top-left-radius: 20px; /* Rounded top-left for sent message */
 	border-top-right-radius: 20px; /* Rounded top-right for sent message */
 }
 
 .message-container.received {
 	align-self: flex-start;
-	background-color: #a9a9a9;
+	background-color: #aaaaaa;
 	border-top-left-radius: 20px; /* Rounded top-left for received message */
 	border-top-right-radius: 20px; /* Rounded top-right for received message */
 }
@@ -302,12 +311,12 @@ body {
 }
 
 .message-container.sent::after {
-	border-top-color: #d4f8d4; /* Tail color for sent messages */
+	border-top-color: #eeeeee; /* Tail color for sent messages */
 	right: -10px; /* Position the tail */
 }
 
 .message-container.received::after {
-	border-top-color: #a9a9a9; /* Tail color for received messages */
+	border-top-color: #aaaaaa; /* Tail color for received messages */
 	left: -10px; /* Position the tail */
 }
 
@@ -340,7 +349,7 @@ img {
 }
 
 .save-btn {
-	background-color: #2c3e50;
+	background-color: var(--primary);
 	color: white;
 	border: none;
 	padding: 5px 10px;

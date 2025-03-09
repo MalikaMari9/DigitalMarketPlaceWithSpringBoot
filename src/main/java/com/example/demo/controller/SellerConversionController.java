@@ -37,7 +37,7 @@ public class SellerConversionController {
 	public String convertToSeller(HttpSession session, RedirectAttributes redirectAttributes) {
 		User user = (User) session.getAttribute("user");
 		if (user == null) {
-			return "redirect:/loginPage";
+			return "redirect:/login";
 		}
 
 		// ✅ Check if the user has a previous seller record
@@ -62,7 +62,7 @@ public class SellerConversionController {
 	public String convertToBuyer(HttpSession session, RedirectAttributes redirectAttributes) {
 		User user = (User) session.getAttribute("user");
 		if (user == null) {
-			return "redirect:/loginPage";
+			return "redirect:/login";
 		}
 
 		Seller seller = sellerRepo.findByUser(user);
@@ -100,7 +100,7 @@ public class SellerConversionController {
 		User user = (User) session.getAttribute("user");
 
 		if (user == null) {
-			return "redirect:/loginPage";
+			return "redirect:/login";
 		}
 
 		// ✅ Prevent duplicate registration

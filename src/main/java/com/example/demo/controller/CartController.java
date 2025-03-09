@@ -109,7 +109,7 @@ public class CartController {
 		User user = (User) session.getAttribute("user");
 
 		if (user == null) {
-			return "redirect:/loginPage";
+			return "redirect:/login";
 		}
 
 		List<Cart> cartItems = cartRepository.findByUser(user);

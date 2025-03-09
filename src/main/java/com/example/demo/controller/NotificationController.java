@@ -34,7 +34,7 @@ public class NotificationController {
 		User user = (User) session.getAttribute("user");
 
 		if (user == null) {
-			return "redirect:/loginPage"; // ✅ Redirect if user is not logged in
+			return "redirect:/login"; // ✅ Redirect if user is not logged in
 		}
 
 		// ✅ Fetch all notifications for the user
@@ -90,7 +90,7 @@ public class NotificationController {
 		// ✅ Check if admin is logged in
 		Boolean isAdmin = (Boolean) session.getAttribute("admin");
 		if (isAdmin == null || !isAdmin) {
-			return "redirect:/loginPage"; // Redirect if not an admin
+			return "redirect:/login"; // Redirect if not an admin
 		}
 
 		// ✅ Fetch admin-related notifications

@@ -218,7 +218,7 @@ public class AdminController {
 			@RequestParam(defaultValue = "6") int itemSize) { // ✅ Consistent page size
 
 		if (session.getAttribute("admin") == null) { // ✅ Ensure admin is logged in
-			return "redirect:/loginPage?error=Session Expired";
+			return "redirect:/login?error=Session Expired";
 		}
 
 		Pageable sellerPageable = PageRequest.of(sellerPage, sellerSize);
@@ -443,7 +443,7 @@ public class AdminController {
 			@RequestParam(defaultValue = "6") int size) { // ✅ Page size is consistent with other lists
 
 		if (session.getAttribute("admin") == null) { // ✅ Ensure admin is logged in
-			return "redirect:/loginPage?error=Session Expired";
+			return "redirect:/login?error=Session Expired";
 		}
 
 		Pageable pageable = PageRequest.of(page, size);
@@ -486,7 +486,7 @@ public class AdminController {
 			@RequestParam(defaultValue = "6") int size) { // ✅ Keep size consistent with other pages
 
 		if (session.getAttribute("admin") == null) { // ✅ Ensure only admins can access
-			return "redirect:/loginPage?error=Session Expired";
+			return "redirect:/login?error=Session Expired";
 		}
 
 		Pageable pageable = PageRequest.of(page, size);
@@ -503,7 +503,7 @@ public class AdminController {
 	public String viewItems(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "6") int size,
 			Model model, HttpSession session) {
 		if (session.getAttribute("admin") == null) { // ✅ Check if admin session exists
-			return "redirect:/loginPage?error=Session Expired"; // ✅ Redirect to login if session expired
+			return "redirect:/login?error=Session Expired"; // ✅ Redirect to login if session expired
 		}
 		Pageable pageable = PageRequest.of(page, size);
 		Page<Item> itemPage = itemRepo.findAll(pageable);
@@ -578,7 +578,7 @@ public class AdminController {
 			@RequestParam(defaultValue = "6") int size) { // ✅ Set default page size
 
 		if (session.getAttribute("admin") == null) { // ✅ Ensure admin is logged in
-			return "redirect:/loginPage?error=Session Expired";
+			return "redirect:/login?error=Session Expired";
 		}
 
 		Pageable pageable = PageRequest.of(page, size);
@@ -595,7 +595,7 @@ public class AdminController {
 	public String viewSellers(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "6") int size,
 			@RequestParam(required = false) String approval, Model model, HttpSession session) {
 		if (session.getAttribute("admin") == null) { // ✅ Check if admin session exists
-			return "redirect:/loginPage?error=Session Expired"; // ✅ Redirect to login if session expired
+			return "redirect:/login?error=Session Expired"; // ✅ Redirect to login if session expired
 		}
 		Pageable pageable = PageRequest.of(page, size);
 
@@ -620,7 +620,7 @@ public class AdminController {
 			@RequestParam(defaultValue = "6") int size // Default page size of 6
 			, HttpSession session) {
 		if (session.getAttribute("admin") == null) { // ✅ Check if admin session exists
-			return "redirect:/loginPage?error=Session Expired"; // ✅ Redirect to login if session expired
+			return "redirect:/login?error=Session Expired"; // ✅ Redirect to login if session expired
 		}
 		Pageable pageable = PageRequest.of(page, size);
 		Page<User> userPage = userRepo.findAll(pageable);

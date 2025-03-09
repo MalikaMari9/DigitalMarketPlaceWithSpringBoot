@@ -88,7 +88,7 @@ public class CheckoutController {
 		User user = (User) session.getAttribute("user");
 
 		if (user == null) {
-			return "redirect:/loginPage"; // Redirect if not logged in
+			return "redirect:/login"; // Redirect if not logged in
 		}
 
 		// GetCardInfo

@@ -69,7 +69,7 @@ public class EditItemController {
 
 		if (user == null) {
 
-			return "redirect:/loginPage";
+			return "redirect:/login";
 		}
 		Optional<Item> itemOptional = itemRepository.findById(itemId);
 		if (itemOptional.isEmpty()) {

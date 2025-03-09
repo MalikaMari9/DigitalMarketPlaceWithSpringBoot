@@ -73,7 +73,7 @@ public class ConfirmOrderController {
 
 		User seller = (User) session.getAttribute("user");
 		if (seller == null) {
-			return "redirect:/loginPage"; // Redirect if not logged in
+			return "redirect:/login"; // Redirect if not logged in
 		}
 
 		// ✅ Ensure Repository Supports Pagination

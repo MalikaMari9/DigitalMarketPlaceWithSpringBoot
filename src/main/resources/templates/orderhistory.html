@@ -4,88 +4,88 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Order History</title>
-    
+
     <link rel="stylesheet" th:href="@{/CSS/orderhistory.css}">
     <link rel="stylesheet" th:href="@{/CSS/headerFooter.css}">
-    
+
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script th:src="@{/JS/sidebar.js}"></script>
     <script th:src="@{/JS/CategorySelect.js}"></script>
-        <script th:src="@{/JS/buyAgain.js}"></script>
-        <style>
-        
-        
-        </style>
+    <script th:src="@{/JS/buyAgain.js}"></script>
 </head>
 <body>
+
 <header th:insert="fragments/header :: header"></header>
 
-    <div class="checkout-body">
-     <div class="completed-orders-wrapper" 
-     th:if="${receipt.receiptID != null}" 
-      th:each="receipt : ${receiptPage.content}" 
-         th:id="'receipt-' + ${receipt.receiptID}">
-            <button class="delete-order-btn" 
-                th:attr="data-receipt-id=${receipt.receiptID}" 
-                title="Delete Order">
-            ❌
-        </button>
-         
-
-            
-            <!-- Order Header -->
-            <div class="order-history-header">
-          
-            
-                <h2>Order from <a th:href="@{/viewSeller/{sellerID}(sellerID=${receipt.seller.userID})}" class="shop-name" th:text="${receipt.seller.username}"></a></h2> 
-                <p class="receipt-id">Receipt ID: <span th:text="${receipt.receiptID}"></span></p>
-                <p><strong>Total:</strong> <span class="order-price" th:text="'USD ' + ${receipt.totalPrice}"></span></p>
+<div class="checkout-body">
+    <th:block th:if="${receiptPage != null and receiptPage.content != null}">
+        <th:block th:each="receipt : ${receiptPage.content}">
+            <div class="completed-orders-wrapper" 
+                 th:if="${receipt != null and receipt.receiptID != null}" 
+                 th:id="'receipt-' + ${receipt.receiptID}">
                 
-                <p class="payment-status">
-                <strong>Payment Status:</strong> 
-                <span th:text="${paymentStatusMap[receipt.receiptID]}" 
-                      th:classappend="${paymentStatusMap[receipt.receiptID] == 'PAID' ? 'status-paid' : 'status-pending'}">
-                </span>
-            </p>
-            </div>
-
-            <!-- Order Items -->
-            <div class="order-card" th:each="order : ${receipt.orders}">
-                <div class="order-card-header">
-
-                    <img th:src="@{${order.item.getThumbnail()}}" alt="Product Image" class="order-image">
+                <!-- Delete Button -->
+                <button class="delete-order-btn" 
+                        th:attr="data-receipt-id=${receipt.receiptID}" 
+                        title="Delete Order">❌</button>
+                
+                <!-- Order Header -->
+                <div class="order-history-header">
+                    <h2>Order from 
+                        <a th:href="@{/viewSeller/{sellerID}(sellerID=${receipt.seller != null ? receipt.seller.userID : 0})}" 
+                           class="shop-name" 
+                           th:text="${receipt.seller != null ? receipt.seller.username : 'Unknown Seller'}">
+                        </a>
+                    </h2> 
+                    <p class="receipt-id">Receipt ID: <span th:text="${receipt.receiptID}"></span></p>
+                    <p><strong>Total:</strong> <span class="order-price" th:text="'USD ' + ${receipt.totalPrice}"></span></p>
                     
-                    <div class="order-info">
-                        <h4 class="order-title" th:text="${order.item.itemName}"></h4>
-                        <p class="order-date"><i class="fas fa-calendar-alt"></i> <span th:text="${#temporals.format(order.receipt.createdAt, 'yyyy-MM-dd HH:mm')}"></span></p>
-                    </div>
-
-                   <div class="order-actions" th:if="${receipt.seller.seller.businessType != 'C2C'}">
-    <button class="buy-again" th:data-item-id="${order.item.itemID}">
-        Buy Again
-    </button>
-</div>
-
-
-                    
+                    <p class="payment-status">
+                        <strong>Payment Status:</strong> 
+                        <span th:text="${paymentStatusMap != null and paymentStatusMap.containsKey(receipt.receiptID) ? paymentStatusMap[receipt.receiptID] : 'UNKNOWN'}"
+                              th:classappend="${paymentStatusMap[receipt.receiptID] == 'PAID' ? 'status-paid' : 'status-pending'}">
+                        </span>
+                    </p>
                 </div>
 
-                <div class="order-details">
-                    <p><strong>Order No:</strong> <span th:text="${order.orderID}"></span></p>
-                    <p><strong>Price × Quantity:</strong> <span class="order-price" th:text="'MMK ' + ${order.price} + ' × ' + ${order.quantity}"></span></p>
-                </div> 
-            </div>
+                <!-- Order Items -->
+                <div class="order-card" th:each="order : ${receipt.orders}">
+                    <div class="order-card-header">
+                        <img th:src="@{${order.item != null and order.item.getThumbnail() != null ? order.item.getThumbnail() : '/images/default.png'}}" 
+                             alt="Product Image" class="order-image">
+                        
+                        <div class="order-info">
+                            <h4 class="order-title" th:text="${order.item != null ? order.item.itemName : 'Unknown Item'}"></h4>
+                            <p class="order-date"><i class="fas fa-calendar-alt"></i> 
+                                <span th:if="${order.receipt != null and order.receipt.createdAt != null}"
+                                      th:text="${#temporals.format(order.receipt.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
+                            </p>
+                        </div>
 
-            <!-- Download Invoice -->
-            <div class="order-footer">
-                <button class="download-button" th:attr="data-receipt-id=${receipt.receiptID}">
-                    <i class="fas fa-file-download"></i> Download Invoice
-                </button>
-            </div>
+                        <div class="order-actions" th:if="${receipt.seller != null and receipt.seller.seller != null and receipt.seller.seller.businessType != 'C2C'}">
+                            <button class="buy-again" th:data-item-id="${order.item != null ? order.item.itemID : 0}">Buy Again</button>
+                        </div>
+                    </div>
 
-        </div>
-         <div class="pagination">
+                    <div class="order-details">
+                        <p><strong>Order No:</strong> <span th:text="${order.orderID}"></span></p>
+                        <p><strong>Price × Quantity:</strong> <span class="order-price" th:text="'MMK ' + ${order.price} + ' × ' + ${order.quantity}"></span></p>
+                    </div> 
+                </div>
+
+                <!-- Download Invoice -->
+                <div class="order-footer">
+                    <button class="download-button" th:attr="data-receipt-id=${receipt.receiptID}">
+                        <i class="fas fa-file-download"></i> Download Invoice
+                    </button>
+                </div>
+            </div>
+        </th:block>
+    </th:block>
+
+    <!-- Pagination -->
+    <div class="pagination" th:if="${receiptPage != null}">
         <a th:if="${receiptPage.hasPrevious()}" 
            th:href="@{/orderHistory(page=${receiptPage.number}, size=${receiptPage.size})}" 
            class="pagination-button">Previous</a>
@@ -96,34 +96,34 @@
            th:href="@{/orderHistory(page=${receiptPage.number + 2}, size=${receiptPage.size})}" 
            class="pagination-button">Next</a>
     </div>
-    </div>
+</div>
 
 <footer th:insert="fragments/footer :: footer"></footer>
+
 <script>
     lucide.createIcons();
+
     document.querySelectorAll(".download-button").forEach((btn) => {
         btn.addEventListener("click", () => {
             const receiptID = btn.getAttribute("data-receipt-id");
             window.location.href = `/download-invoice/${receiptID}`;
         });
     });
-
 </script>
+
 <script>
     window.onload = function () {
-        console.log("JavaScript Loaded"); // ✅ Ensure script is executing
-
-        const highlightReceiptID = "[[${highlightReceiptID}]]"; 
-        console.log("Highlight Receipt ID:", highlightReceiptID); // ✅ Log receipt ID
+        console.log("JavaScript Loaded");
+        const highlightReceiptID = "[[${highlightReceiptID}]]";
+        console.log("Highlight Receipt ID:", highlightReceiptID);
 
         if (highlightReceiptID && highlightReceiptID !== "null") {
             setTimeout(() => {
                 const targetReceipt = document.getElementById("receipt-" + highlightReceiptID);
-                console.log("Target Element:", targetReceipt); // ✅ Log the target element
-
+                console.log("Target Element:", targetReceipt);
                 if (targetReceipt) {
                     targetReceipt.scrollIntoView({ behavior: "smooth", block: "start" });
-                    targetReceipt.style.border = "3px solid red"; // Highlight effect
+                    targetReceipt.style.border = "3px solid red";
                     setTimeout(() => { targetReceipt.style.border = ""; }, 2000);
                 } else {
                     console.error("Element not found: receipt-" + highlightReceiptID);
@@ -135,10 +135,34 @@
     };
 </script>
 
+<script>
+	document.querySelectorAll(".delete-order-btn").forEach((btn) => {
+	    btn.addEventListener("click", function () {
+	        const receiptID = this.getAttribute("data-receipt-id"); // Now using receiptID
 
+	        if (confirm("Are you sure you want to delete this order?")) {
+	            fetch(`/api/order/delete/${receiptID}`, {  // ✅ Updated URL to use receiptID
+	                method: "DELETE",
+	                headers: { "Content-Type": "application/json" }
+	            })
+	            .then(response => response.json())
+	            .then(data => {
+	                if (data.success) {
+	                    alert("✅ Order deleted successfully!");
+	                    window.location.reload();
+	                } else {
+	                    alert("❌ Error: " + data.message);
+	                }
+	            })
+	            .catch(error => {
+	                console.error("Error:", error);
+	                alert("❌ Something went wrong.");
+	            });
+	        }
+	    });
+	});
 
-
-
+</script>
 
 </body>
 </html>

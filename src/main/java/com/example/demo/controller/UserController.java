@@ -366,7 +366,7 @@ public class UserController {
 		Object sessionUser = session.getAttribute("user");
 
 		if (!(sessionUser instanceof User)) {
-			return "redirect:/loginPage"; // Redirect if session expired
+			return "redirect:/login"; // Redirect if session expired
 		}
 
 		User user = (User) sessionUser; // ✅ Now correctly retrieving User object
@@ -374,7 +374,7 @@ public class UserController {
 		// ✅ Ensure the user exists in the database
 		Optional<User> userOptional = userRepository.findById(user.getUserID());
 		if (userOptional.isEmpty()) {
-			return "redirect:/loginPage?error=UserNotFound";
+			return "redirect:/login?error=UserNotFound";
 		}
 		user = userOptional.get();
 
@@ -391,11 +391,11 @@ public class UserController {
 		// ✅ Validate session
 		User user = (User) session.getAttribute("user");
 		if (user == null)
-			return "redirect:/loginPage";
+			return "redirect:/login";
 
 		Optional<User> userOptional = userRepository.findById(user.getUserID());
 		if (userOptional.isEmpty())
-			return "redirect:/loginPage?error=UserNotFound";
+			return "redirect:/login?error=UserNotFound";
 
 		user = userOptional.get();
 
@@ -484,7 +484,7 @@ public class UserController {
 	public String gmail(HttpSession session) {
 		User user = (User) session.getAttribute("user");
 		if (user == null)
-			return "redirect:/loginPage";
+			return "redirect:/login";
 		return "gmail";
 	}
 
@@ -492,7 +492,7 @@ public class UserController {
 	public String handleForgetPassword(@RequestParam String email, Model model, HttpSession session) {
 		User user = (User) session.getAttribute("user");
 		if (user == null)
-			return "redirect:/loginPage";
+			return "redirect:/login";
 
 		String username = user.getUsername();
 
@@ -540,7 +540,7 @@ public class UserController {
 			HttpSession session) {
 		User user1 = (User) session.getAttribute("user");
 		if (user1 == null)
-			return "redirect:/loginPage";
+			return "redirect:/login";
 
 		String username = user1.getUsername();
 		Optional<User> userOptional = userRepository.findByEmailandUsername(email, username);
@@ -578,7 +578,7 @@ public class UserController {
 			@RequestParam String newPassword, Model model) throws NoSuchAlgorithmException {
 		User user1 = (User) session.getAttribute("user");
 		if (user1 == null)
-			return "redirect:/loginPage";
+			return "redirect:/login";
 
 		String username = user1.getUsername();
 		Optional<User> userOptional = userRepository.findByEmailandUsername(email, username);

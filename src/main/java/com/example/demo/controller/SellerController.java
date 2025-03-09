@@ -97,7 +97,7 @@ public class SellerController {
 		User seller = (User) session.getAttribute("user");
 
 		if (seller == null) {
-			return "redirect:/loginPage";
+			return "redirect:/login";
 		}
 
 		// ✅ Define Sorting Order Dynamically
@@ -188,7 +188,7 @@ public class SellerController {
 		} else {
 			seller = (User) session.getAttribute("user");
 			if (seller == null) {
-				return "redirect:/loginPage?error=notLoggedIn";
+				return "redirect:/login?error=notLoggedIn";
 			}
 		}
 
@@ -260,7 +260,7 @@ public class SellerController {
 		User reviewer = (User) session.getAttribute("user");
 
 		if (reviewer == null) {
-			return "redirect:/loginPage?error=notLoggedIn";
+			return "redirect:/login?error=notLoggedIn";
 		}
 
 		Optional<User> reviewedUserOpt = userRepo.findById(sellerID);
@@ -302,7 +302,7 @@ public class SellerController {
 		User reviewer = (User) session.getAttribute("user");
 
 		if (reviewer == null) {
-			return "redirect:/loginPage?error=notLoggedIn";
+			return "redirect:/login?error=notLoggedIn";
 		}
 
 		Optional<Review> reviewOpt = reviewRepo.findById(reviewID);
@@ -329,7 +329,7 @@ public class SellerController {
 		User reviewer = (User) session.getAttribute("user");
 
 		if (reviewer == null) {
-			return "redirect:/loginPage?error=notLoggedIn";
+			return "redirect:/login?error=notLoggedIn";
 		}
 
 		Optional<Review> reviewOpt = reviewRepo.findById(reviewID);
@@ -363,7 +363,7 @@ public class SellerController {
 		User seller = (User) session.getAttribute("user");
 
 		if (seller == null) {
-			return "redirect:/loginPage";
+			return "redirect:/login";
 		}
 
 		Pageable pageable = PageRequest.of(page, size);
@@ -390,7 +390,7 @@ public class SellerController {
 		User seller = (User) session.getAttribute("user");
 
 		if (seller == null) {
-			return "redirect:/loginPage";
+			return "redirect:/login";
 		}
 
 		Optional<Item> optionalItem = itemRepo.findById(itemID);

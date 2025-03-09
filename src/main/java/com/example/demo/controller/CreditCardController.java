@@ -77,7 +77,7 @@ public class CreditCardController {
 		// ✅ Ensure User is Logged In
 		User user = (User) session.getAttribute("user");
 		if (user == null) {
-			return "redirect:/loginPage"; // Redirect to login page if not logged in
+			return "redirect:/login"; // Redirect to login page if not logged in
 		}
 
 		// ✅ If sellerID is missing, show error message and redirect to checkout

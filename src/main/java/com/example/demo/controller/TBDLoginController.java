@@ -52,7 +52,7 @@ public class TBDLoginController {
 	public String sellerDashboard(HttpSession session, Model model) {
 		User seller = (User) session.getAttribute("user");
 		if (seller == null) {
-			return "redirect:/loginPage";
+			return "redirect:/login";
 		}
 
 		// ✅ Fetch Total Orders for the seller
