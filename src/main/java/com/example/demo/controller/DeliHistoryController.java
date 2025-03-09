@@ -17,13 +17,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.example.demo.entity.Address;
 import com.example.demo.entity.DeliTrack;
 import com.example.demo.entity.Delivery;
+import com.example.demo.entity.Payment;
 import com.example.demo.entity.Receipt;
 import com.example.demo.entity.User;
 import com.example.demo.repository.DeliTrackRepository;
 import com.example.demo.repository.DeliveryRepository;
+import com.example.demo.repository.PaymentRepository;
 import com.example.demo.repository.ReceiptRepository;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.transaction.Transactional;
 
 @Controller
 public class DeliHistoryController {
@@ -36,6 +39,9 @@ public class DeliHistoryController {
 
 	@Autowired
 	private DeliTrackRepository deliTrackRepository;
+
+	@Autowired
+	private PaymentRepository paymentRepository;
 
 	@GetMapping("/deliHistory")
 	public String getDeliHistory(Model model, HttpSession session, // ✅ Use session to get the logged-in user
@@ -199,6 +205,7 @@ public class DeliHistoryController {
 	}
 
 	@PostMapping("/receiveOrder")
+	@Transactional
 	public String receiveOrder(@RequestParam Long receiptID, HttpSession session) {
 		// ✅ Ensure user is logged in
 		Object userObj = session.getAttribute("user");
@@ -215,7 +222,7 @@ public class DeliHistoryController {
 		Receipt receipt = receiptOpt.get();
 		Delivery delivery = receipt.getDelivery();
 
-		// ✅ Update status only if it's DELIVERED
+		// ✅ Only allow update if order status is DELIVERED
 		if (delivery.getStatus() == Delivery.DeliveryStatus.DELIVERED) {
 			delivery.setStatus(Delivery.DeliveryStatus.RECEIVED);
 			delivery.setUpdatedAt(LocalDateTime.now()); // ✅ Update timestamp
@@ -226,7 +233,36 @@ public class DeliHistoryController {
 			track.setDelivery(delivery);
 			track.setStatus(Delivery.DeliveryStatus.RECEIVED);
 			track.setNote("Customer has received the order.");
-			deliTrackRepository.save(track); // ✅ Corrected Repository Usage
+			deliTrackRepository.save(track);
+
+			// ✅ Retrieve payment and check payment method
+			Payment payment = paymentRepository.findByReceipt(receipt);
+			if (payment != null) {
+				// ✅ Convert payment method to a safe comparison format
+				String paymentMethod = (payment.getPaymentMethod() != null)
+						? payment.getPaymentMethod().trim().toLowerCase()
+						: "";
+
+				System.out.println("🔍 Found Payment: " + payment.getPaymentID());
+				System.out.println("🔹 Payment Method: '" + paymentMethod + "'");
+				System.out.println("🔹 Current Payment Status: " + payment.getPaymentStatus());
+
+				if ("cod".equals(paymentMethod) || "cash_on_delivery".equals(paymentMethod)) {
+					// ✅ Update COD payment to PAID when user receives the order
+					System.out.println("✅ Payment is COD. Updating status to PAID...");
+					payment.setPaymentStatus("PAID");
+					paymentRepository.save(payment);
+					System.out.println("🎉 COD Payment status updated successfully!");
+				} else if ("online".equals(paymentMethod)) {
+					// ✅ ONLINE Payments should already be PAID (No change needed)
+					System.out.println("✅ Payment was already ONLINE and PAID. No changes required.");
+				} else {
+					// ❓ Unexpected payment method (debugging case)
+					System.out.println("⚠️ Warning: Unknown Payment Method '" + paymentMethod + "'. No action taken.");
+				}
+			} else {
+				System.out.println("❌ No Payment entry found for Receipt ID: " + receipt.getReceiptID());
+			}
 		}
 
 		return "redirect:/deli-track?receiptID=" + receiptID;
