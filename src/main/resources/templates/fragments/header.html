@@ -92,7 +92,7 @@
 
        </th:block>
            <th:block th:if="${session.user != null}">
-          	 <th:block th:if="${session.user.role=='SELLER' and session.user.seller.approval!='pending'} ">
+          	 <th:block th:if="${session.user.role=='SELLER' and session.user.seller.approval!='pending' } ">
               
 <a th:href="@{/confirmDelivery}">
     <button class="cart-buttonyoon">

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>About Us</title>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- FontAwesome Icons -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" th:href="@{/CSS/home/picture-carousel.css}" />
+    <link rel="stylesheet" th:href="@{/CSS/home/how-to-buy.css}" />
+    <link rel="stylesheet" th:href="@{/CSS/home/explore-categories.css}" />
+    <link rel="stylesheet" th:href="@{/CSS/home/product-grid.css}" />
+    <link rel="stylesheet" th:href="@{/CSS/hpme/admin-announcement.css}" />
+    <link rel="stylesheet" th:href="@{/CSS/home/journey-section.css}" />
+    <link rel="stylesheet" th:href="@{/CSS/styles.css}" />
+
+    <!-- Scripts -->
+    <script th:src="@{/JS/home/picture-carousel.js}"></script>
+    <script th:src="@{/JS/home/how-to-buy.js}"></script>
+    <script th:src="@{/JS/home/explore-categories.js}"></script>
+    <script th:src="@{/JS/home/product-grid.js}"></script>
+    <script th:src="@{/JS/home/admin-announcement.js}"></script>
+    <script th:src="@{/JS/home/journey-section.js}"></script>
+    <script th:src="@{/JS/main.js}"></script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+    <!-- AOS Animation -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+    
+        <link rel="stylesheet" th:href="@{/CSS/STRMstyle.css}">
+    <link rel="stylesheet" th:href="@{/CSS/headerFooter.css}">
+        <script th:src="@{/JS/sidebar.js}"></script>
+    <script th:src="@{/JS/CategorySelect.js}"></script>
+
+    <style>
+        /* First Container */
+        .aboutus1 {
+            display: flex;
+            justify-content: center;  
+            align-items: center;    
+            height: 45vh;            
+            background-color: white;
+        }
+
+        .containerakkh1 {
+            background: white;
+            padding: 30px;
+            text-align: center;
+            width: 90%;
+            border-radius: 10px;
+        }
+
+        .aboutusp1 {
+            color: #6a6a6a;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        /* Second Container */
+        .aboutus2 {
+            display: flex;
+            justify-content: center;  
+            align-items: center;      
+            height: 95vh;           
+            background-color: #788fa1;
+        }
+
+        .containerakkh2 {
+            display: flex;
+            width: 75%;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .image-sectionakk img {
+            max-width: 300px;
+            border-radius: 10px;
+            background-color: white;
+        }
+
+        .text-sectionakk1 {
+            padding-left: 20px;
+            text-align: justify;
+        }
+
+        .aboutusp2 {
+            font-size: 16px;
+            color: black;
+            text-align: justify;
+        }
+
+        /* Third Container */
+        .aboutus3 {
+            display: flex;
+            justify-content: center;  
+            align-items: center;      
+            height: 160vh;            
+            background-color: white;
+        }
+
+        .containerakkh3 {
+            background: white;
+            padding: 30px;
+            text-align: center;
+            width: 90%;
+            border-radius: 10px;
+            border: solid gray 1px;
+        }
+
+        .aboutusp3 {
+            color: #6a6a6a;
+            font-size: 16px;
+            line-height: 1.6;
+            text-align: left;
+        }
+
+        /* Last Container */
+        .aboutus4 {
+            display: flex;
+            justify-content: center;  
+            align-items: center;      
+            height: 100vh;            
+            background-color: white;
+        }
+
+        .columnakkh {
+            float: left;
+            width: 45%;
+            padding: 10px;
+            height: 600px; 
+        }
+
+        .aboutusp4 {
+            color: white;
+            font-size: 16px;
+            line-height: 1.6;
+            text-align: left;
+        }
+
+        .vl {
+            border-left: 3px solid white;
+            height: 500px;
+        }
+    </style>
+</head>
+<body>
+
+<header th:insert="~{fragments/header :: header}"></header>
+
+<!-- About Us Carousel -->
+<div class="carousel-container">
+    <div class="carousel">
+        <div class="slide active">
+            <img th:src="@{/Image/aboutus.jpg}" alt="Curated Collections" />
+            <div class="slide-content">
+                <h2>About Us</h2>
+            </div>
+        </div>
+    </div>
+</div> 
+
+<!-- First Container -->
+<div class="aboutus1">
+    <div class="containerakkh1">
+        <h2 style="color: #494947;">Why TradeSphere? – Your Trusted Shopping Destination</h2><br>
+        <p class="aboutusp1" style="color: #494947;">
+            At TradeSphere, we are dedicated to providing a top-tier shopping experience with high-quality products, secure transactions, and excellent customer service. Our goal is to make online shopping seamless, trustworthy, and enjoyable for every customer.
+        </p>
+    </div>
+</div>
+
+<!-- Second Container -->
+<div class="aboutus2">
+    <div class="containerakkh2">
+        <div class="image-sectionakk">
+            <img th:src="@{/Image/whychooseus.jpeg}" alt="Team working at a table">
+        </div>
+        <div class="text-sectionakk1">
+            <h2 style="color: white; font-size: larger;">Uncompromising Quality & Reliability</h2>
+            <p class="aboutusp2" style="color: white;">
+                At TradeSphere, we handpick products from trusted suppliers to guarantee excellence. Each item undergoes rigorous quality checks to ensure it meets high standards of durability, performance, and customer satisfaction before reaching you.
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Third Container (Terms & Conditions) -->
+<div class="aboutus3">
+    <div class="containerakkh3">
+        <h2 style="color: #494947;">Terms and Conditions</h2>
+        <h3 style="text-align: left; color: #494947;"><b>Introduction</b></h3>
+        <p class="aboutusp3">Welcome to TradeSphere. By accessing or using our website, you agree to comply with these Terms and Conditions.</p>
+    </div>
+</div>
+
+<!-- Last Container -->
+<div class="aboutus4">
+    <div class="columnakkh" style="background-color: #788fa1;">
+        <h2 style="text-align: center; color: white;">Privacy Policy</h2>
+        <p class="aboutusp4">We collect personal information during registration and checkout, ensuring secure transactions.</p>
+    </div>
+    <div class="vl"></div>
+    <div class="columnakkh" style="background-color: #788fa1;">
+        <h2 style="text-align: center; color: white;">Returns Policy</h2>
+        <p class="aboutusp4">Items must be unused, in original packaging, and shipped with tracking.</p>
+    </div>
+</div>
+
+<footer th:insert="~{fragments/footer :: footer}"></footer>
+<script>lucide.createIcons();</script>
+
+</body>
+</html>

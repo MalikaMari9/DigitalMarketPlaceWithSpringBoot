@@ -123,6 +123,30 @@ public class dmpController {
 		return "contactus";
 
 	}
+
+	@GetMapping("/aboutus")
+	public String aboutus() {
+		return "aboutus";
+
+	}
+
+	@GetMapping("/shipping")
+	public String shipping() {
+		return "shippinginfo";
+
+	}
+
+	@GetMapping("/shopnow")
+	public String shopnow() {
+		return "shopnow";
+
+	}
+	
+	@GetMapping("/trackOrder")
+	public String trackOrderrr() {
+		return "trackorder";
+
+	}
 	// Site that has header footers
 
 	@GetMapping("/viewBuyer")

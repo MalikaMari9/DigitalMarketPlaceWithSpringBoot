@@ -1,80 +1,79 @@
-
 <div th:fragment="footer">
-        <footer class="footeryoon">
-            <div class="containeryoon">
-              <!-- Main Footer Content -->
-              <div class="footer-gridyoon">
+    <footer class="footeryoon">
+        <div class="containeryoon">
+            <!-- Main Footer Content -->
+            <div class="footer-gridyoon">
                 <!-- About Section -->
                 <div class="footer-sectionyoon">
-                  <h3>About Us</h3>
-                  <p>
-                    We're dedicated to providing the best shopping experience with
-                    quality products and exceptional service.
-                    <a href="/about" class="learn-moreyoon">Learn more</a>
-                  </p>
+                    <h3>About Us</h3>
+                    <p>
+                        We're dedicated to providing the best shopping experience with
+                        quality products and exceptional service.
+                        <a th:href="@{/aboutus}" class="learn-moreyoon">Learn more</a>
+                    </p>
                 </div>
-      
+
                 <!-- Quick Links -->
                 <div class="footer-sectionyoon">
-                  <h3>Quick Links</h3>
-                  <ul>
-                    <li><a href="/about">About Us</a></li>
-                    <li><a href="#">Shop Now</a></li>
-                    <li><a href="#">Track Order</a></li>
-                    <li><a href="#">Return Policy</a></li>
-                    <li><a href="#">FAQs</a></li>
-                  </ul>
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a th:href="@{/aboutus}">About Us</a></li>
+                        <li><a th:href="@{/shopnow}">Shop Now</a></li>
+                        <li><a th:href="@{/trackOrder}">Track Order</a></li>
+                        <li><a th:href="@{/aboutus}">Return Policy</a></li>
+                        <li><a th:href="@{/faq}">FAQs</a></li>
+                    </ul>
                 </div>
-      
+
                 <!-- Customer Service -->
                 <div class="footer-sectionyoon">
-                  <h3>Customer Service</h3>
-                  <ul>
-                    <li><a href="#">Contact Us</a></li>
-                    <li><a href="#">Shipping Info</a></li>
-                    <li><a href="#">Privacy Policy</a></li>
-                    <li><a href="#">Terms & Conditions</a></li>
-                  </ul>
+                    <h3>Customer Service</h3>
+                    <ul>
+                        <li><a th:href="@{/contact}">Contact Us</a></li>
+                        <li><a th:href="@{/shipping}">Shipping Info</a></li>
+                        <li><a th:href="@{/aboutus}">Privacy Policy</a></li>
+                        <li><a th:href="@{/aboutus}">Terms & Conditions</a></li>
+                    </ul>
                 </div>
-      
+
                 <!-- Newsletter -->
                 <div class="footer-sectionyoon">
-                  <h3>Newsletter</h3>
-                  <p>
-                    Subscribe to receive updates, access to exclusive deals, and more.
-                  </p>
-                  <input
-                    type="email"
-                    id="newsletter-emailyoon"
-                    placeholder="Enter your email"
-                  />
+                    <h3>Newsletter</h3>
+                    <p>
+                        Subscribe to receive updates, access to exclusive deals, and more.
+                    </p>
+                    <input
+                        type="email"
+                        id="newsletter-emailyoon"
+                        placeholder="Enter your email"
+                    />
                 </div>
-              </div>
-      
-              <div class="separatoryoon"></div>
-      
-              <!-- Bottom Footer -->
-              <div class="bottom-footeryoon">
+            </div>
+
+            <div class="separatoryoon"></div>
+
+            <!-- Bottom Footer -->
+            <div class="bottom-footeryoon">
                 <div class="copyrightyoon">
-                  <span id="copyright-yearyoon"></span> STORE. All rights reserved.
+                    <span th:text="${#dates.year(#dates.createNow())}"></span> STORE. All rights reserved.
                 </div>
-      
+
                 <!-- Social Media Links -->
                 <div class="social-linksyoon">
-                  <a href="#" class="social-iconyoon" aria-label="Facebook">
-                    <i data-lucide="facebook"></i>
-                  </a>
-                  <a href="#" class="social-iconyoon" aria-label="Twitter">
-                    <i data-lucide="twitter"></i>
-                  </a>
-                  <a href="#" class="social-iconyoon" aria-label="Instagram">
-                    <i data-lucide="instagram"></i>
-                  </a>
-                  <a href="#" class="social-iconyoon" aria-label="LinkedIn">
-                    <i data-lucide="linkedin"></i>
-                  </a>
+                    <a href="#" class="social-iconyoon" aria-label="Facebook">
+                        <i data-lucide="facebook"></i>
+                    </a>
+                    <a href="#" class="social-iconyoon" aria-label="Twitter">
+                        <i data-lucide="twitter"></i>
+                    </a>
+                    <a href="#" class="social-iconyoon" aria-label="Instagram">
+                        <i data-lucide="instagram"></i>
+                    </a>
+                    <a href="#" class="social-iconyoon" aria-label="LinkedIn">
+                        <i data-lucide="linkedin"></i>
+                    </a>
                 </div>
-              </div>
             </div>
-          </footer>
-          </div>
+        </div>
+    </footer>
+</div>

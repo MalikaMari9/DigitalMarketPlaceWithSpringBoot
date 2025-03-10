@@ -13,12 +13,25 @@
     <script th:src="@{/JS/sidebar.js}"></script>
     <script th:src="@{/JS/CategorySelect.js}"></script>
     <script th:src="@{/JS/buyAgain.js}"></script>
+    <style>
+    .empty-message {
+    font-size: 1.2rem;
+    color: #555;
+    text-align: center;
+    margin-top: 20px;
+}
+    
+    </style>
 </head>
 <body>
 
 <header th:insert="fragments/header :: header"></header>
 
-<div class="checkout-body">
+<div class="checkout-body" style="min-height: 50vh; margin-top:50px;">
+<p class="empty-message" th:if="${receiptPage == null or receiptPage.totalElements == 0}">
+    You have no order history yet. Start shopping today! 🛍️
+</p>
+
     <th:block th:if="${receiptPage != null and receiptPage.content != null}">
         <th:block th:each="receipt : ${receiptPage.content}">
             <div class="completed-orders-wrapper" 

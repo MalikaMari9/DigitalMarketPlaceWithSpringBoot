@@ -127,7 +127,7 @@ public class SellerConversionController {
 		session.setAttribute("user", user);
 
 		redirectAttributes.addFlashAttribute("success", "Seller registration submitted! Awaiting approval.");
-		return "redirect:/home";
+		return "redirect:/login";
 	}
 
 	private String saveFile(MultipartFile file) throws IOException {

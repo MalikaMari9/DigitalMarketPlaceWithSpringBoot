@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Shipping Information</title>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- FontAwesome Icons -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" th:href="@{/CSS/home/picture-carousel.css}" />
+    <link rel="stylesheet" th:href="@{/CSS/home/how-to-buy.css}" />
+    <link rel="stylesheet" th:href="@{/CSS/home/explore-categories.css}" />
+    <link rel="stylesheet" th:href="@{/CSS/home/product-grid.css}" />
+    <link rel="stylesheet" th:href="@{/CSS/hpme/admin-announcement.css}" />
+    <link rel="stylesheet" th:href="@{/CSS/home/journey-section.css}" />
+    <link rel="stylesheet" th:href="@{/CSS/styles.css}" />
+
+    <!-- Scripts -->
+    <script th:src="@{/JS/home/picture-carousel.js}"></script>
+    <script th:src="@{/JS/home/how-to-buy.js}"></script>
+    <script th:src="@{/JS/home/explore-categories.js}"></script>
+    <script th:src="@{/JS/home/product-grid.js}"></script>
+    <script th:src="@{/JS/home/admin-announcement.js}"></script>
+    <script th:src="@{/JS/home/journey-section.js}"></script>
+    <script th:src="@{/JS/main.js}"></script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+    <!-- AOS Animation -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+    
+        <link rel="stylesheet" th:href="@{/CSS/STRMstyle.css}">
+    <link rel="stylesheet" th:href="@{/CSS/headerFooter.css}">
+        <script th:src="@{/JS/sidebar.js}"></script>
+    
+
+    <style>
+        /* First container */
+        .kh1 {
+            display: flex;
+            justify-content: center;  
+            align-items: center;    
+            height: 65vh;            
+            background-color: white;
+        }
+
+        .containerkh1 {
+            background: white;
+            padding: 30px;
+            text-align: center;
+            width: 90%;
+            border-radius: 10px;
+        }
+
+        .khp1 {
+            color: #6a6a6a;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 10px; 
+        }
+        th, td { 
+            padding: 12px; 
+            border: 1px solid #ddd; 
+            text-align: center; 
+        }
+        th { 
+            background-color: gray; 
+            color: white; 
+        }
+
+        /* Second container */
+        .kh2 {
+            display: flex;
+            justify-content: center;  
+            align-items: center;      
+            height: 50vh;           
+            background-color: white;
+        }
+
+        .containerkh2 {
+            display: flex;
+            width: 75%;
+            padding: 20px;
+            border-radius: 10px;
+            border: solid #6a6a6a;
+        }
+
+        .highlightakk {
+            color: #6a6a6a;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ✅ Insert Header Fragment -->
+<header th:insert="~{fragments/header :: header}"></header>
+
+<!-- ✅ Shipping Container -->
+<div class="carousel-container">
+    <div class="carousel">
+        <div class="slide active">
+            <img th:src="@{/Image/shipping.jpg}" alt="Curated Collections" />
+            <div class="slide-content">
+                <h2>Shipping Information</h2>
+            </div>
+        </div>
+    </div>
+</div> 
+
+<!-- ✅ First Container -->
+<div class="kh1">
+    <div class="containerkh1">
+        <h3>Shipping Methods & Delivery Time</h3> <br>
+        <table>
+            <tr>
+                <th>Shipping Method</th>
+                <th>Estimated Delivery Time</th>
+                <th>Cost</th>
+            </tr>
+            <tr>
+                <td>Standard Shipping</td>
+                <td>5-7 business days</td>
+                <td>$5.99</td>
+            </tr>
+            <tr>
+                <td>Express Shipping</td>
+                <td>1-2 business days</td>
+                <td>$15.99</td>
+            </tr>
+            <tr>
+                <td>Same-Day Delivery</td>
+                <td>Same day (Order before 12 PM)</td>
+                <td>$19.99</td>
+            </tr>
+            <tr>
+                <td>International Shipping</td>
+                <td>7-14 business days</td>
+                <td>Varies by country</td>
+            </tr>
+            <tr>
+                <td>Local Pickup</td>
+                <td>Immediate</td>
+                <td><span class="free-shipping">Free</span></td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<!-- ✅ Second Container -->
+<div class="kh2">
+    <div class="containerkh2">
+        <div>
+            <h2 style="color: #6a6a6a; font-size: larger;">Shipping Policy & Delivery Guidelines</h2>
+            <ul class="khp2" style="color: #6a6a6a;">
+                <li class="highlightakk">Standard shipping takes 5-7 business days.</li>
+                <li class="highlightakk">Express shipping delivers within 1-2 business days.</li>
+                <li class="highlightakk">Same-day delivery is available for orders placed before 12 PM.</li>
+                <li class="highlightakk">Free shipping applies for orders above $50.</li>
+                <li class="highlightakk">We do not ship to P.O. Boxes.</li>
+                <li class="highlightakk">Orders placed on weekends/holidays are processed on the next business day.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- ✅ Insert Footer Fragment -->
+<footer th:insert="~{fragments/footer :: footer}"></footer>
+
+<!-- ✅ Initialize Lucide Icons -->
+<script>
+    lucide.createIcons();
+</script>
+
+</body>
+</html>

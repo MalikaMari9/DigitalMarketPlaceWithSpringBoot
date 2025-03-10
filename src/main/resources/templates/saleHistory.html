@@ -9,16 +9,42 @@
     <link th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css}" rel="stylesheet">
      <script th:src="@{/JS/sidebar.js}"></script>
      <script th:src="@{/JS/CategorySelect.js}"></script>
+      <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+   <style>
+   .back-button {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 15px;
+}
+
+.back-button i {
+    margin-right: 5px;
+    font-size: 18px;
+}
+   
+   </style>
+   <script>
+    lucide.createIcons();
+</script>
    
 </head>
-<body>
+<body >
 
 
 <header th:insert="~{fragments/header :: header}"></header>
-    <div id="container">
+    <div id="container" style="min-height: 50vh; margin-top:100px;">
+    <a href="javascript:history.back()" class="back-button">
+    <i data-lucide="arrow-left"></i> Back
+</a>
     <h2 id="page-title">Sale History</h2>
 
 <form id="search-form" method="get" action="/saleHistory">
+
     <label class="search-label">Search: </label>
     <input type="text" id="search-field" name="search" th:value="${searchQuery}">
     
@@ -102,6 +128,7 @@
         Next
     </a>
 </div>
+
 
 
     </div>

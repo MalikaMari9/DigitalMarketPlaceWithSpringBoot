@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Track Order</title>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- External Styles and Scripts -->
+   <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" th:href="@{/CSS/home/picture-carousel.css}" />
+    <link rel="stylesheet" th:href="@{/CSS/home/how-to-buy.css}" />
+    <link rel="stylesheet" th:href="@{/CSS/home/explore-categories.css}" />
+    <link rel="stylesheet" th:href="@{/CSS/home/product-grid.css}" />
+    <link rel="stylesheet" th:href="@{/CSS/hpme/admin-announcement.css}" />
+    <link rel="stylesheet" th:href="@{/CSS/home/journey-section.css}" />
+    <link rel="stylesheet" th:href="@{/CSS/styles.css}" />
+
+    <!-- Scripts -->
+    <script th:src="@{/JS/home/picture-carousel.js}"></script>
+    <script th:src="@{/JS/home/how-to-buy.js}"></script>
+    <script th:src="@{/JS/home/explore-categories.js}"></script>
+    <script th:src="@{/JS/home/product-grid.js}"></script>
+    <script th:src="@{/JS/home/admin-announcement.js}"></script>
+    <script th:src="@{/JS/home/journey-section.js}"></script>
+    <script th:src="@{/JS/main.js}"></script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+    <!-- AOS Animation -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+    
+        <link rel="stylesheet" th:href="@{/CSS/STRMstyle.css}">
+    <link rel="stylesheet" th:href="@{/CSS/headerFooter.css}">
+        <script th:src="@{/JS/sidebar.js}"></script>
+    
+
+    <style>
+        .track1, .track2 {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 40vh;
+            background-color: white;
+        }
+
+        .containertrack1, .containertrack2 {
+            background: white;
+            padding: 30px;
+            text-align: center;
+            width: 90%;
+            border-radius: 10px;
+        }
+
+        .tracking-container {
+            max-width: 500px;
+            margin: auto;
+            background: gray;
+            padding: 30px;
+            border-radius: 18px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .inputtrack {
+            width: 80%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .buttontrack {
+            padding: 10px 15px;
+            background: white;
+            color: black;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+
+        .buttontrack:hover {
+            background: rgb(158, 158, 236);
+            transform: scale(1.05);
+        }
+
+        .order-status {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .status-box {
+            padding: 10px;
+            border-radius: 5px;
+            display: inline-block;
+            margin-top: 10px;
+            font-size: 16px;
+        }
+
+        .shipped { background: #a3b565; color: white; }
+        .delivered { background: #ffb2f7; color: white; }
+        .processing { background: #ab9dff; color: white; }
+        .error { background: gray; color: black; }
+    </style>
+</head>
+<body>
+
+<!-- ✅ Insert Header Fragment -->
+<header th:insert="~{fragments/header :: header}"></header>
+
+<!-- ✅ Track Order Container -->
+<div class="carousel-container">
+    <div class="carousel">
+        <div class="slide active">
+            <img th:src="@{/Image/trackorder.jpg}" alt="Track Order" />
+            <div class="slide-content">
+                <h2>Track Your Order</h2>
+            </div>
+        </div>
+    </div>
+</div> 
+
+<!-- ✅ First Section -->
+<div class="track1">
+    <div class="containertrack1">
+        <h2 style="color: black;">Track Your Order – Stay Updated on Your Delivery!</h2> <br>
+        <p class="ptrack">At TradeSphere, we understand how exciting it is to receive your order! Our Track Order feature allows you to check your order status in real-time. Simply enter your tracking number or order ID to see whether your package is processing, shipped, or delivered. We ensure fast, reliable, and secure delivery, so you can shop with confidence. If you need further assistance, our customer support team is always here to help!</p>
+    </div>
+</div>
+
+<!-- ✅ Order Tracking -->
+
+
+<!-- ✅ Insert Footer Fragment -->
+<footer th:insert="~{fragments/footer :: footer}"></footer>
+
+<!-- ✅ JavaScript Initialization -->
+<script>
+    function trackOrder() {
+        let trackingNum = document.getElementById("trackingNumber").value.trim();
+        let statusBox = document.getElementById("orderStatus");
+
+        let orderData = {
+            "1": { status: "Shipped", className: "shipped", estimatedDelivery: "Mar 12, 2025" },
+            "2": { status: "Delivered", className: "delivered", estimatedDelivery: "Mar 10, 2025" },
+            "3": { status: "Processing", className: "processing", estimatedDelivery: "Mar 14, 2025" }
+        };
+
+        if (orderData[trackingNum]) {
+            let order = orderData[trackingNum];
+            statusBox.innerHTML = `Your order is <span class='status-box ${order.className}'>${order.status}</span><br>Estimated Delivery: <b>${order.estimatedDelivery}</b>`;
+            statusBox.classList.remove("error");
+        } else {
+            statusBox.innerHTML = "Invalid tracking number. Please try again.";
+            statusBox.classList.add("error");
+        }
+
+        return false; // Prevent form submission
+    }
+
+    lucide.createIcons();
+</script>
+
+</body>
+</html>

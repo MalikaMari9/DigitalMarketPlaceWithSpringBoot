@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+
+
+		
+		
     <link rel="stylesheet" th:href="@{/CSS/sellItem.css}" />
     <script th:src="@{/JS/previewImage.js}"></script>
 
@@ -79,6 +83,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 </head>
 <body th:attr="data-business-type=${session.user.seller.businessType}">
+
 
 
     <form id="item-form" th:action="@{/sell-item}" method="POST" enctype="multipart/form-data">
@@ -195,6 +200,7 @@ document.addEventListener("DOMContentLoaded", function () {
         <div id="image-preview-container" class="form-image-preview"></div>
         <input type="submit" id="submit-button" class="form-submit-button" value="Submit" name="submit">
     </form>
+    
     <script>
     lucide.createIcons();
     document.addEventListener("DOMContentLoaded", function () {

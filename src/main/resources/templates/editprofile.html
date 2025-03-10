@@ -3,8 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   
     <title>Edit Profile</title>
     <link rel="stylesheet" type="text/css" th:href="@{/CSS/STRMstyle.css}">
+    
+       <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+   <style>
+   .back-button {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 15px;
+    border: none; /* ✅ Ensures no border */
+    outline: none; /* ✅ Removes focus outline */
+    background: none; /* ✅ Ensures no background */
+    padding: 5px; 
+}
+
+.back-button i {
+    margin-right: 5px;
+    font-size: 18px;
+}
+   
+   .body{
+     background-color:white;}
+   </style>
+   <script>
+    lucide.createIcons();
+</script>
+   
 </head>
 <body>
     <div class="add-body">
@@ -12,6 +43,10 @@
             <main class="edit-profile-container">
                 <h1>Edit Profile</h1>
                 <form th:action="@{/editProfile}" th:object="${user}" method="post" enctype="multipart/form-data" class="horizontal-form">
+               <a href="javascript:history.back()" class="back-button">
+    <i class="fa fa-arrow-left"></i> Back
+</a>
+               
                     <input type="hidden" name="userID" th:value="${user.userID}">
 
                     <!-- Profile Picture -->

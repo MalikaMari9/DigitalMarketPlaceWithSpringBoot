@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Shop Now</title>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+   <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" th:href="@{/CSS/home/picture-carousel.css}" />
+    <link rel="stylesheet" th:href="@{/CSS/home/how-to-buy.css}" />
+    <link rel="stylesheet" th:href="@{/CSS/home/explore-categories.css}" />
+    <link rel="stylesheet" th:href="@{/CSS/home/product-grid.css}" />
+    <link rel="stylesheet" th:href="@{/CSS/hpme/admin-announcement.css}" />
+    <link rel="stylesheet" th:href="@{/CSS/home/journey-section.css}" />
+    <link rel="stylesheet" th:href="@{/CSS/styles.css}" />
+
+    <!-- Scripts -->
+    <script th:src="@{/JS/home/picture-carousel.js}"></script>
+    <script th:src="@{/JS/home/how-to-buy.js}"></script>
+    <script th:src="@{/JS/home/explore-categories.js}"></script>
+    <script th:src="@{/JS/home/product-grid.js}"></script>
+    <script th:src="@{/JS/home/admin-announcement.js}"></script>
+    <script th:src="@{/JS/home/journey-section.js}"></script>
+    <script th:src="@{/JS/main.js}"></script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+    <!-- AOS Animation -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+    
+        <link rel="stylesheet" th:href="@{/CSS/STRMstyle.css}">
+    <link rel="stylesheet" th:href="@{/CSS/headerFooter.css}">
+        <script th:src="@{/JS/sidebar.js}"></script>
+    
+
+    <style>
+        .shop1, .shop2 {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 50vh;
+            background-color: white;
+        }
+
+        .containershop1, .containershop2 {
+            background: white;
+            padding: 30px;
+            text-align: center;
+            width: 90%;
+            border-radius: 10px;
+        }
+
+        .btnshop1 {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 20px;
+            background-color: gray;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .btnshop1:hover {
+            background-color: rgb(158, 158, 236);
+        }
+
+        .testimonial-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .testimonial-card {
+            background: rgb(158, 158, 236);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+            width: 300px;
+            text-align: left;
+        }
+
+        .testimonial-card img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
+
+        .customer-name {
+            font-weight: bold;
+            color: black;
+        }
+
+        .stars {
+            color: goldenrod;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ✅ Insert Header Fragment -->
+<header th:insert="~{fragments/header :: header}"></header>
+
+<!-- ✅ Shop Now Container -->
+<div class="carousel-container">
+    <div class="carousel">
+        <div class="slide active">
+            <img th:src="@{/Image/shopnow.jpg}" alt="Curated Collections" />
+            <div class="slide-content">
+                <h2>Shop Today</h2>
+            </div>
+        </div>
+    </div>
+</div> 
+
+<!-- ✅ First Section -->
+<div class="shop1">
+    <div class="containershop1">
+        <h2 style="color: black;">Shop Smarter, Shop Faster – Welcome to TradeSphere!</h2> <br>
+        <p class="pshop">At TradeSphere, we bring you the best deals, top-quality products, and a seamless shopping experience – all in one place! Whether you're looking for the latest tech gadgets, stylish fashion, or must-have home essentials, we've got you covered. Enjoy exclusive discounts, fast shipping, and secure checkout as you shop with confidence. Start exploring today and discover why thousands of customers love shopping with us!</p>
+        <a th:href="@{/home}" class="btnshop1">Shop Now</a>
+    </div>
+</div>
+
+<!-- ✅ Customer Testimonials -->
+<div class="shop2">
+    <div class="containershop2">
+        <h2 style="color: black;">What Our Customers Say!</h2> <br>
+        <div class="testimonial-container">
+            <div class="testimonial-card">
+                <img th:src="@{/Image/customer1.jpg}" alt="Customer 1">
+                <p class="customer-name">Sarah M.</p>
+                <p class="stars">★★★★★</p>
+                <p>"Shopping at TradeSphere has been a game-changer! The website is easy to use, and the delivery was super fast. Highly recommended!"</p>
+            </div>
+        
+            <div class="testimonial-card">
+                <img th:src="@{/Image/customer2.jpg}" alt="Customer 2">
+                <p class="customer-name">David R.</p>
+                <p class="stars">★★★★★</p>
+                <p>"From great prices to fantastic customer service, this store has it all! My sneakers arrived in just two days. I'll be back for more!"</p>
+            </div>
+        
+            <div class="testimonial-card">
+                <img th:src="@{/Image/customer3.jpg}" alt="Customer 3">
+                <p class="customer-name">Jessica L.</p>
+                <p class="stars">★★★★★</p>
+                <p>"Secure checkout and real-time tracking kept me informed. My order arrived on time and in perfect condition!"</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ✅ Insert Footer Fragment -->
+<footer th:insert="~{fragments/footer :: footer}"></footer>
+
+<!-- ✅ JavaScript Initialization -->
+<script>
+    lucide.createIcons();
+</script>
+
+</body>
+</html>
