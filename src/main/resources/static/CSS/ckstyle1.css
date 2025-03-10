@@ -3,7 +3,7 @@ body {
   margin: 0;
   padding: 0;
   background-color: #f9f9f9;
-  
+  display:flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
@@ -227,26 +227,56 @@ input:focus {
   flex: 1;
 }
 
-/* Button styles */
-/*
+
 button {
-  background-color: #2b2c2b;
-  color: #fff;
-  font-size: 16px;
-  font-weight: bold;
-  padding: 10px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+  background-color:  #333;
+	    color: white;
+	    border: none;
+	    padding: 10px 20px;
+
+	    font-size: 1rem;
+	    border-radius: 5px;
+	    cursor: pointer;
+	    transition: background-color 0.3s ease;
 }
 
 button:hover {
-  background-color: #9b99a1;
-}*/
+  background-color:white;
+    color: #333;
+}
 .error-message {
   color: red;
   font-size: 12px;
   margin-top: 5px;
   display: block;
 }
+
+/* Ensure the entire page takes at least full viewport height */
+html, body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Make the main content container take up remaining space */
+.container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  
+    justify-content: center;
+    min-height: 50vh;
+    margin-top: 50px;
+}
+
+/* Ensure footer stays at the bottom */
+footer {
+    width: 100%;
+    background-color: #f8f8f8; /* Optional: Customize footer background */
+   
+    padding: 10px;
+    position: relative;
+    bottom: 0;
+}
+

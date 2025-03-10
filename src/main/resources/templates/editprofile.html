@@ -29,9 +29,13 @@
     font-size: 18px;
 }
    
-   .body{
+   .page-wrapper{
      background-color:white;}
+     
+    .edit-profile-container h1{
+      text-align:center;}
    </style>
+   
    <script>
     lucide.createIcons();
 </script>
@@ -41,11 +45,12 @@
     <div class="add-body">
         <div class="page-wrapper">
             <main class="edit-profile-container">
-                <h1>Edit Profile</h1>
-                <form th:action="@{/editProfile}" th:object="${user}" method="post" enctype="multipart/form-data" class="horizontal-form">
-               <a href="javascript:history.back()" class="back-button">
+             <a href="javascript:history.back()" class="back-button">
     <i class="fa fa-arrow-left"></i> Back
 </a>
+                <h1>Edit Profile</h1>
+                <form th:action="@{/editProfile}" th:object="${user}" method="post" enctype="multipart/form-data" class="horizontal-form">
+              
                
                     <input type="hidden" name="userID" th:value="${user.userID}">
 
@@ -117,6 +122,9 @@
     </div>
 
     <script>
+    
+    lucide.createIcons();
+    
         document.addEventListener("DOMContentLoaded", function () {
             const profilePictureInput = document.getElementById("profilePicture");
             const profileImagePreview = document.getElementById("profileImagePreview");
