@@ -6,6 +6,7 @@
     <title>Login Form</title>
     <link rel="stylesheet" th:href="@{/CSS/ckstyle1.css}">
     <script th:src="@{/JS/login.js}" defer></script>
+
 </head>
 <body>
 
@@ -32,6 +33,8 @@
                 <input type="submit" value="Login">
             </div>
         </form>
+		<p>Dont have an account? <a>Register here!</a></p>
+		<p><a th:href="@{/gmailForgetPassword}">Forget Password</a></p>
 </div>
 
 </body>

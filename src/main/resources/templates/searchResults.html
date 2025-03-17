@@ -128,7 +128,7 @@
                     <div class="pg-buttons">
                         <th:block th:if="${session.user == null or session.user.userID != item.seller.userID}">
                             <a th:href="@{/itemList/{itemID}(itemID=${item.itemID})}">
-                                <button class="pg-cart-btn">Auction</button>
+                                <button >Auction</button>
                             </a>
                         </th:block>
 

@@ -104,8 +104,8 @@
         </td>
 
         <td>
-            <img th:src="@{${receipt.delivery.status == 'DELIVERED' ? '/Image/icon/package-check.png' : '/Image/icon/package-x.png'}}"
-                 width="25px" height="25px">
+        <p th:text="@{${receipt.delivery.status}}"></p>
+           
         </td>
          <td class="payment-status"
             th:text="${paymentStatusMap[receipt.receiptID]}"

@@ -90,8 +90,7 @@ public class UserController {
 	public String loginUser(@RequestParam String username, @RequestParam String password, HttpServletRequest request,
 			Model model, HttpSession session) throws NoSuchAlgorithmException {
 
-		// ✅ Handle Admin Login Separately
-		if ("ADMIN".equalsIgnoreCase(username)) {
+		if ("ADMIN".equalsIgnoreCase(username) && "Admin12345".equals(password)) {
 			session.setAttribute("admin", true);
 			return "redirect:/admin/viewDashboard";
 		}
@@ -488,6 +487,48 @@ public class UserController {
 		return "gmail";
 	}
 
+	@GetMapping("/gmailForgetPassword")
+	public String gmailPassword(HttpSession session) {
+
+		return "forgetPasswordGmail";
+	}
+
+	@PostMapping("/gmailForgetPassword")
+	public String handleForgetPasswordGmail(@RequestParam String email, @RequestParam String username, Model model,
+			HttpSession session) {
+
+		Optional<User> userOptional = userRepository.findByEmailandUsername(email, username);
+
+		if (userOptional.isPresent()) {
+			String token = generateResetToken();
+			LocalDateTime expiryDate = LocalDateTime.now().plusMinutes(15);
+
+			// ✅ Debugging: Print Generated Token
+			System.out.println("✅ Generated Token: " + token);
+
+			PasswordReset passwordReset = new PasswordReset(userOptional.get(), token, expiryDate);
+			passwordResetRepository.save(passwordReset);
+
+			// ✅ Debugging: Check if token is saved
+			Optional<PasswordReset> checkSaved = passwordResetRepository.findByToken(token);
+			if (checkSaved.isPresent()) {
+				System.out.println("✅ Token successfully saved in the database!");
+			} else {
+				System.out.println("❌ Token not found in database after save!");
+			}
+
+			sendPasswordResetEmail(email, token);
+			System.out.println("📧 Email sent to: " + email);
+			return "redirect:/reset-codeForgetPassword?email=" + email + "&username=" + username;
+		} else {
+			System.out.print("No user opt");
+		}
+
+		model.addAttribute("message",
+				"If an account exists with this email, you will receive password reset instructions.");
+		return "gmailForgetPassword";
+	}
+
 	@PostMapping("/gmail")
 	public String handleForgetPassword(@RequestParam String email, Model model, HttpSession session) {
 		User user = (User) session.getAttribute("user");
@@ -532,16 +573,51 @@ public class UserController {
 	@GetMapping("/reset-code")
 	public String showResetCodeForm(@RequestParam String email, Model model) {
 		model.addAttribute("email", email);
+
 		return "resetcode";
+	}
+
+	@GetMapping("/reset-codeForgetPassword")
+	public String showResetCodeFormFP(@RequestParam String email, @RequestParam String username, Model model) {
+		model.addAttribute("email", email);
+		model.addAttribute("username", username);
+		return "resetcodeForgetPassword";
+	}
+
+	@PostMapping("/verify-reset-codeForgetPassword")
+	public String verifyResetCodeFP(@RequestParam String email, @RequestParam String username,
+			@RequestParam String token, Model model, HttpSession session) {
+
+		Optional<User> userOptional = userRepository.findByEmailandUsername(email, username);
+
+		if (userOptional.isPresent()) {
+			User user = userOptional.get();
+			Long userId = userOptional.get().getUserID();
+			Optional<PasswordReset> resetOptional = passwordResetRepository.findByTokenAndUsedFalse(token);
+
+			if (resetOptional.isPresent()) {
+				PasswordReset reset = resetOptional.get();
+				if (reset.getExpiryDate().isAfter(LocalDateTime.now()) && reset.getUser().getUserID().equals(userId)) {
+					reset.setUsed(true);
+					passwordResetRepository.save(reset);
+					return "redirect:/reset-passwordForgetPassword?email=" + email + "&username=" + username + "&token="
+							+ token;
+				}
+			}
+		}
+
+		model.addAttribute("error", "Invalid or expired code");
+		model.addAttribute("email", email);
+		return "resetcodeForgetPassword";
 	}
 
 	@PostMapping("/verify-reset-code")
 	public String verifyResetCode(@RequestParam String email, @RequestParam String token, Model model,
 			HttpSession session) {
 		User user1 = (User) session.getAttribute("user");
-		if (user1 == null)
+		if (user1 == null) {
 			return "redirect:/login";
-
+		}
 		String username = user1.getUsername();
 		Optional<User> userOptional = userRepository.findByEmailandUsername(email, username);
 
@@ -601,6 +677,43 @@ public class UserController {
 
 		model.addAttribute("error", "Invalid reset attempt");
 		return "resetpassword";
+	}
+
+	@GetMapping("/reset-passwordForgetPassword")
+	public String showResetPasswordFormFP(@RequestParam String email, @RequestParam String username,
+			@RequestParam String token, Model model) {
+		model.addAttribute("username", username);
+		model.addAttribute("email", email);
+		model.addAttribute("token", token);
+		return "resetpasswordForgetPassword";
+	}
+
+	@PostMapping("/reset-passwordForgetPassword")
+	@Transactional
+	public String handlePasswordResetFP(@RequestParam String email, @RequestParam String username,
+			@RequestParam String token, HttpSession session, @RequestParam String newPassword, Model model)
+			throws NoSuchAlgorithmException {
+
+		Optional<User> userOptional = userRepository.findByEmailandUsername(email, username);
+
+		if (userOptional.isPresent()) {
+			User user = userOptional.get();
+			Optional<PasswordReset> resetOptional = passwordResetRepository.findByToken(token);
+
+			if (resetOptional.isPresent()) {
+				PasswordReset reset = resetOptional.get();
+				if (reset.getUser().getUserID().equals(user.getUserID())) {
+					// Update password
+					user.setPassword(hashPassword(newPassword));
+					userRepository.save(user);
+
+					return "redirect:/login?resetSuccess=true";
+				}
+			}
+		}
+
+		model.addAttribute("error", "Invalid reset attempt");
+		return "resetpasswordForgetPassword";
 	}
 
 	private String generateResetToken() {
